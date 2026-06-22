@@ -1,5 +1,5 @@
-__pycache__/
 .idea/
+__pycache__/
 functions/db/known_faces/
 functions/test/
 functions/__pycache__/
