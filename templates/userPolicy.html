@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>翱三通史官网 · 用户信息保密协议</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f5f7fc;
+            font-family: system-ui, -apple-system, 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Noto Sans', sans-serif;
+            line-height: 1.5;
+            color: #1e2a3e;
+            padding: 2rem 1rem;
+        }
+
+        /* 主容器 - 更温和的卡片质感 */
+        .protocol-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 28px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.05), 0 4px 8px rgba(0, 0, 0, 0.02);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        /* 内边距统一舒适 */
+        .protocol-inner {
+            padding: 2rem 2rem 2.8rem;
+        }
+
+        /* 头部区域 */
+        .protocol-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #eef2f9;
+            padding-bottom: 1.25rem;
+        }
+
+        .protocol-header h1 {
+            font-size: 1.9rem;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+            background: linear-gradient(135deg, #1f3b4c, #2c5a6e);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .version-badge {
+            display: inline-flex;
+            gap: 1.2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: #4b6f86;
+            background: #f0f4fa;
+            padding: 0.4rem 1.2rem;
+            border-radius: 60px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .version-badge span {
+            font-weight: 500;
+        }
+
+        /* 所有正文段落 */
+        .md-para {
+            padding: 0.25rem 0;
+            margin: 0.9rem 0;
+            line-height: 1.6;
+            color: #2c3f4f;
+        }
+
+        /* 标题样式 h2 */
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 1.8rem 0 1rem 0;
+            padding-left: 0.5rem;
+            border-left: 5px solid #2c7a6e;
+            color: #1e3b44;
+            letter-spacing: -0.2px;
+        }
+
+        /* 有序列表 & 无序列表 统一样式 */
+        ol, ul {
+            margin: 0.75rem 0 0.75rem 1.6rem;
+            padding-left: 0.2rem;
+        }
+
+        li {
+            margin: 0.6rem 0;
+            line-height: 1.6;
+        }
+
+        li p.md-para {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 嵌套列表微调 */
+        ul ul, ol ul {
+            margin-top: 0.2rem;
+            margin-bottom: 0.2rem;
+        }
+
+        /* 加粗更醒目但温和 */
+        strong {
+            color: #1f5e6e;
+            font-weight: 600;
+        }
+
+        /* 链接样式 */
+        a {
+            color: #2a7f6e;
+            text-decoration: none;
+            border-bottom: 1px dashed #bdd4db;
+            transition: all 0.2s;
+        }
+
+        a:hover {
+            color: #0f4c5c;
+            border-bottom-color: #0f4c5c;
+        }
+
+        /* 特殊高亮块 用于重要声明 */
+        .highlight-note {
+            background: #fef8e7;
+            border-left: 4px solid #e6b12e;
+            padding: 0.8rem 1.2rem;
+            border-radius: 16px;
+            margin: 1.3rem 0;
+            font-size: 0.95rem;
+        }
+
+        /* 联系卡片 */
+        .contact-card {
+            background: #f8fafd;
+            border-radius: 24px;
+            padding: 1.2rem 1.5rem;
+            margin: 1.5rem 0 1rem;
+            border: 1px solid #e9edf2;
+        }
+
+        .contact-card p {
+            margin: 0.4rem 0;
+        }
+
+        .footer-thanks {
+            margin-top: 2.2rem;
+            text-align: center;
+            padding-top: 1.2rem;
+            border-top: 1px solid #e4eaf1;
+            font-size: 0.9rem;
+            color: #4a6276;
+        }
+
+        /* 针对小型设备优化 */
+        @media (max-width: 680px) {
+            body {
+                padding: 1rem 0.8rem;
+            }
+            .protocol-inner {
+                padding: 1.5rem 1.2rem 2rem;
+            }
+            .protocol-header h1 {
+                font-size: 1.5rem;
+            }
+            h2 {
+                font-size: 1.35rem;
+            }
+            ol, ul {
+                margin-left: 1rem;
+            }
+            .version-badge {
+                font-size: 0.75rem;
+                gap: 0.8rem;
+            }
+        }
+
+        /* 打印友好 */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .protocol-container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+            a {
+                text-decoration: underline;
+                color: black;
+            }
+        }
+
+        /* 分隔线轻柔 */
+        hr.md-hr {
+            display: none;
+        }
+        /* 原有 hr 隐藏，用更优雅的边框代替 */
+        .protocol-header + .soft-divider {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="protocol-container">
+    <div class="protocol-inner">
+        <div class="protocol-header">
+            <h1>翱三通史官网<br>用户信息保密协议</h1>
+            <div class="version-badge">
+                <span>📅 版本日期：2026年1月1日</span>
+                <span>⚡ 生效日期：2026年1月1日</span>
+            </div>
+        </div>
+
+        <p class="md-para">翱三通史官网（以下简称“本网站”或“我们”）深知用户个人信息的重要性，并承诺按照中华人民共和国相关法律法规（包括但不限于《中华人民共和国个人信息保护法》《中华人民共和国网络安全法》）及本协议约定，对用户信息予以严格保密。本协议适用于本网站所有注册用户及访客。</p>
+
+        <h2>一、信息的收集范围</h2>
+        <ol>
+            <li><strong>用户主动提供的信息</strong>
+                <ul>
+                    <li>当您在本网站登录时，您需要提供<strong>用户名</strong>和<strong>密码</strong>。</li>
+                    <li>当您发表评论时，您需要提供<strong>评论内容</strong>，系统会自动关联您的<strong>用户ID</strong>。</li>
+                    <li>如果您参与文章编辑，您需要提供<strong>作者ID</strong>（即您的用户标识）以及文章相关内容。</li>
+                </ul>
+            </li>
+            <li><strong>自动收集的信息</strong>
+                <ul>
+                    <li><strong>设备与访问记录</strong>：如IP地址、浏览器类型、操作系统、访问时间、访问来源页面。</li>
+                    <li><strong>行为记录</strong>：您在本网站的浏览、搜索、评论、编辑等操作日志。</li>
+                    <li><strong>Cookie与本地存储</strong>：用于维持登录状态、记录您是否已阅读提示等。</li>
+                </ul>
+            </li>
+            <li><strong>不收集敏感个人信息</strong><br>本网站不收集您的真实姓名、身份证号、银行账户、生物识别信息等法律定义的“敏感个人信息”，除非您自愿在文章或评论中公开。</li>
+        </ol>
+
+        <h2>二、信息的使用目的</h2>
+        <p class="md-para">我们仅在以下必要范围内使用您的信息：</p>
+        <ol>
+            <li>提供、维护、优化本网站的核心功能（登录、浏览文章、发表评论、编辑文章）。</li>
+            <li>验证您的身份，防止非授权访问（如禁止教师账号在2026年中考前访问）。</li>
+            <li>保护网站安全，检测和防止恶意攻击、刷评论等行为。</li>
+            <li>根据您的操作展示个性化内容（如显示“编辑”链接给特定用户）。</li>
+            <li>统计网站访问量、文章热度，以改进服务质量。</li>
+            <li>履行法律法规要求的义务（如配合司法机关调查）。</li>
+        </ol>
+
+        <h2>三、信息的保存与保护</h2>
+        <ol>
+            <li><strong>保存期限</strong>
+                <ul>
+                    <li>用户登录凭证（加密密码）将长期保存，直至您主动注销账号或本网站停止运营。</li>
+                    <li>评论、文章等内容保存期限为您主动删除或本网站停止运营。</li>
+                    <li>访问日志等操作记录保存不超过180天，用于安全审计。</li>
+                </ul>
+            </li>
+            <li><strong>技术保护措施</strong>
+                <ul>
+                    <li>密码采用不可逆加密算法存储，任何人（包括管理员）无法直接获取明文密码。</li>
+                    <li>数据库访问限制在内部网络，并定期备份。</li>
+                    <li>网站采用HTTPS加密传输（如适用），防止中间人窃听。</li>
+                    <li>登录失败多次锁定IP，防止暴力破解。</li>
+                </ul>
+            </li>
+            <li><strong>管理保护措施</strong>
+                <ul>
+                    <li>仅授权必要人员（网站维护者）接触数据库，且均签署保密承诺。</li>
+                    <li>定期检查安全漏洞，及时更新服务器和程序。</li>
+                    <li>如发生用户信息泄露事件，我们将在72小时内通知受影响用户并向监管部门报告。</li>
+                </ul>
+            </li>
+        </ol>
+
+        <h2>四、信息的共享与披露</h2>
+        <ol>
+            <li><strong>原则上不对外共享</strong><br>我们不会将您的个人信息出售、出租或与任何第三方共享，除非：
+                <ul>
+                    <li>获得您的明确同意；</li>
+                    <li>依据法律、行政法规规定或司法机关/行政机关的要求必须提供；</li>
+                    <li>为维护本网站的安全、财产或合法权益所合理必需的。</li>
+                </ul>
+            </li>
+            <li><strong>公开内容</strong>
+                <ul>
+                    <li>您在本网站发表的<strong>评论内容、用户ID（翱三班X号）</strong>会对所有访客公开。</li>
+                    <li>您参与编辑的文章，<strong>作者ID、文章内容</strong>会向所有访客公开。</li>
+                    <li>建议您不要在公开内容中泄露个人真实姓名、家庭住址、联系方式等。</li>
+                </ul>
+            </li>
+            <li><strong>第三方服务</strong><br>本网站未接入第三方分析工具或广告联盟，不主动向外部传输用户信息。</li>
+        </ol>
+
+        <h2>五、用户的权利</h2>
+        <p class="md-para">您对您在本网站的个人信息享有以下权利：</p>
+        <ol>
+            <li><strong>访问与更正</strong>：您可以登录后查看自己的用户ID，通过网站内联系渠道申请更正错误的关联信息。</li>
+            <li><strong>删除</strong>：您可以请求删除您发表的评论（联系管理员）；文章内容若您是唯一作者，可申请删除或匿名化处理。</li>
+            <li><strong>注销账号</strong>：联系管理员申请注销账号，我们将在15个工作日内删除您的所有关联信息（但已公开发表的评论、文章可能因技术原因保留匿名形态）。</li>
+            <li><strong>撤回同意</strong>：您可以通过停止使用本网站、清除浏览器存储来撤回对Cookie等非必要信息的收集同意。</li>
+            <li><strong>投诉举报</strong>：如果您认为您的信息权利受到侵害，可联系本网站管理员（邮箱/联系方式见网站“关于”页面），或向网信、工信等部门投诉。</li>
+        </ol>
+
+        <h2>六、未成年人保护</h2>
+        <p class="md-para">本网站主要服务于初中学生及教师。我们特别重视未成年人个人信息保护：</p>
+        <ul>
+            <li>未满14周岁的未成年人使用本网站前，应征得法定监护人同意。</li>
+            <li>我们不会故意收集未成年人的真实身份信息。</li>
+            <li>监护人有权要求我们删除被监护未成年人的相关信息（请联系管理员）。</li>
+        </ul>
+
+        <h2>七、免责条款</h2>
+        <p class="md-para">在以下情况下，本网站不承担信息泄露的法律责任：</p>
+        <ol>
+            <li>因您主动将密码告知他人、与他人共享账号或未安全退出导致的泄露。</li>
+            <li>因不可抗力（如黑客攻击、病毒、战争、政府行为）造成的意外泄露，但本网站已采取合理必要防护措施的。</li>
+            <li>在评论、文章中主动公开的个人信息。</li>
+            <li>根据法律要求或应有权机关指令必须披露的。</li>
+        </ol>
+
+        <h2>八、协议的修改</h2>
+        <p class="md-para">我们可能根据法律法规变化或网站功能调整对本协议进行修订。修订后的协议将在本页面公布，并注明生效日期。对于重大变更（如收集信息范围扩大、使用目的改变），我们会通过网站弹窗或邮件等方式显著通知您。您继续使用本网站即视为同意修订后的协议。</p>
+
+        <h2>九、联系我们</h2>
+        <div class="contact-card">
+            <p>📧 电子邮件：<a href="mailto:1046971617@qq.com">1046971617@qq.com</a></p>
+            <p>🌐 网站内私信：访问 <a href="https://www.cjchcoderchat.site:65431/" target="_blank" rel="noopener noreferrer">www.cjchcoderchat.site:65431</a>，登录后 @admin 即可</p>
+            <!--<p>📍 邮寄地址：（可选）湖北省武汉市 · 翱三通史工作室（收）</p>-->
+            <p style="margin-top: 0.5rem; font-size: 0.85rem; color: #5a6f7e;">💬 工作时间内最迟168h回复请求，我们将认真对待每一份隐私请求。</p>
+        </div>
+
+        <div class="highlight-note">
+            🌟 温馨提示：您在本网站公开发表的评论、文章中请勿填写个人真实姓名、住址、电话等敏感信息。共同维护良好的历史分享社区。
+        </div>
+
+        <div class="footer-thanks">
+            <strong>感谢您信任翱三通史官网。</strong> 我们将竭诚守护您的信息权益，共同留存美好的初中记忆。
+        </div>
+    </div>
+</div>
+</body>
+</html>

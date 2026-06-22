@@ -1,0 +1,13 @@
+{
+  "name": "orsun-history",
+  "version": "2.0.0",
+  "main": "templates/index.html",
+  "scripts": {
+    "test": "cd ./ && python orsun_server.py",
+    "produce": "cd ./ && python run.py"
+  },
+  "keywords": ["orsun", "翱三"],
+  "author": "翱三通史编委会",
+  "license": "ISC",
+  "description": "记录奥山实验初级中学2023届3班初中生活的网站。"
+}

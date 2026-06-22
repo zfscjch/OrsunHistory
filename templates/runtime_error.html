@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>翱三通史 · 假期静修</title>
+    <!-- 极简美学 · 只添几笔 -->
+    <style>
+        /* 重置 & 基础 —— 干净如纸 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f7f5f0;          /* 暖白底，像旧书页 */
+            font-family: 'Times New Roman', '宋体', 'Georgia', serif;
+            padding: 1.5rem;
+            margin: 0;
+        }
+
+        /* 卡片 —— 轻透、留白、呼吸感 */
+        .notice-card {
+            max-width: 720px;
+            width: 100%;
+            background: rgba(255, 252, 245, 0.85); /* 半透米白 */
+            backdrop-filter: blur(2px);            /* 极淡毛玻璃 */
+            padding: 3rem 2.8rem;
+            border-radius: 48px 16px 48px 16px;    /* 不对称圆角，古典又现代 */
+            box-shadow:
+                    0 12px 28px rgba(0, 0, 0, 0.04),
+                    0 4px 12px rgba(0, 0, 0, 0.02),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(200, 180, 160, 0.2);
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        /* 装饰细线 —— 不喧宾夺主 */
+        .ornament {
+            display: inline-block;
+            width: 48px;
+            height: 2px;
+            background: #c9b6a2;
+            margin: 0.4rem auto 1.2rem;
+            border-radius: 4px;
+            opacity: 0.6;
+        }
+
+        /* 主标题 —— 静穆、温和 */
+        h1 {
+            font-size: 2.6rem;
+            font-weight: 400;
+            letter-spacing: 6px;
+            color: #3c2e26;
+            margin-bottom: 0.2rem;
+            font-family: 'Times New Roman', '楷体', serif;
+            text-shadow: 0 1px 2px rgba(255, 248, 240, 0.6);
+        }
+
+        /* 副标题/小引 */
+        .subhead {
+            font-size: 0.95rem;
+            letter-spacing: 4px;
+            color: #8b7a6a;
+            text-transform: uppercase;
+            border-top: 1px solid #e4d8cc;
+            border-bottom: 1px solid #e4d8cc;
+            display: inline-block;
+            padding: 0.3rem 1.2rem;
+            margin: 0.6rem auto 1.8rem;
+            font-weight: 300;
+            background: rgba(235, 224, 212, 0.15);
+            border-radius: 40px;
+            backdrop-filter: blur(1px);
+        }
+
+        /* 核心通知 —— 温润清晰 */
+        .notice-text {
+            font-size: 1.4rem;
+            line-height: 1.7;
+            color: #2f241d;
+            background: rgba(250, 242, 232, 0.3);
+            padding: 1.8rem 1.2rem;
+            border-radius: 32px 8px 32px 8px;
+            backdrop-filter: blur(1px);
+            border: 1px solid rgba(210, 190, 170, 0.15);
+            margin: 1.4rem 0 1.2rem;
+            font-weight: 350;
+            word-break: break-word;
+        }
+
+        /* 重点强调 —— 只轻轻一提 */
+        .highlight-date {
+            display: inline-block;
+            background: #e7dbce;
+            color: #2d1f17;
+            padding: 0.1rem 1rem;
+            border-radius: 40px;
+            font-weight: 400;
+            letter-spacing: 1px;
+            font-size: 1.2rem;
+            background: rgba(200, 180, 160, 0.15);
+            border: 1px solid rgba(180, 160, 140, 0.15);
+            backdrop-filter: blur(2px);
+            margin: 0 0.1rem;
+        }
+
+        /* 脚注 —— 极淡存在 */
+        .footer-note {
+            margin-top: 2.4rem;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            color: #aa9a8a;
+            border-top: 1px dashed #dacfc4;
+            padding-top: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-note span {
+            opacity: 0.7;
+            font-style: italic;
+        }
+
+        /* 小装饰 —— 手绘感 */
+        .divider-icon {
+            display: inline-block;
+            font-size: 1.2rem;
+            opacity: 0.3;
+            transform: rotate(15deg);
+        }
+
+        /* 响应式：小屏依然舒适 */
+        @media (max-width: 480px) {
+            .notice-card {
+                padding: 2rem 1.4rem;
+                border-radius: 32px 12px 32px 12px;
+            }
+            h1 {
+                font-size: 2.0rem;
+                letter-spacing: 4px;
+            }
+            .notice-text {
+                font-size: 1.2rem;
+                padding: 1.2rem 0.8rem;
+            }
+            .subhead {
+                font-size: 0.75rem;
+                letter-spacing: 2px;
+                padding: 0.2rem 0.8rem;
+            }
+        }
+
+        /* 轻触感 (鼠标悬停微动) */
+        .notice-card:hover {
+            box-shadow:
+                    0 20px 40px rgba(0, 0, 0, 0.03),
+                    0 6px 16px rgba(0, 0, 0, 0.02);
+            border-color: rgba(180, 160, 140, 0.25);
+        }
+
+        /* 保持文字可读性，不滥用斜体 */
+        em {
+            font-style: normal;
+            color: #5d4b3a;
+            font-weight: 400;
+        }
+    </style>
+</head>
+<body>
+<div class="notice-card">
+
+    <!-- 极简装饰 —— 三枚点 (呼应“三通”) -->
+    <div style="display: flex; justify-content: center; gap: 6px; opacity: 0.25; margin-bottom: 0.2rem;">
+        <span style="font-size: 2rem; line-height: 1;">·</span>
+        <span style="font-size: 2.4rem; line-height: 1; transform: translateY(-2px);">·</span>
+        <span style="font-size: 2rem; line-height: 1;">·</span>
+    </div>
+
+    <h1>翱三通史</h1>
+    <div class="ornament"></div>
+    <div class="subhead">· 夏 日 静 修 ·</div>
+
+    <!-- 核心通知 — 保留原始语义，仅美化结构 -->
+    <div class="notice-text">
+        为了让老师和同学享受一个美好的假期，<br>
+        <span style="display: inline-block; margin: 0.4rem 0 0.2rem;">
+        《翱三通史》
+      </span>
+        <br>
+        在 <span class="highlight-date" style="background: rgba(180, 150, 130, 0.12);">6月23日</span> 前
+        <span style="display: inline-block; margin-top: 0.5rem; font-weight: 380; background: rgba(200, 180, 160, 0.05); padding: 0.1rem 1rem; border-radius: 30px;">
+        禁止教师访问
+      </span>
+    </div>
+
+    <!-- 小引 —— 只留淡淡余韵 -->
+    <div style="margin: 0.8rem 0 0.2rem; font-size: 0.9rem; color: #b7a697; letter-spacing: 1px; font-style: italic;">
+        — 书卷静默，时光从容 —
+    </div>
+
+    <!-- 脚注：保留原有信息，增加一点雅致 -->
+    <div class="footer-note">
+        <span>🌿 假期愉快</span>
+        <span class="divider-icon">✦</span>
+        <span>师·生·共·憩</span>
+        <span class="divider-icon">✦</span>
+        <span>📖 静待翻页</span>
+    </div>
+
+    <!-- 极小的装饰点，平衡视觉 -->
+    <div style="margin-top: 1rem; display: flex; justify-content: center; gap: 12px; opacity: 0.15; font-size: 0.5rem;">
+        <span>⏤</span><span>⏤</span><span>⏤</span>
+    </div>
+</div>
+</body>
+</html>

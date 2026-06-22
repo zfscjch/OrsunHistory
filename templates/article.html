@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ article.title|default('文章') }} - 翱三通史</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'Georgia', 'Times New Roman', '宋体', serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f1eb;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        /* 文章容器 */
+        .article-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fffefc;
+            border-radius: 32px;
+            box-shadow: 0 20px 40px -12px rgba(0, 20, 10, 0.25);
+            padding: 2.5rem;
+            position: relative;
+        }
+
+        /* 文章类型标识 */
+        .article-badge {
+            position: absolute;
+            top: -12px;
+            right: 30px;
+            padding: 0.3rem 1.5rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        .badge-teacher {
+            background: #2e3b2c;
+            color: #e8d6b5;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .badge-student {
+            background: #8b6914;
+            color: #fff8e7;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 500;
+            color: #2c3e50;
+            border-bottom: 2px solid #eee7dd;
+            padding-bottom: 0.8rem;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.01em;
+        }
+
+        /* 文章内容 */
+        #content {
+            display: block;
+            padding: 1.5rem;
+            word-break: break-word;
+            background-color: #fefcf8;
+            border-radius: 16px;
+            margin: 1.5rem 0;
+            line-height: 1.8;
+            font-size: 1.05rem;
+        }
+
+        #content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        #author {
+            color: #7f8c8d;
+            font-style: italic;
+            text-align: right;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px dashed #e0d9cf;
+        }
+
+        /* 语录区域 - 仅教师文章显示 */
+        .sayings-section {
+            margin: 2rem 0;
+            padding: 1.2rem;
+            background: #f9f5e8;
+            border-radius: 16px;
+            border-left: 4px solid #9bb88b;
+        }
+
+        .sayings-section h2 {
+            font-size: 1.3rem;
+            color: #2e3b2c;
+            margin-bottom: 0.8rem;
+        }
+
+        .sayings-section #sayings {
+            color: #5a4a2a;
+            font-style: italic;
+            line-height: 1.7;
+        }
+
+        /* 编辑链接 */
+        .edit-link {
+            display: inline-block;
+            margin: 1rem 0;
+            padding: 0.5rem 1.5rem;
+            background: #9bb88b;
+            color: #1f2a1c;
+            text-decoration: none;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .edit-link:hover {
+            background: #aac9a0;
+            transform: translateY(-2px);
+        }
+
+        /* ========= 评论区域样式 ========= */
+        #comments {
+            margin-top: 3rem;
+            padding: 1.5rem;
+            background: #faf8f4;
+            border-radius: 24px;
+            border: 1px solid #eee7dd;
+        }
+
+        #comments h3 {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e0d9cf;
+            position: relative;
+        }
+
+        #comments h3::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background: #9bb88b;
+        }
+
+        /* 评论列表 */
+        #comments-show {
+            margin-bottom: 2rem;
+        }
+
+        .comment {
+            background: white;
+            border-radius: 16px;
+            padding: 1.2rem;
+            margin: 1rem 0;
+            border-left: 3px solid #9bb88b;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .comment:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        /* 回复缩进 */
+        .comment[data-level="1"] {
+            margin-left: 40px;
+            border-left-color: #e67e22;
+        }
+
+        .comment[data-level="2"] {
+            margin-left: 80px;
+            border-left-color: #27ae60;
+        }
+
+        .comment[data-level="3"] {
+            margin-left: 120px;
+            border-left-color: #3498db;
+        }
+
+        /* 评论头部 */
+        .comment .sender {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.3rem;
+            border-bottom: 1px dashed #f0ebe3;
+        }
+
+        .comment .sender strong {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .comment .sender .reply-indicator {
+            color: #e67e22;
+            font-size: 0.85rem;
+            margin-left: 0.5rem;
+        }
+
+        /* 评论内容 */
+        .comment .message {
+            font-size: 0.98rem;
+            line-height: 1.6;
+            color: #2c3e50;
+            margin: 0.8rem 0;
+            word-wrap: break-word;
+        }
+
+        /* 评论底部 */
+        .comment .date {
+            font-size: 0.75rem;
+            color: #95a5a6;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .comment .date .likes {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            color: #e74c3c;
+        }
+
+        .comment .reply-btn {
+            font-size: 0.75rem;
+            padding: 0.2rem 0.8rem;
+            border: 1px solid #9bb88b;
+            background: white;
+            color: #2e3b2c;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-left: auto;
+        }
+
+        .comment .reply-btn:hover {
+            background: #9bb88b;
+            color: white;
+        }
+
+        /* 输入区域 */
+        .input-area {
+            background: white;
+            padding: 1.2rem;
+            border-radius: 20px;
+            margin-top: 1rem;
+        }
+
+        .input-area label {
+            display: block;
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .input-area input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #e0d9cf;
+            border-radius: 30px;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+
+        .input-area input:focus {
+            outline: none;
+            border-color: #9bb88b;
+            box-shadow: 0 0 0 3px rgba(155, 184, 139, 0.1);
+        }
+
+        #submit-comment {
+            margin-top: 0.8rem;
+            padding: 0.6rem 1.5rem;
+            background: #9bb88b;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            float: right;
+        }
+
+        #submit-comment:hover {
+            background: #7a9a6a;
+            transform: translateY(-2px);
+        }
+
+        /* 回复状态 */
+        #reply-status {
+            background: #e8f5e9 !important;
+            padding: 0.6rem 1rem !important;
+            margin: 0.8rem 0;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            color: #2e3b2c;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        #reply-status span {
+            color: #e67e22;
+            font-weight: 600;
+        }
+
+        #cancel-reply {
+            padding: 0.2rem 0.8rem;
+            background: #95a5a6;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            margin-left: auto;
+        }
+
+        #cancel-reply:hover {
+            background: #7f8c8d;
+        }
+
+        .no-comments {
+            text-align: center;
+            padding: 2rem;
+            color: #95a5a6;
+            font-style: italic;
+            background: #fefcf8;
+            border-radius: 16px;
+            border: 2px dashed #e0d9cf;
+        }
+
+        .loading-comments {
+            text-align: center;
+            padding: 2rem;
+            color: #95a5a6;
+        }
+
+        .loading-comments::after {
+            content: '...';
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { content: '.'; }
+            33% { content: '..'; }
+            66% { content: '...'; }
+        }
+
+        /* 清空浮动 */
+        .input-area::after {
+            content: '';
+            display: table;
+            clear: both;
+        }
+
+        /* 响应式 */
+        @media (max-width: 600px) {
+            .article-container {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            .comment[data-level="1"] {
+                margin-left: 15px;
+            }
+
+            .comment[data-level="2"] {
+                margin-left: 30px;
+            }
+
+            #submit-comment {
+                width: 100%;
+                float: none;
+            }
+        }
+    </style>
+    <script>
+        // ========= 评论功能 =========
+        let currentReply = {
+            parentId: null,
+            userName: null
+        };
+
+        // 获取评论列表
+        function getComments(targetId, isStu) {
+            const requestBody = isStu
+                ? { student_id: targetId }
+                : { article_id: targetId };
+
+            fetch("/api/comments/get", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(requestBody)
+            })
+                .then(res => res.json())
+                .then(data => {
+                    const commentsShow = document.getElementById("comments-show");
+                    if (data && data.status === "success") {
+                        const comments = data.data;
+                        if (!comments || !comments.length) {
+                            commentsShow.innerHTML = "<div class='no-comments'>✨ 暂无评论，来做第一个留言的人吧 ✨</div>";
+                            return;
+                        }
+                        commentsShow.innerHTML = '';
+                        console.log(comments);
+                        // 按时间正序显示
+                        comments.sort((a, b) => new Date(a[8]) - new Date(b[8]));
+                        for (let comment of comments) {
+                            new Comment(comments, ...comment);
+                        }
+                    } else {
+                        commentsShow.innerHTML = "<div class='no-comments'>加载评论失败</div>";
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    document.getElementById("comments-show").innerHTML = "<div class='no-comments'>加载评论失败</div>";
+                });
+        }
+
+        // 评论类
+        class Comment {
+            constructor(all, id, articleId, studentId, userId, parentId, content, likes, status, createdAt, updateAt, anonymous) {
+                this.id = id;
+                this.userId = userId;
+                this.parentId = parentId;
+                this.content = content;
+                this.likes = likes || 0;
+                this.status = status;
+                this.createdAt = createdAt;
+                this.anonymous = anonymous;
+                this.all = all;
+                this.generateHTML();
+            }
+
+            generateHTML() {
+                let level = 0;
+                let currentParentId = this.parentId;
+                let parentComment = null;
+                let parentUser = "未知";
+                let parentAnonymous = false;
+
+                if (this.parentId) {
+                    for (let c of this.all) {
+                        if (c[0] === this.parentId) {
+                            parentComment = c;
+                            break;
+                        }
+                    }
+                }
+                if (parentComment) {
+                    parentUser = parentComment[3];
+                    parentAnonymous = parentComment[10];
+                }
+
+                const commentsShow = document.querySelector("#comments-show");
+                const commentHtml = `<div class="comment" data-id="${this.id}" data-user-id="${this.userId}" data-level="${this.getCommentLevel()}">
+                    <div class="sender">
+                        ${this.anonymous ? '<strong>📝 匿名用户</strong>' : `<strong>📝 翱三班${this.userId}号同学</strong>`}
+                        ${this.parentId ?
+                    `<span class="reply-indicator">↪ 回复 ${parentAnonymous ? '匿名用户' : `翱三班${parentUser}号`}</span>` :
+                    ''}
+                    </div>
+                    <div class="message">${this.escapeHtml(this.content)}</div>
+                    <div class="date">
+                        <span class="time">📅 ${new Date(this.createdAt).toLocaleString()}</span>
+                        <span class="likes">
+                            ❤️ ${this.likes}
+                        </span>
+                        <button class="reply-btn" data-id="${this.id}" data-user="翱三班${this.userId}号"  data-anonymous="${this.anonymous}">💬 回复</button>
+                    </div>
+                </div>`;
+
+                commentsShow.innerHTML += commentHtml;
+            }
+
+            getCommentLevel() {
+                let level = 0;
+                let currentId = this.parentId;
+                const commentMap = new Map(this.all.map(c => [c[0], c]));
+
+                while (currentId && commentMap.has(currentId)) {
+                    level++;
+                    currentId = commentMap.get(currentId)[4]; // parent_id
+                    if (level > 5) break;
+                }
+                return Math.min(level, 5);
+            }
+
+            escapeHtml(text) {
+                if (!text) return '';
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+        }
+
+        // 获取当前用户
+        function getCurrentUser() {
+            const userId = sessionStorage.getItem("userID");
+            if (userId) {
+                return {
+                    id: parseInt(userId),
+                    isTeacher: sessionStorage.getItem("isTeacher") === "true"
+                };
+            }
+            return null;
+        }
+
+        // 发送评论
+        function sendComment() {
+            const input = document.querySelector("#comment-input");
+            const content = input.value.trim();
+
+            if (!content) {
+                alert("📝 评论内容不能为空");
+                return;
+            }
+
+            const user = getCurrentUser();
+            if (!user) {
+                alert("🔒 请先登录后再评论");
+                window.location.href = "/login";
+                return;
+            }
+
+            const targetId = parseInt(document.querySelector("#content").dataset.passageId);
+            const isStu = document.querySelector("#content").dataset.isStu === "True";
+            const isAnonymous = document.querySelector("#anonymous-checkbox").checked;
+            console.log(isAnonymous);
+
+            const commentData = {
+                user_id: user.id,
+                content: content,
+                parent_id: currentReply.parentId || null,
+                anonymous: isAnonymous
+            };
+
+            if (isStu) {
+                commentData.student_id = targetId;
+            } else {
+                commentData.article_id = targetId;
+            }
+
+            fetch("/api/comments/add", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(commentData)
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === "success") {
+                        input.value = "";
+                        cancelReply();
+                        refreshComments(targetId, isStu);
+                        // 显示成功提示
+                        const msgDiv = document.createElement('div');
+                        msgDiv.textContent = '✅ 评论发送成功！';
+                        msgDiv.style.cssText = 'color: green; font-size: 0.85rem; margin-top: 0.5rem;';
+                        document.querySelector(".input-area").appendChild(msgDiv);
+                        setTimeout(() => msgDiv.remove(), 3000);
+                    } else {
+                        alert("❌ 评论失败：" + (data.msg || "未知错误"));
+                    }
+                })
+                .catch(err => {
+                    console.error("发送评论失败", err);
+                    alert("网络错误，请稍后重试");
+                });
+        }
+
+        function refreshComments(targetId, isStu) {
+            document.querySelector("#comments-show").innerHTML = '<div class="loading-comments">加载评论中</div>';
+            getComments(targetId, isStu);
+        }
+
+        function cancelReply() {
+            currentReply = {parentId: null, userName: null};
+            document.querySelector("#reply-status").style.display = 'none';
+            document.querySelector("#comment-input").placeholder = "📖 分享你的想法...";
+        }
+
+        function setReply(parentId, userName, anonymous) {
+            currentReply = {parentId: parentId, userName: userName};
+            document.querySelector("#reply-status").style.display = 'flex';
+            document.querySelector("#reply-to-name").textContent = anonymous ? "匿名用户" : userName;
+            document.querySelector("#comment-input").placeholder = anonymous ? "回复匿名用户" : `💬 回复 ${userName}...`;
+            document.querySelector("#comment-input").focus();
+        }
+
+        // 处理语录显示
+        function handleSaying() {
+            const sayingsSection = document.querySelector(".sayings-section");
+            const sayings = document.querySelector("#sayings");
+            if (sayingsSection && (!sayings || !sayings.innerHTML || sayings.innerHTML === ""
+                || sayings.innerHTML === "暂未统计语录" || sayings.innerHTML === "[内容处理错误]")) {
+                sayingsSection.style.display = 'none';
+            }
+
+            // 特定用户隐藏语录
+            const isT = sessionStorage.getItem("isTeacher") === "true";
+            if (isT) {
+                if (sayingsSection) sayingsSection.style.display = 'none';
+                const hideParas = document.querySelectorAll(".hide");
+                hideParas.forEach(hidePara => hidePara.style.display = 'none');
+            }
+        }
+
+        // 添加编辑链接
+        function addEditLink(content) {
+            const userId = parseInt(sessionStorage.getItem("userID"));
+            const username = sessionStorage.getItem("user");
+            const title = document.querySelector("#title").textContent;
+            const name = title.replace(/[记传]$/, '');
+
+            if (userId >= 61 || username === name) {
+                const slug = content.dataset.slug;
+                const isStu = content.dataset.isStu === "True";
+                const editLink = document.createElement('a');
+                editLink.href = `/edit?slug=${slug}&type=${isStu ? 'student' : 'article'}`;
+                editLink.className = 'edit-link';
+                editLink.textContent = '✏️ 参与编辑';
+                document.querySelector("#author").after(editLink);
+            }
+        }
+
+        // 窗口消息监听
+        window.addEventListener("message", e => {
+            const allowedOrigins = ["http://129.211.162.48:3", "https://www.cjchcoderchat.site:3"];
+            if (!allowedOrigins.includes(e.origin)) return;
+            if (e.data && e.data.type === "AUTH_STATE" && e.data.isLoggedIn) {
+                sessionStorage.setItem("user", e.data.user);
+                sessionStorage.setItem("isTeacher", e.data.isTeacher.toString());
+                sessionStorage.setItem("userID", e.data.userId);
+            }
+        });
+    </script>
+    <script src="../static/js/secret20260622.js"></script>
+</head>
+<body>
+<div id="app">
+<div class="article-container">
+    <!-- 文章类型标识 -->
+    <div class="article-badge {% if article.is_stu %}badge-student{% else %}badge-teacher{% endif %}">
+        {% if article.is_stu %}🎓 学生传记{% else %}📖 教师传记{% endif %}
+    </div>
+
+    <h1 id="title">{{ article.title|default('无标题') }}</h1>
+
+    <article id="content" data-passage-id="{{ article.id }}" data-is-stu="{{ article.is_stu }}" data-slug="{{ article.slug }}">
+        {{ article.content|default('')|safe }}
+    </article>
+
+    <p id="author">{{ article.author|default('作者：未知') }}</p>
+
+    <!-- 语录区域 - 仅教师文章显示 -->
+    {% if not article.is_stu %}
+    <div class="sayings-section">
+        <h2>📜 语录</h2>
+        <div id="sayings">{{ article.sayings|default('暂未统计语录')|safe }}</div>
+    </div>
+    {% endif %}
+
+    <!-- 评论区域 - 所有文章都支持评论 -->
+    <div id="comments">
+        <h3>💬 评论互动</h3>
+        <div id="comments-show">
+            <div class="loading-comments">加载评论中</div>
+        </div>
+
+        <div class="input-area">
+            <label for="comment-input">📝 写评论</label>
+            <input id="comment-input" placeholder="📖 分享你的想法...">
+            <button id="submit-comment">发送评论</button>
+        </div>
+
+        <div id="reply-status" style="display: none;">
+            <span>💬</span> 回复 <span id="reply-to-name"></span>
+            <button id="cancel-reply">取消回复</button>
+        </div>
+
+        <div id="for-anonymous">
+            <input type="checkbox" id="anonymous-checkbox">
+            <label for="anonymous-checkbox">开启匿名</label>
+        </div>
+    </div>
+</div>
+</div>
+<div id="verify-container"></div>
+<script>
+    async function log() {
+        const user = sessionStorage.getItem("user");
+        const psgName = document.querySelector("#title").innerText;
+        await fetch("/api/log", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({user: user, action: "浏览:" + psgName})
+        });
+    }
+
+    document.addEventListener("verifySuccess", () => {
+        log();
+        handleSaying();
+        const contentElement = document.querySelector("#content");
+        const targetId = parseInt(contentElement.dataset.passageId);
+        const isStu = contentElement.dataset.isStu === "True";
+
+        // 添加编辑链接
+        addEditLink(contentElement);
+
+        // 加载评论
+        getComments(targetId, isStu);
+
+        // 绑定评论事件
+        const submitBtn = document.querySelector("#submit-comment");
+        const commentInput = document.querySelector("#comment-input");
+        const cancelReplyBtn = document.querySelector("#cancel-reply");
+        const commentsShow = document.querySelector("#comments-show");
+
+        if (submitBtn) {
+            submitBtn.addEventListener("click", sendComment);
+        }
+
+        if (commentInput) {
+            commentInput.addEventListener("keypress", (e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    sendComment();
+                }
+            });
+        }
+
+        if (cancelReplyBtn) {
+            cancelReplyBtn.addEventListener("click", cancelReply);
+        }
+
+        if (commentsShow) {
+            commentsShow.addEventListener("click", (e) => {
+                if (e.target.classList.contains("reply-btn")) {
+                    const commentId = e.target.dataset.id;
+                    const userName = e.target.dataset.user;
+                    const anonymous = e.target.dataset.anonymous === "1";
+                    setReply(parseInt(commentId), userName, anonymous);
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

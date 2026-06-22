@@ -1,0 +1,262 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>翱三周报-验证</title>
+	<style>
+		body {
+			font-family: Arial, serif;
+			background: #f0f2f5;
+			height: 100vh;
+			margin: 0;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		.login-container {
+			background: white;
+			padding: 2rem;
+			border-radius: 8px;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+			width: 300px;
+		}
+
+		.form-group {
+			margin-bottom: 1rem;
+		}
+
+		input {
+			width: 100%;
+			padding: 0.8rem;
+			border: 1px solid #ddd;
+			border-radius: 6px;
+			box-sizing: border-box;
+		}
+
+		button {
+			width: 100%;
+			padding: 0.8rem;
+			background: #1877f2;
+			color: white;
+			border: none;
+			border-radius: 6px;
+			cursor: pointer;
+			transition: background 0.3s;
+		}
+
+		button:hover {
+			background: #166fe5;
+		}
+
+		.error-message {
+			color: #ff4242;
+			font-size: 0.9rem;
+			margin-top: 0.5rem;
+		}
+
+		.success-message {
+			color: #42b883;
+			font-size: 0.9rem;
+			margin-top: 0.5rem;
+		}
+
+		.info-text {
+			font-size: 15px;
+			color: gray;
+			margin-top: 1rem;
+			line-height: 1.4;
+		}
+	</style>
+</head>
+<body>
+<div class="login-container">
+	<h2>防泄漏验证</h2>
+	<div class="info-text">请注意：您所访问的内容已经属于《翱三通史》的保密内容，需要进行身份验证。请回答下面问题：</div>
+	<form id="title-form">
+		<div class="form-group">
+			<label for="answer">请根据下面关键词，填写对应人物（范围：武汉奥山实验初级中学）</label>
+			<div id="v-title"></div>
+			<input type="text" id="answer" placeholder="请填写答案" required>
+		</div>
+		<progress id="time" max="60" value="60"></progress>
+		<div><span id="time-show">60</span>秒后自动提交答案</div>
+		<button type="submit">提交答案</button>
+		<div id="message" class="error-message"></div>
+	</form>
+</div>
+<!-- <script>
+	window.onload = () => {sendMessage("system", "titles")}
+	// 页面加载时检查是否有退出登录请求
+	const urlParams = new URLSearchParams(window.location.search);
+	const username = urlParams.get('user');
+	const if_teacher = urlParams.get('teacher_user') === "true";
+	if (!username) window.location.href = "login.html";
+	let titles = [];
+	let num = -1;
+	http://127.0.0.1:3/psg/hdt#sayings
+
+	// 登录表单提交处理
+	document.getElementById('title-form').addEventListener('submit', function(e) {
+		e.preventDefault();
+
+		const answer = document.getElementById('answer').value.trim();
+		const messageElement = document.getElementById('message');
+
+		// 重置消息提示
+		messageElement.textContent = '';
+		messageElement.className = 'error-message';
+
+		// 显示登录中状态
+		showMessage('验证中...', 'success');
+
+		// 查找用户
+		sendMessage(username, answer);
+	});
+
+	function mainLoop() {
+		const loop = setInterval(() => {
+			const progress = document.getElementById('time');
+			const showTimeEl = document.getElementById('time-show');
+			let time = parseInt(progress.value);
+			time --;
+			progress.value = time.toString();
+			showTimeEl.textContent = time.toString();
+
+			if (time <= 0) {
+				clearInterval(loop);
+				document.querySelector("button[type='submit']").click();
+			}
+		}, 1000)
+	}
+
+	// 显示消息
+	function showMessage(message, type) {
+		const messageElement = document.getElementById('message');
+		messageElement.textContent = message;
+		messageElement.className = type === 'error' ? 'error-message' : 'success-message';
+	}
+
+	// 发送消息到服务器
+	function sendMessage(username, answer) {
+		let isRight = null;
+		if (answer !== "titles") {
+			// 确保随机题目索引有效
+			if (num >= 0 && num < titles.length) {
+				isRight = titles[num].answer === answer;
+			}
+		}
+
+		const data = {
+			name: username,
+			answer: answer === "titles" ? "titles" : "save",
+			isRight: isRight
+		};
+
+		// 如果答案是 "titles"，不需要 isRight 字段
+		if (answer === "titles") {
+			delete data.isRight;
+		}
+
+		fetch("http://129.211.162.48:5000/titles", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(data),
+		})
+				.then((res) => {
+					if (!res.ok) {
+						throw new Error(`HTTP error! status: ${res.status}`);
+					}
+					return res.json();
+				})
+				.then(response => {
+					console.log("服务器响应:", response);
+
+					if (response.status === "error") {
+						showMessage(response.message || "服务器错误", 'error');
+						return;
+					}
+
+					if (response.action === "show") {
+						titles = response.title || [];
+						if (titles.length > 0) {
+							num = Math.floor(Math.random() * titles.length);
+							if (username === "黄鼎泰") num = Math.min(2, titles.length - 1);
+							document.querySelector("#title").innerHTML = titles[num].title;
+							mainLoop();
+						}
+					} else if (response.msg === "success") {
+						handleVerifySuccess(username);
+					}
+				})
+				.catch((err) => {
+					console.error("请求错误:", err);
+					showMessage("网络错误或服务器无响应", 'error');
+				});
+	}
+
+	// 处理登录成功
+	function handleVerifySuccess(username) {
+		showMessage('验证成功，正在跳转...', 'success');
+
+		// 获取跳转页面
+		let jumpPage = document.referrer;
+
+		// 如果没有来源页面或来源页面是登录页面本身，则跳转到默认页面
+		if (!jumpPage || jumpPage.includes(window.location.href)) {
+			jumpPage = "introduce.html";
+		}
+
+		// 构建跳转URL - 修复版本
+		const redirectUrl = buildRedirectUrl(jumpPage, username);
+
+		// 延迟跳转，让用户看到成功消息
+		setTimeout(() => {
+			try {
+				console.log("跳转到:", redirectUrl);
+				window.location.href = redirectUrl;
+			} catch (err) {
+				console.error('跳转失败:', err);
+				showMessage('跳转失败，请手动访问目标页面', 'error');
+			}
+		}, 1);
+	}
+
+	// 构建重定向URL的专用函数
+	function buildRedirectUrl(baseUrl, username) {
+		const isTeacher = if_teacher;
+
+		try {
+			// 解析基础URL
+			const url = new URL(baseUrl);
+
+			// 更新或添加用户参数
+			url.searchParams.set('user', encodeURIComponent(username));
+			url.searchParams.set('teacher_user', isTeacher.toString());
+			url.searchParams.set('allow', "true");
+
+			return url.toString();
+		} catch (e) {
+			// 如果baseUrl不是完整URL，则手动处理
+			console.warn("URL解析失败，使用手动处理:", e);
+
+			// 分离路径和查询参数
+			const [path, existingQuery] = baseUrl.split('?');
+			const params = new URLSearchParams(existingQuery || '');
+
+			// 更新参数
+			params.set('user', encodeURIComponent(username));
+			params.set('teacher_user', isTeacher.toString());
+			params.set('allow', "true");
+
+			// 重建URL
+			const queryString = params.toString();
+			return queryString ? `${path}?${queryString}` : path;
+		}
+	}
+</script>-->
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>系统维护中 · 翱三通史</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f5f7fc 0%, #eef2f8 100%);
+            font-family: 'Segoe UI', 'Roboto', system-ui, -apple-system, 'Helvetica Neue', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1.5rem;
+        }
+
+        /* 主卡片容器 */
+        .maintenance-card {
+            max-width: 620px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(0px);
+            border-radius: 2rem;
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.2), 0 8px 18px rgba(0, 0, 0, 0.05);
+            padding: 2rem 2rem 2.2rem;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        /* 装饰性顶部光晕 */
+        .maintenance-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #d4af37, #b8860b, #daa520);
+            border-radius: 2rem 2rem 0 0;
+        }
+
+        .maintenance-card {
+            position: relative;
+        }
+
+        /* 标题区 */
+        h1 {
+            font-size: 2.1rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #2c3e4e, #1a2a36);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin: 0.5rem 0 0.25rem 0;
+            letter-spacing: -0.3px;
+            display: inline-block;
+            border-left: 5px solid #e6b422;
+            padding-left: 1rem;
+        }
+
+        h2 {
+            font-size: 1.35rem;
+            font-weight: 600;
+            color: #2c3e4e;
+            margin: 1.8rem 0 0.6rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        h2:first-of-type {
+            margin-top: 1.2rem;
+        }
+
+        /* 段落文本 */
+        p {
+            color: #2c3e4e;
+            line-height: 1.5;
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+            background: #f8f9fe;
+            padding: 0.6rem 1rem;
+            border-radius: 1rem;
+            border-left: 3px solid #e6b422;
+        }
+
+        /* 解决说明段落特殊间距 */
+        .solution-text {
+            background: #fef7e0;
+            border-left-color: #daa520;
+        }
+
+        /* 脚注版权 */
+        .copyright {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #8b9ab0;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px dashed #dee4ed;
+            background: none;
+            border-left: none;
+        }
+
+        /* 响应式优化 */
+        @media (max-width: 500px) {
+            body {
+                padding: 1rem;
+            }
+            .maintenance-card {
+                padding: 1.5rem;
+            }
+            h1 {
+                font-size: 1.7rem;
+            }
+            h2 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="maintenance-card">
+    <h1>⚙️ 服务器正在维护</h1>
+    <p style="background: none; border-left: none; padding-left: 0; margin-top: 0.25rem;">请稍后访问，感谢您的耐心。</p>
+
+    <h2>📌 为什么会出现这个页面？</h2>
+    <p>翱三通史后端代码正在升级，部分功能暂时无法使用。我们正在全力优化，为您提供更好的体验。</p>
+
+    <h2>🕒 如何解决？</h2>
+    <p class="solution-text">建议 10 分钟后再尝试重新访问网站。若长时间无法进入，请联系技术支持。</p>
+
+    <div class="copyright">
+        © 2025-2026 翱三通史. All Rights Reserved.
+    </div>
+</div>
+
+<!-- 可微调表单提交提示 (保留原始行为，无侵入) -->
+<script>
+    (function() {
+        // 仅为增强用户体验: 若表单提交前无用户名或密码，给出轻提醒（但不会阻止原有提交流程，尊重原始逻辑）
+        const form = document.getElementById('upload-request');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const username = document.getElementById('username');
+                const password = document.getElementById('password');
+                if (!username.value.trim() || !password.value.trim()) {
+                    // 仅友好提醒，不阻止提交（避免破坏原有机制）
+                    console.log('用户名或密码未填写完整，将尝试提交空凭据');
+                }
+            });
+        }
+    })();
+</script>
+</body>
+</html>

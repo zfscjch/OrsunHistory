@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>翱三通史 · 编辑</title>
+    <!-- 柔和风格，干净舒适，保留原有结构，增强视觉层次 -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: #f4f1eb;  /* 暖白底，护眼古韵 */
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+
+        #container {
+            max-width: 960px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(2px);
+            background: #fffefc;
+            border-radius: 32px;
+            box-shadow: 0 20px 40px -12px rgba(0, 20, 10, 0.25), 0 8px 16px -8px rgba(0, 20, 10, 0.15);
+            padding: 2.5rem 2.2rem;
+            transition: all 0.2s ease;
+            border: 1px solid #eee7dd;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 500;
+            letter-spacing: -0.01em;
+            color: #2e3b2c;
+            border-left: 8px solid #9bb88b;
+            padding-left: 1.4rem;
+            margin-top: 0;
+            margin-bottom: 1.8rem;
+            line-height: 1.2;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.02);
+        }
+
+        /* 搜索栏 — 优雅嵌入 */
+        .search {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 2.8rem;
+            background: #f2efe9;
+            padding: 0.6rem 0.6rem 0.6rem 1.5rem;
+            border-radius: 60px;
+            align-items: center;
+            border: 1px solid #e0d9cf;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02), 0 2px 6px rgba(100, 80, 60, 0.05);
+        }
+
+        .search label {
+            display: none;   /* 保留label但隐藏，仍符合语义 */
+        }
+
+        .search input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            font-size: 1.1rem;
+            padding: 0.6rem 0.2rem;
+            outline: none;
+            color: #2b3a2a;
+            font-weight: 400;
+        }
+
+        .search input::placeholder {
+            color: #a59e94;
+            font-style: italic;
+            font-weight: 300;
+            letter-spacing: 0.2px;
+        }
+
+        .search button {
+            background: #2e3b2c;
+            color: white;
+            font-size: 1.05rem;
+            font-weight: 450;
+            padding: 0.6rem 2rem;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.15s;
+            letter-spacing: 0.3px;
+            box-shadow: 0 6px 12px -6px #1f2a1e;
+            border: 1px solid #495a45;
+        }
+
+        .search button:hover {
+            background: #3f5240;
+            transform: scale(1.01);
+            box-shadow: 0 8px 16px -8px #1f2a1e;
+        }
+
+        .search button:active {
+            background: #212d20;
+            transform: scale(0.98);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        /* 表单 — 自然呼吸 */
+        #edit-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* 每一行 (div 包装) */
+        #edit-form > div {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.8rem 1.2rem;
+        }
+
+        /* 标签统一优雅比例 */
+        label {
+            width: 100px;
+            font-size: 1.05rem;
+            font-weight: 450;
+            color: #3f4a3c;
+            letter-spacing: 0.3px;
+        }
+
+        /* 输入框 / 下拉框 / 文本区域统一样式 */
+        input, select, textarea {
+            background: #fefcf8;
+            border: 1px solid #dcd3c6;
+            border-radius: 20px;
+            padding: 0.7rem 1.2rem;
+            font-size: 1rem;
+            color: #1f2a1c;
+            outline: none;
+            transition: 0.15s;
+            box-shadow: inset 0 2px 3px rgba(0,0,0,0.02);
+            flex: 1 1 260px;       /* 灵活伸缩，最小260px */
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: #9bb88b;
+            box-shadow: 0 0 0 4px rgba(155, 184, 139, 0.2), inset 0 1px 4px #eae3d9;
+            background: #ffffff;
+        }
+
+        /* 单选/下拉箭头美化 */
+        select {
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%2360564c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 1.2rem center;
+            background-size: 1.2rem;
+        }
+
+        /* textarea 专有调整 */
+        textarea {
+            line-height: 1.65;
+            border-radius: 28px;
+            padding: 1.2rem 1.5rem;
+            resize: vertical;
+            min-height: 280px;
+            font-size: 1.05rem;
+            background: #fefcf8;
+        }
+
+        /* 密码那一行略微特殊，但遵循统一 */
+        #password {
+            letter-spacing: 0.2rem;  /* 隐约可见密码长度 */
+        }
+
+        .success {
+            color: green;
+        }
+
+        .fail {
+            color: red;
+        }
+
+        /* 提交按钮独占一行，右对齐更干净 */
+        button[type="submit"] {
+            background: #9bb88b;
+            color: #1f2a1c;
+            font-weight: 600;
+            font-size: 1.3rem;
+            padding: 0.8rem 2rem;
+            border-radius: 48px;
+            cursor: pointer;
+            transition: 0.15s;
+            letter-spacing: 0.5px;
+            box-shadow: 0 12px 24px -14px #6d8a5e;
+            border: 1px solid #b3cfaa;
+            width: fit-content;
+            min-width: 180px;
+            margin-top: 1rem;
+            align-self: flex-end;    /* 靠右但不破坏flex */
+        }
+
+        button[type="submit"]:hover {
+            background: #aac9a0;
+            transform: translateY(-2px);
+            box-shadow: 0 20px 28px -14px #55734b;
+        }
+
+        button[type="submit"]:active {
+            background: #84a376;
+            transform: translateY(2px);
+            box-shadow: 0 6px 12px -6px #3c5436;
+        }
+
+        /* 当屏幕变窄时微调标签左对齐 */
+        @media (max-width: 650px) {
+            #container {
+                padding: 1.8rem 1.2rem;
+            }
+
+            label {
+                width: 100%;         /* 标签独占一行，更干净 */
+                margin-bottom: -0.3rem;
+                font-size: 1rem;
+            }
+
+            input, select, textarea {
+                flex: 1 1 100%;
+            }
+
+            .search {
+                flex-wrap: wrap;
+                background: #f2efe9;
+                padding: 0.8rem;
+            }
+
+            .search input {
+                min-width: 200px;
+            }
+
+            .search button {
+                width: 100%;
+            }
+        }
+
+        /* 小细节：状态与秘钥之间的间距舒服 */
+        #edit-form > div:last-of-type {
+            margin-bottom: 0.2rem;
+        }
+
+        /* 给所有内部 div 一点下边距微调 */
+        #edit-form > div:not(:last-child) {
+            margin-bottom: 0.2rem;
+        }
+
+        /* 额外：滚动条匹配氛围 */
+        textarea::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        textarea::-webkit-scrollbar-track {
+            background: #ede7dd;
+            border-radius: 20px;
+        }
+
+        textarea::-webkit-scrollbar-thumb {
+            background: #b6aa9a;
+            border-radius: 20px;
+            border: 3px solid #ede7dd;
+        }
+
+        /* 添加文章类型切换样式 */
+        .type-selector {
+            background: #f2efe9;
+            border-radius: 40px;
+            padding: 0.3rem;
+            display: inline-flex;
+            gap: 0.5rem;
+        }
+
+        .type-btn {
+            padding: 0.4rem 1.5rem;
+            border: none;
+            background: transparent;
+            border-radius: 32px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            color: #5a6e55;
+        }
+
+        .type-btn.active {
+            background: #2e3b2c;
+            color: white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .type-btn:hover:not(.active) {
+            background: #e0d9cf;
+        }
+
+        /* 语录区域隐藏样式 */
+        .saying-hidden {
+            display: none !important;
+        }
+    </style>
+    <script>
+        window.addEventListener("message", e => {
+            if (e.origin !== "http://129.211.162.48:3/index" || e.origin !== "http://129.211.162.48:3/login") return;
+            if (e.type === "AUTH_STATE" && e.isLoggedIn) {
+                sessionStorage.setItem("user", e.user);
+                sessionStorage.setItem("isTeacher", e.isTeacher.toString());
+                sessionStorage.setItem("userID", e.userId.toString());
+            }
+        });
+    </script>
+</head>
+<body>
+<div id="container">
+    <h1>翱三通史 · 文章编辑</h1>
+
+    <!-- 添加文章类型切换 -->
+    <div style="margin-bottom: 1.5rem;">
+        <div class="type-selector">
+            <button type="button" class="type-btn" id="type-article">📖 教师传记</button>
+            <button type="button" class="type-btn" id="type-student">🎓 学生传记</button>
+        </div>
+    </div>
+
+    <!-- 搜索区域 -->
+    <div class="search">
+        <input id="search" placeholder="输入URL关键词以搜索文章" aria-label="搜索文章的URL关键词">
+        <label for="search">🔍</label>
+        <button onclick="search()">搜索</button>
+    </div>
+
+    <!-- 编辑表单 -->
+    <form id="edit-form">
+        <div>
+            <label for="title">标题</label>
+            <input type="text" id="title" placeholder="起一个醒目的标题">
+        </div>
+        <div>
+            <label for="author">作者ID</label>
+            <input type="text" id="author" placeholder="如：aoshan_writer">
+        </div>
+        <div>
+            <label for="slug">URL关键词</label>
+            <input type="text" id="slug" placeholder="unique-page-name">
+        </div>
+        <div>
+            <label for="content">正文</label>
+            <textarea id="content" rows="20" cols="100" placeholder="在此书写翱三通史…… 支持HTML风格"></textarea>
+        </div>
+        <div id="saying-container">
+            <label for="saying">语录</label>
+            <textarea id="saying" rows="20" cols="100" placeholder="在此书写语录……(选填) 支持HTML风格"></textarea>
+        </div>
+        <div>
+            <label for="status">状态</label>
+            <select id="status">
+                <option value="draft">📄 草稿</option>
+                <option value="published">🌐 发布</option>
+            </select>
+        </div>
+        <div>
+            <label for="password">提交秘钥</label>
+            <input type="password" id="password" placeholder="请输入提交秘钥">
+        </div>
+        <button type="submit">提交文章</button>
+        <div id="msg"></div>
+    </form>
+    <script>
+        let isChanged = false;
+        let currentType = "article"; // 'article' 或 'student'
+        const user = sessionStorage.getItem("user");
+        if (!user) window.location.href = "./login";
+
+        const searchEL = document.getElementById('search');
+        const editForm = document.getElementById('edit-form');
+        const titleEl = document.getElementById('title');
+        const authorEl = document.getElementById('author');
+        const slugEl = document.getElementById('slug');
+        const contentEl = document.getElementById('content');
+        const sayingEl = document.getElementById('saying');
+        const sayingContainer = document.getElementById('saying-container');
+        const statusSelect = document.getElementById('status');
+        const passwordEl = document.getElementById('password');
+
+        // 文章类型切换
+        const typeArticleBtn = document.getElementById('type-article');
+        const typeStudentBtn = document.getElementById('type-student');
+
+        function setArticleType(type) {
+            currentType = type;
+            if (type === 'student') {
+                sayingContainer.classList.add('saying-hidden');
+                typeStudentBtn.classList.add('active');
+                typeArticleBtn.classList.remove('active');
+            } else {
+                sayingContainer.classList.remove('saying-hidden');
+                typeArticleBtn.classList.add('active');
+                typeStudentBtn.classList.remove('active');
+            }
+            // 清空搜索和表单
+            searchEL.value = '';
+            clearForm();
+        }
+
+        function clearForm() {
+            titleEl.value = '';
+            authorEl.value = '';
+            slugEl.value = '';
+            contentEl.value = '';
+            sayingEl.value = '';
+            statusSelect.value = 'draft';
+        }
+
+        typeArticleBtn.addEventListener('click', () => setArticleType('article'));
+        typeStudentBtn.addEventListener('click', () => setArticleType('student'));
+
+        // 初始化类型
+        setArticleType('article');
+
+        window.search = () => {
+            isChanged = true;
+            const slug = searchEL.value;
+            if (!slug) {
+                alert('请输入URL关键词');
+                return;
+            }
+
+            // 使用统一的搜索接口
+            const searchURL = "/api/search";
+            fetch(searchURL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    "slug": slug,
+                    "type": currentType
+                }),
+            })
+                .then(res => res.json())
+                .then(data => {
+                    console.log(data);
+                    const article = data.data;
+                    if (!article) {
+                        alert('未找到文章');
+                        return;
+                    }
+                    titleEl.value = article[1] || '';
+                    authorEl.value = article[4] || '';
+                    slugEl.value = article[3] || '';
+                    contentEl.value = article[2] || '';
+                    if (currentType === 'article' && article[8]) {
+                        sayingEl.value = article[8] || '';
+                    }
+                    if (article[7] === "published") {
+                        statusSelect.value = "published";
+                    } else {
+                        statusSelect.value = "draft";
+                    }
+                })
+                .catch(err => console.error(err));
+        }
+
+        editForm.addEventListener('submit', e => {
+            e.preventDefault();
+
+            const article = {
+                title: titleEl.value,
+                content: contentEl.value,
+                slug: slugEl.value,
+                author: authorEl.value,
+                status: statusSelect.value
+            };
+
+            if (currentType === 'article') {
+                article.saying = sayingEl.value;
+            }
+
+            const uploadURL = "/api/upload"; // 使用统一上传接口
+
+            fetch(uploadURL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    user: user,
+                    article: article,
+                    pwd: passwordEl.value,
+                    request: isChanged ? "change" : "upload",
+                    type: currentType  // 添加类型标识
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    console.log(data);
+                    const msgDiv = document.querySelector("#msg");
+                    if (data.status === "success") {
+                        msgDiv.innerHTML = "<span class='success'>提交成功！</span>";
+                        setTimeout(() => {
+                            window.location.href = currentType === 'article' ? `/psg/${slugEl.value}` : `/student/${slugEl.value}`;
+                        }, 1000);
+                    } else {
+                        msgDiv.innerHTML = `<span class='fail'>提交失败：${data.msg}</span>`;
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    document.querySelector("#msg").innerHTML = "<span class='fail'>网络错误，请稍后重试</span>";
+                });
+        });
+
+        const urlParams = new URLSearchParams(window.location.search);
+        let slug = urlParams.get("slug");
+        const typeParam = urlParams.get("type");
+        if (typeParam === 'student') {
+            setArticleType('student');
+        }
+        if (slug) {
+            searchEL.value = slug;
+            window.search();
+        }
+    </script>
+</div>
+</body>
+</html>

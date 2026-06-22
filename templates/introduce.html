@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>翱三通史</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Comic Sans MS', '微软雅黑', sans-serif;
+        }
+
+        body {
+            background-color: #f0f0f0;
+            background-image: radial-gradient(#ffcc00 1px, transparent 1px),
+            radial-gradient(#ff6600 1px, transparent 1px);
+            background-size: 30px 30px;
+            background-position: 0 0, 15px 15px;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        h1 {
+            text-align: center;
+            color: #ff3300;
+            font-size: 3.5rem;
+            margin-bottom: 30px;
+            text-shadow: 3px 3px 0 #ffcc00,
+            6px 6px 0 #ff6600,
+            9px 9px 5px rgba(0, 0, 0, 0.3);
+            transform: rotate(-2deg);
+            animation: titleWobble 3s infinite alternate;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #663300;
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            font-weight: bold;
+            transform: rotate(1deg);
+        }
+
+        .image-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .image-container {
+            position: relative;
+            width: 280px;
+            margin-bottom: 30px;
+            transition: transform 0.3s;
+        }
+
+        .image-container:hover {
+            transform: rotate(5deg) scale(1.05);
+            z-index: 10;
+        }
+
+        img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border: 8px solid #ffcc00;
+            border-radius: 15px;
+            box-shadow: 10px 10px 0 #ff6600,
+            20px 20px 10px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.4s;
+        }
+
+        .image-container:nth-child(odd) img {
+            border-color: #ff6600;
+            box-shadow: 10px 10px 0 #ffcc00,
+            20px 20px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .image-container:nth-child(1):hover img {
+            filter: sepia(100%) hue-rotate(300deg);
+        }
+
+        .image-container:nth-child(2):hover img {
+            filter: saturate(300%) contrast(150%);
+        }
+
+        .image-container:nth-child(3):hover img {
+            filter: brightness(120%) hue-rotate(90deg);
+        }
+
+        .image-container:nth-child(4):hover img {
+            filter: invert(100%) hue-rotate(180deg);
+        }
+
+        .caption {
+            background-color: #ffcc00;
+            color: #663300;
+            padding: 10px;
+            border-radius: 10px;
+            margin-top: 15px;
+            font-weight: bold;
+            text-align: center;
+            position: relative;
+            transform: rotate(-1deg);
+            box-shadow: 5px 5px 0 #ff6600;
+        }
+
+        .funny-comment {
+            position: absolute;
+            background-color: #ff3300;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 5;
+        }
+
+        .image-container:hover .funny-comment {
+            opacity: 1;
+            animation: commentFloat 2s infinite alternate;
+        }
+
+        .comment-1 {
+            top: -20px;
+            left: -20px;
+        }
+
+        .comment-2 {
+            top: -20px;
+            right: -20px;
+        }
+
+        .comment-3 {
+            bottom: 80px;
+            left: -30px;
+        }
+
+        .comment-4 {
+            bottom: 80px;
+            right: -30px;
+        }
+
+        .floating-objects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-object {
+            position: absolute;
+            font-size: 2rem;
+            animation: floatAround 15s infinite linear;
+        }
+
+        .floating-object:nth-child(1) {
+            top: 10%;
+            left: 5%;
+            animation-duration: 20s;
+            content: "😂";
+        }
+
+        .floating-object:nth-child(2) {
+            top: 20%;
+            right: 10%;
+            animation-duration: 25s;
+            animation-delay: 2s;
+            content: "🤣";
+        }
+
+        .floating-object:nth-child(3) {
+            bottom: 30%;
+            left: 15%;
+            animation-duration: 18s;
+            animation-delay: 1s;
+            content: "😆";
+        }
+
+        .floating-object:nth-child(4) {
+            bottom: 15%;
+            right: 20%;
+            animation-duration: 22s;
+            animation-delay: 3s;
+            content: "😜";
+        }
+
+        .floating-object:nth-child(5) {
+            top: 40%;
+            left: 25%;
+            animation-duration: 30s;
+            animation-delay: 4s;
+            content: "🤪";
+        }
+
+        .footnote {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #ffcc00;
+            border-radius: 15px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            border: 5px dashed #ff6600;
+            transform: rotate(1deg);
+            margin-bottom: 40px;
+        }
+
+        /* 重点修改：突出psg链接区域 */
+        .psg {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 50px auto;
+            padding: 30px;
+            background: linear-gradient(135deg, #ff3300, #ff6600, #ffcc00);
+            border-radius: 20px;
+            max-width: 900px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.4),
+            0 0 30px rgba(255, 51, 0, 0.5);
+            border: 8px solid #ffcc00;
+            position: relative;
+            overflow: hidden;
+            animation: psgPulse 3s infinite alternate;
+            transform: rotate(-1deg);
+        }
+
+        .psg::before {
+            content: "✨ 点击探索更多 ✨";
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #ff3300;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+            z-index: 2;
+            white-space: nowrap;
+        }
+
+        .psg::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.2) 50%, transparent 70%);
+            animation: shimmer 3s infinite;
+            z-index: 1;
+        }
+
+        .psg div {
+            position: relative;
+            z-index: 2;
+        }
+
+        .psg a {
+            display: inline-block;
+            padding: 20px 40px;
+            background-color: white;
+            color: #ff3300;
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 15px;
+            box-shadow: 0 8px 0 #663300,
+            0 15px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            min-width: 250px;
+            text-align: center;
+        }
+
+        .psg a::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+            transition: left 0.5s;
+        }
+
+        .psg a:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 0 #663300,
+            0 25px 30px rgba(0, 0, 0, 0.4);
+            background-color: #ffffcc;
+        }
+
+        .psg a:hover::before {
+            left: 100%;
+        }
+
+        .psg a:active {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 0 #663300,
+            0 20px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes titleWobble {
+            0%, 100% {
+                transform: rotate(-2deg) scale(1);
+            }
+            50% {
+                transform: rotate(2deg) scale(1.05);
+            }
+        }
+
+        @keyframes commentFloat {
+            0% {
+                transform: translateY(0);
+            }
+            100% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes floatAround {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            25% {
+                transform: translate(100px, 50px) rotate(90deg);
+            }
+            50% {
+                transform: translate(50px, 100px) rotate(180deg);
+            }
+            75% {
+                transform: translate(-50px, 50px) rotate(270deg);
+            }
+            100% {
+                transform: translate(0, 0) rotate(360deg);
+            }
+        }
+
+        @keyframes psgPulse {
+            0% {
+                transform: rotate(-1deg) scale(1);
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4),
+                0 0 30px rgba(255, 51, 0, 0.5);
+            }
+            100% {
+                transform: rotate(-1deg) scale(1.02);
+                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4),
+                0 0 40px rgba(255, 51, 0, 0.7);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .image-gallery {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .psg {
+                flex-direction: column;
+                gap: 20px;
+                padding: 25px 15px;
+            }
+
+            .psg a {
+                min-width: auto;
+                width: 100%;
+                font-size: 1.5rem;
+                padding: 18px 30px;
+            }
+
+            .psg::before {
+                font-size: 1rem;
+                padding: 6px 15px;
+                top: -12px;
+            }
+        }
+    </style>
+    <script>
+        window.addEventListener("message", e => {
+            if (e.origin !== "http://129.211.162.48:3/index" || e.origin !== "http://129.211.162.48:3/login") return;
+            if (e.type === "AUTH_STATE" && e.isLoggedIn) {
+                sessionStorage.setItem("user", e.user);
+                sessionStorage.setItem("isTeacher", e.isTeacher.toString());
+                sessionStorage.setItem("userID", e.userId);
+            }
+        });
+    </script>
+    <script src="../static/js/secret20260622.js"></script>
+</head>
+<body>
+<div id="app">
+    <h1>翱三通史</h1>
+    <div class="subtitle">历史人物的另一种打开方式</div>
+
+    <div class="image-gallery">
+        <div class="image-container">
+            <div class="funny-comment comment-1">红衣战神！</div>
+            <div class="funny-comment comment-2">气场两米八</div>
+            <img src="../static/pics/红衣htd.JPG" alt="黄鼎泰老师">
+            <div class="caption">黄鼎泰老师 - "学我说话很时髦是吧？"</div>
+        </div>
+
+        <div class="image-container">
+            <div class="funny-comment comment-1">主任驾到！</div>
+            <div class="funny-comment comment-2">走路带风</div>
+            <img src="../static/pics/红衣主任.JPG" alt="高波老师">
+            <div class="caption">高波老师 - "我们来——考试"</div>
+        </div>
+
+        <div class="image-container">
+            <div class="funny-comment comment-1">上课中</div>
+            <div class="funny-comment comment-2">睡觉ing……</div>
+            <img src="../static/pics/粪账.JPG" alt="高波主任">
+            <div class="caption">高波主任 - "吾爱高夫子，粪账天下闻"</div>
+        </div>
+
+        <div class="image-container">
+            <div class="funny-comment comment-1">三人成虎！</div>
+            <div class="funny-comment comment-2">力拔山兮</div>
+            <img src="../static/pics/3人拔河.JPG" alt="翱三班第一代领导团体">
+            <div class="caption">翱三班第一代领导团体 - "一二三，拉！"</div>
+        </div>
+    </div>
+
+    <div class="footnote">
+        <p>⚠️ 温馨提示：本页面内容纯属娱乐。</p>
+        <p>🔄 鼠标悬停在图片上有惊喜效果哦！</p>
+        <p>🎉 翱三班传奇永流传，向所有辛勤付出的老师们致敬！</p>
+    </div>
+
+    <div class="psg">
+        <a href="/">主页</a>
+    </div>
+
+    <div class="floating-objects">
+        <div class="floating-object">😂</div>
+        <div class="floating-object">🤣</div>
+        <div class="floating-object">😆</div>
+        <div class="floating-object">😜</div>
+        <div class="floating-object">🤪</div>
+    </div>
+
+    <script>
+        const isTeacherUser = sessionStorage.getItem("isTeacher");
+        if (isTeacherUser === "true") window.location.href = "/not_allow?isT=true";
+
+        // 添加点击图片时的搞笑音效文字
+        const images = document.querySelectorAll('img');
+        const captions = document.querySelectorAll('.caption');
+
+        // 搞笑音效文字数组
+        const funnySounds = [
+            "啪嗒！", "咔嚓！", "咻——", "咚！", "噗嗤！",
+            "嘿嘿嘿！", "哈哈哈！", "哇塞！", "哎哟！", "啊哈！"
+        ];
+
+        // 为每张图片添加点击事件
+        images.forEach((img, _) => {
+            img.addEventListener('click', function () {
+                // 创建音效文字
+                const soundText = document.createElement('div');
+                soundText.textContent = funnySounds[Math.floor(Math.random() * funnySounds.length)];
+                soundText.style.position = 'absolute';
+                soundText.style.color = '#ff3300';
+                soundText.style.fontSize = '2rem';
+                soundText.style.fontWeight = 'bold';
+                soundText.style.zIndex = '100';
+                soundText.style.textShadow = '2px 2px 0 #ffcc00';
+                soundText.style.left = (img.getBoundingClientRect().left + img.width / 2) + 'px';
+                soundText.style.top = (img.getBoundingClientRect().top + img.height / 2) + 'px';
+                soundText.style.pointerEvents = 'none';
+                soundText.style.animation = 'textPop 1s forwards';
+
+                document.body.appendChild(soundText);
+
+                // 添加动画样式
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes textPop {
+                        0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+                        100% { transform: translate(-50%, -150%) scale(1.5); opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(style);
+
+                // 1秒后移除音效文字
+                setTimeout(() => {
+                    soundText.remove();
+                    style.remove();
+                }, 1000);
+
+                // 随机旋转图片
+                const randomRotate = Math.floor(Math.random() * 21) - 10; // -10到10度
+                img.style.transform = `rotate(${randomRotate}deg) scale(1.1)`;
+
+                // 1秒后恢复
+                setTimeout(() => {
+                    img.style.transform = '';
+                }, 1000);
+            });
+        });
+
+        // 为标题添加随机颜色变化
+        const title = document.querySelector('h1');
+        setInterval(() => {
+            const hue = Math.floor(Math.random() * 360);
+            title.style.color = `hsl(${hue}, 100%, 50%)`;
+        }, 3000);
+
+        // 为psg链接添加额外的点击效果
+        const psgLinks = document.querySelectorAll('.psg a');
+        psgLinks.forEach(link => {
+            link.addEventListener('click', function (e) {
+                // 创建点击效果
+                const clickEffect = document.createElement('div');
+                clickEffect.style.position = 'fixed';
+                clickEffect.style.width = '20px';
+                clickEffect.style.height = '20px';
+                clickEffect.style.borderRadius = '50%';
+                clickEffect.style.backgroundColor = '#ffcc00';
+                clickEffect.style.pointerEvents = 'none';
+                clickEffect.style.zIndex = '1000';
+                clickEffect.style.left = e.clientX + 'px';
+                clickEffect.style.top = e.clientY + 'px';
+                clickEffect.style.animation = 'clickExpand 0.6s forwards';
+
+                document.body.appendChild(clickEffect);
+
+                // 添加动画
+                const style = document.createElement('style');
+                style.textContent = `
+                @keyframes clickExpand {
+                    0% { transform: scale(1); opacity: 1; }
+                    100% { transform: scale(30); opacity: 0; }
+                }
+            `;
+                document.head.appendChild(style);
+
+                // 移除效果
+                setTimeout(() => {
+                    clickEffect.remove();
+                    style.remove();
+                }, 600);
+            });
+        });
+    </script>
+</div>
+<div id="verify-container"></div>
+</body>
+</html>

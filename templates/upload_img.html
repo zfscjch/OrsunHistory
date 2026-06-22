@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>上传照片</title>
+    <link rel="stylesheet" href="./../static/css/face.css">
+    <style>
+        .register-panel {
+            background: #f7f9fc;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        #userName {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        /* 新增样式：文件上传区域 */
+        .file-upload-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            margin-top: 10px;
+            padding: 10px;
+            background: #fff;
+            border: 1px dashed #ccc;
+            border-radius: 8px;
+        }
+        .file-upload-area input[type="file"] {
+            flex: 1;
+            min-width: 150px;
+        }
+        .file-upload-area .btn-upload {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+        .file-upload-area .btn-upload:hover {
+            background: #218838;
+        }
+        .file-name {
+            font-size: 0.9rem;
+            color: #555;
+            margin-left: 5px;
+        }
+    </style>
+    <script defer>
+        /**
+         * 显示对话框并获取用户输入
+         * @param {string} message - 请求输入的内容
+         * @param {string} placeholderText - 输入框提示语
+         * @param {string} type - 输入框属性
+         * @param {boolean} isRequired - 是否必填
+         * @returns {Promise<string>} 用户回答的Promise
+         */
+        function dialog(message, placeholderText, type = "text", isRequired = true) {
+            return new Promise((resolve, reject) => {
+                const dialog = document.querySelector("#ensure-sth");
+                const description = document.querySelector("#description");
+                const input = document.querySelector("#question");
+
+                description.innerHTML = message;
+                input.placeholder = placeholderText;
+                input.type = type;
+                input.required = isRequired;
+                input.value = "";
+
+                dialog.showModal();
+
+                document.querySelector("#sure").onclick = () => {
+                    const answer = input.value.trim();
+                    if (!isRequired || (isRequired && answer)) {
+                        dialog.close();
+                        resolve(answer);
+                    }
+                };
+
+                document.querySelector("#cancel").onclick = () => {
+                    dialog.close();
+                    reject("cancel by user");
+                };
+
+                input.onkeypress = (e) => {
+                    if (e.key === 'Enter') {
+                        document.querySelector("#sure").click();
+                    }
+                };
+
+                dialog.onclick = (e) => {
+                    if (e.target === dialog) {
+                        dialog.close();
+                        reject("cancel by user");
+                    }
+                };
+            });
+        }
+    </script>
+</head>
+<body>
+
+<dialog id="ensure-sth">
+    <div class="dialog-content">
+        <label for="question" id="description"></label>
+        <input id="question">
+        <div class="button-group">
+            <button class="close-btn" id="sure">确定</button>
+            <button class="close-btn" id="cancel">取消</button>
+        </div>
+    </div>
+</dialog>
+
+<div id="container">
+    <header>
+        <h1>🎭 人脸识别系统</h1>
+        <p class="subtitle">前后端分离 | 实时识别</p>
+    </header>
+
+    <div class="main-content">
+        <!-- 左侧：视频区域 -->
+        <div class="video-section">
+            <div class="video-container">
+                <video id="video" autoplay muted playsinline></video>
+                <canvas id="overlayCanvas" class="overlay-canvas"></canvas>
+            </div>
+            <div class="video-controls">
+                <button id="startCameraBtn" class="btn btn-primary">📷 启动摄像头</button>
+                <button id="captureBtn" class="btn btn-success" disabled>🎯 注册当前人脸</button>
+                <button id="stopCameraBtn" class="btn btn-warning" disabled>⏹️ 关闭摄像头</button>
+            </div>
+        </div>
+
+        <div class="control-section">
+            <div class="result-panel">
+                <h3>状态</h3>
+                <div id="resultArea" class="result-area">
+                    <div class="info-message">等待识别...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="register-panel">
+            <h3>📝 注册新用户</h3>
+            <div class="register-controls">
+                <input type="text" id="userName" placeholder="请输入用户名" maxlength="20">
+            </div>
+
+            <!-- ====== 新增：直接上传照片注册 ====== -->
+            <div class="file-upload-area">
+                <span style="font-weight:500;">📁 上传照片：</span>
+                <input type="file" id="uploadImage" accept="image/*">
+                <span id="fileDisplayName" class="file-name">未选择文件</span>
+                <button id="uploadRegisterBtn" class="btn-upload">📤 上传照片注册</button>
+            </div>
+            <!-- ====== 新增结束 ====== -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // ==================== 原有变量与函数 ====================
+    let videoStream = null;
+    let isRecognizing = false;
+
+    const startCameraBtn = document.querySelector("#startCameraBtn");
+    const captureBtn = document.querySelector("#captureBtn");
+    const stopCameraBtn = document.querySelector("#stopCameraBtn");
+    const overlayCanvas = document.querySelector("#overlayCanvas");
+    const ctx = overlayCanvas.getContext("2d");
+    const resultArea = document.querySelector("#resultArea");
+    const userName = document.querySelector("#userName");
+
+    // 文件选择显示文件名
+    document.querySelector("#uploadImage").addEventListener("change", function(e) {
+        const file = this.files[0];
+        const display = document.querySelector("#fileDisplayName");
+        if (file) {
+            display.textContent = file.name + " (" + (file.size/1024).toFixed(1) + " KB)";
+        } else {
+            display.textContent = "未选择文件";
+        }
+    });
+
+    // ==================== 摄像头相关 ====================
+    async function startCamera() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: {
+                    width: { ideal: 640 },
+                    height: { ideal: 480 },
+                    facingMode: 'user'
+                }
+            });
+
+            videoStream = stream;
+            video.srcObject = stream;
+            await video.play();
+
+            overlayCanvas.width = video.videoWidth;
+            overlayCanvas.height = video.videoHeight;
+
+            startCameraBtn.disabled = true;
+            captureBtn.disabled = false;
+            stopCameraBtn.disabled = false;
+
+            console.log('摄像头已启动');
+        } catch (error) {
+            console.error('摄像头启动失败:', error);
+            alert('无法访问摄像头，请检查权限设置');
+        }
+    }
+
+    function stopCamera() {
+        if (videoStream) {
+            videoStream.getTracks().forEach(track => track.stop());
+            videoStream = null;
+            video.srcObject = null;
+
+            startCameraBtn.disabled = false;
+            captureBtn.disabled = true;
+            stopCameraBtn.disabled = true;
+
+            ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+
+            console.log('摄像头已关闭');
+        }
+    }
+
+    function captureCurrentFrame() {
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const tempCtx = canvas.getContext('2d');
+
+        tempCtx.save();
+        tempCtx.scale(-1, 1);
+        tempCtx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+        tempCtx.restore();
+
+        return canvas.toDataURL('image/jpeg', 0.8);
+    }
+
+    // ==================== 通用注册函数 ====================
+    function performRegister(name, imageData) {
+        resultArea.innerHTML = '<div class="info-message">🤔 注册中...</div>';
+
+        fetch("/face/register", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name: name, image: imageData })
+        })
+            .then(res => res.json())
+            .then(result => {
+                if (result.status === "success") {
+                    resultArea.innerHTML = `<div class="info-message">✅ ${result.message}</div>`;
+                    // 弹出密码重置对话框
+                    dialog("为确保安全，请重置密码", "请输入重置密码", "password")
+                        .then(pwd => {
+                            savePassword(result.user_id, pwd);
+                            sessionStorage.setItem("user", result.user);
+                            sessionStorage.setItem("isTeacher", result.isT);
+                            sessionStorage.setItem("userID", result.user_id);
+                            setTimeout(() => {
+                                window.location.href = "/";
+                            }, 1000);
+                        })
+                        .catch(() => {
+                            // 用户取消密码设置，不执行跳转（与原逻辑一致）
+                            console.log("用户取消密码设置");
+                        });
+                } else {
+                    resultArea.innerHTML = `<div class="error-message">❌ ${result.message}</div>`;
+                }
+            })
+            .catch(error => {
+                console.error('注册请求失败:', error);
+                resultArea.innerHTML = `<div class="error-message">❌ 连接后端失败: ${error.message}</div>`;
+            });
+    }
+
+    // ==================== 保存密码（已存在） ====================
+    function savePassword(id, pwd) {
+        fetch("/api/savePwd", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ user_id: id, pwd: pwd })
+        })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
+                if (data.status === "success") {
+                    alert("密码保存成功！");
+                }
+            })
+            .catch(error => {
+                console.log(error);
+                alert("密码保存失败！");
+            });
+    }
+
+    // ==================== 摄像头注册（原有） ====================
+    function registerFace() {
+        const name = userName.value.trim();
+        if (!name) {
+            resultArea.innerHTML = '<div class="error-message">请输入用户名</div>';
+            return;
+        }
+        if (!videoStream) {
+            resultArea.innerHTML = '<div class="error-message">请先启动摄像头</div>';
+            return;
+        }
+
+        const imageData = captureCurrentFrame();
+        performRegister(name, imageData);
+    }
+
+    // ==================== 新增：上传照片注册 ====================
+    function uploadRegister() {
+        const name = userName.value.trim();
+        if (!name) {
+            resultArea.innerHTML = '<div class="error-message">请输入用户名</div>';
+            return;
+        }
+
+        const fileInput = document.querySelector("#uploadImage");
+        const file = fileInput.files[0];
+        if (!file) {
+            resultArea.innerHTML = '<div class="error-message">请先选择一张照片</div>';
+            return;
+        }
+
+        // 检查文件类型
+        if (!file.type.startsWith('image/')) {
+            resultArea.innerHTML = '<div class="error-message">请选择有效的图片文件</div>';
+            return;
+        }
+
+        resultArea.innerHTML = '<div class="info-message">📤 正在上传图片...</div>';
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const imageData = e.target.result; // base64 dataURL
+            performRegister(name, imageData);
+        };
+        reader.onerror = function() {
+            resultArea.innerHTML = '<div class="error-message">❌ 读取文件失败，请重试</div>';
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // ==================== 事件绑定 ====================
+    startCameraBtn.addEventListener('click', startCamera);
+    stopCameraBtn.addEventListener('click', stopCamera);
+    captureBtn.addEventListener('click', registerFace);
+
+    // 新增上传按钮事件
+    document.querySelector("#uploadRegisterBtn").addEventListener('click', uploadRegister);
+
+    // （可选）文件选择后自动清空之前的状态
+    document.querySelector("#uploadImage").addEventListener('change', function() {
+        // 不自动注册，等待用户点击按钮
+    });
+</script>
+</body>
+</html>

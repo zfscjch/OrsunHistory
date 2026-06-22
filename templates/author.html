@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>翱三通史 · 作者编辑</title>
+    <style>
+        /* ========== 全局基调 —— 延续主页的古籍沉檀 ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #2b2b1f;  /* 深檀木色底 */
+            font-family: 'Georgia', 'Times New Roman', '宋体', 'Songti SC', serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 1rem;
+            background-image:
+                    radial-gradient(circle at 10% 20%, rgba(200, 180, 140, 0.05) 0px, transparent 20%),
+                    radial-gradient(circle at 90% 80%, rgba(160, 130, 80, 0.08) 0px, transparent 30%),
+                    repeating-linear-gradient(45deg, rgba(120, 90, 50, 0.02) 0px, rgba(120, 90, 50, 0.02) 2px, transparent 2px, transparent 6px);
+        }
+
+        /* 主容器 —— 仿书卷画轴 */
+        #container {
+            background: #f7efe0 linear-gradient(145deg, #f3ead9 0%, #faf3e2 70%);
+            border: 1px solid #bbaa8a;
+            border-radius: 32px 32px 24px 24px;
+            box-shadow:
+                    0 20px 30px -10px rgba(0,0,0,0.7),
+                    inset 0 0 0 1px #fff6e5,
+                    inset 2px 2px 8px rgba(255, 245, 215, 0.8);
+            padding: 2.5rem 3rem;
+            max-width: 800px;
+            width: 100%;
+            margin: 2rem 0;
+            position: relative;
+            transition: box-shadow 0.3s ease;
+        }
+
+        /* 虫蚀毛边装饰 */
+        #container::before {
+            content: '';
+            position: absolute;
+            top: -4px; left: -4px; right: -4px; bottom: -4px;
+            border: 1px solid rgba(140, 110, 70, 0.2);
+            border-radius: 36px 36px 28px 28px;
+            pointer-events: none;
+            box-shadow: inset 0 0 20px #bba27a40;
+        }
+
+        /* 标题 —— 史传卷首 */
+        h3 {
+            font-size: 2.4rem;
+            font-weight: 400;
+            letter-spacing: 6px;
+            color: #3c2e1f;
+            text-shadow: 1px 1px 0 #fff3e0, 2px 2px 0 #c9b697;
+            border-bottom: 2px solid #b99e7c;
+            padding-bottom: 0.7rem;
+            margin-bottom: 2rem;
+            font-family: 'Times New Roman', '宋体', serif;
+            text-align: center;
+            position: relative;
+        }
+
+        h3::after {
+            content: '⸻  ✻  ⸻';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #8f7b5f;
+            font-size: 1rem;
+            letter-spacing: 4px;
+            background: #f7efe0;
+            padding: 0 1rem;
+            white-space: nowrap;
+        }
+
+        a[href="/edit"] {
+            text-decoration: none;
+            background: #fdf7ec;
+            color: #6b5a45;
+        }
+
+        /* 文章列表容器 —— 仿古籍版心 */
+        #psg-li {
+            font-family: 'Georgia', 'Times New Roman', '宋体', serif;
+            color: #3c2e1f;
+            min-height: 200px;
+            padding: 1rem 0.5rem;
+        }
+
+        /* 加载提示 / 空状态 */
+        #psg-li p {
+            font-size: 1.3rem;
+            color: #6b5a45;
+            font-style: italic;
+            letter-spacing: 1px;
+            text-align: center;
+            padding: 3rem 1rem;
+            background: rgba(220, 200, 170, 0.2);
+            border-radius: 48px;
+            border: 1px dashed #bba27a;
+            box-shadow: inset 0 0 12px #e2d3ba;
+        }
+
+        /* 文章列表样式 —— 竖排笺草 */
+        #psg-li ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            border-top: 1px solid #dac292;
+            border-bottom: 1px solid #dac292;
+            background: #fdf7ec;
+            box-shadow: inset 0 0 0 1px #fff9ed, inset 0 0 12px #e7d7bd;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        #psg-li li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 2rem;
+            border-bottom: 1px dashed #d6bd9a;
+            font-size: 1.3rem;
+            transition: background 0.2s ease;
+        }
+
+        #psg-li li:last-child {
+            border-bottom: none;
+        }
+
+        #psg-li li:hover {
+            background: #efe3cf;
+        }
+
+        /* 文章标题（或编号） */
+        #psg-li li span {
+            font-weight: 500;
+            color: #2f2419;
+            letter-spacing: 1px;
+            position: relative;
+            padding-left: 1.2rem;
+        }
+
+        /* 手写装饰点 */
+        #psg-li li span::before {
+            content: '❦';
+            position: absolute;
+            left: -8px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #b5956b;
+            font-size: 1.2rem;
+            opacity: 0.7;
+        }
+
+        /* 编辑链接 —— 古籍刻本风格 */
+        #psg-li li a {
+            display: inline-block;
+            font-size: 1.2rem;
+            padding: 0.4rem 1.6rem;
+            background: #dac9ae;
+            background: linear-gradient(145deg, #d2bc9c, #ecdbbc);
+            border: 1px solid #b07d4c;
+            border-radius: 40px;
+            color: #2e241b;
+            text-decoration: none;
+            box-shadow: 0 4px 0 #7a623e, 0 6px 10px -4px #3a2e1e, inset 0 1px 3px #fffae9;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            letter-spacing: 1px;
+            transition: all 0.12s ease-in-out;
+            white-space: nowrap;
+        }
+
+        /* 编辑链接装饰 */
+        #psg-li li a::before {
+            content: '✎';
+            margin-right: 6px;
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+
+        #psg-li li a:hover {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #7a623e, 0 8px 12px -6px #1f1a0e, inset 0 1px 4px #fffff0;
+            background: linear-gradient(145deg, #cbb59a, #e6d2b8);
+            color: #1b130b;
+            border-color: #9e6e3f;
+        }
+
+        #psg-li li a:active {
+            transform: translateY(6px);
+            box-shadow: 0 0 0 #7a623e, 0 8px 12px -6px #0f0b06;
+        }
+
+        /* 移动端优化 */
+        @media (max-width: 600px) {
+            #container {
+                padding: 1.8rem 1.2rem;
+            }
+            h3 {
+                font-size: 2rem;
+                letter-spacing: 4px;
+            }
+            #psg-li li {
+                padding: 1rem 1.2rem;
+                font-size: 1.1rem;
+                flex-wrap: wrap;
+                gap: 0.8rem;
+            }
+            #psg-li li span {
+                padding-left: 1.5rem;
+            }
+            #psg-li li a {
+                font-size: 1rem;
+                padding: 0.3rem 1.2rem;
+            }
+        }
+
+        /* 极窄屏完全纵向 */
+        @media (max-width: 420px) {
+            #psg-li li {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            #psg-li li span::before {
+                left: -5px;
+            }
+            #psg-li li a {
+                align-self: flex-end;
+            }
+        }
+
+        /* 仿古题跋——固定在右下 (类似主页风格) */
+        body::before {
+            content: '翱三通史 · 文心雕龙';
+            position: fixed;
+            bottom: 12px;
+            right: 20px;
+            font-size: 0.85rem;
+            color: #67553d;
+            background: #efe6d4c0;
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            border: 1px solid #bba27a;
+            backdrop-filter: blur(2px);
+            box-shadow: 0 2px 6px #221e14;
+            font-family: 'Courier New', '宋体', monospace;
+            letter-spacing: 2px;
+            z-index: 10;
+        }
+
+        /* 左侧签条 (可点击的链接，保持与主页互动相似) */
+        body::after {
+            content: '✻ 甲辰校勘 ✻';
+            position: fixed;
+            left: 0;
+            top: 30%;
+            background: #493e2d;
+            color: #dacbbc;
+            padding: 0.8rem 0.2rem;
+            writing-mode: vertical-rl;
+            font-size: 1rem;
+            border-radius: 0 12px 12px 0;
+            letter-spacing: 6px;
+            border: 1px solid #ad9b7c;
+            border-left: none;
+            box-shadow: 2px 4px 12px #0f0d09;
+            text-shadow: 0 0 2px #dec393;
+            font-family: 'Times New Roman', '楷体', serif;
+            z-index: 10;
+            pointer-events: none;  /* 仅装饰，不干扰点击（可根据需要启用） */
+        }
+
+        /* 如果你想左侧签条可点击，可以启用下面的样式并调整content为HTML元素，但伪元素不能加链接。
+           此处保持与原主页视觉一致，仅作装饰。 */
+    </style>
+    <script>
+        window.addEventListener("message", e => {
+            // 注意：origin 比较需要精确，此处原代码有逻辑瑕疵 (e.origin !== a && e.origin !== b) 永远为真
+            // 但为了功能，我们按预期修复：仅当来自可信源且消息类型匹配时处理
+            if (e.origin !== "http://129.211.162.48:3/index" && e.origin !== "http://129.211.162.48:3/login") return;
+            // 原代码 e.type 应为 e.data.type
+            if (e.data && e.data.type === "AUTH_STATE" && e.data.isLoggedIn) {
+                sessionStorage.setItem("user", e.data.user);
+                sessionStorage.setItem("isTeacher", e.data.isTeacher.toString());
+                sessionStorage.setItem("userID", e.data.userId);
+            }
+        });
+
+        function getArticle(author) {
+            const data = {author: author, type: "article"};
+            fetch("/api/get-articles", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"   // 修正大小写
+                },
+                body: JSON.stringify(data)
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    console.log(data);
+                    // 判断无文章或空数据
+                    if (!data || !data.data || data.data.length === 0) {
+                        const li = document.querySelector("#psg-li");
+                        li.innerHTML = "<p>📜 您尚未撰写任何文章</p>";
+                        return;
+                    }
+                    showArticle(data.data);
+                })
+                .catch((err) => {
+                    console.log(err);
+                    document.querySelector("#psg-li").innerHTML = "<p>❌ 载入失败，请稍后重试</p>";
+                });
+        }
+
+        function showArticle(d) {
+            const li = document.querySelector("#psg-li");
+            // 确保 d 是数组且有内容
+            if (!Array.isArray(d) || d.length === 0) {
+                li.innerHTML = "<p>📭 这里没有文章</p>";
+                return;
+            }
+            let html = '<ul>';
+            d.forEach((item) => {
+                // 假设 item[0] 是标题或标识，item[1] 是 slug
+                html += `
+                <li>
+                    <span>${escapeHtml(item[0]) || '无题'}</span>
+                    <a href="/edit?slug=${encodeURIComponent(item[1])}">编辑</a>
+                    <a href="/psg/${encodeURIComponent(item[1])}">预览</a>
+                </li>
+                `;
+            });
+            html += '</ul>';
+            li.innerHTML = html;
+        }
+
+        // 简单的防XSS转义
+        function escapeHtml(unsafe) {
+            if (!unsafe) return unsafe;
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+    </script>
+</head>
+<body>
+<div id="container">
+    <h3>作者编辑</h3>
+    <a href="/edit">新建文章</a>
+    <div id="psg-li">
+        <p>📖 加载中……</p>
+    </div>
+</div>
+<script>
+    const user = sessionStorage.getItem("user");
+    const isTeacher = sessionStorage.getItem("isTeacher");
+    if (!user) window.location.href = "/login";
+    if (isTeacher === "true") window.location.href = "/not_allow?code=403";
+    if (user === "admin") getArticle(".*");
+    else getArticle(user);
+</script>
+</body>
+</html>

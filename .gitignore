@@ -1,0 +1,10 @@
+__pycache__/
+functions/db/known_faces/
+functions/test/
+functions/__pycache__/
+functions/config.py
+
+*.sql
+*.bat
+*.log
+*.db

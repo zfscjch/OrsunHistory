@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>翱三通史 · 日志</title>
+    <style>
+        /* 极简重置，只留必要 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f6f4f0;          /* 素净暖灰 */
+            font-family: 'Inter', -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            padding: 1.5rem;
+            margin: 0;
+            line-height: 1.5;
+            color: #1f1b17;
+        }
+
+        /* 卡片 —— 干净、留白、微光 */
+        .log-card {
+            max-width: 640px;
+            width: 100%;
+            background: #ffffff;
+            padding: 2.8rem 2.5rem 2.2rem;
+            border-radius: 28px;
+            box-shadow:
+                    0 8px 24px rgba(0, 0, 0, 0.02),
+                    0 2px 6px rgba(0, 0, 0, 0.01);
+            border: 1px solid #edeae5;
+            transition: box-shadow 0.2s ease;
+        }
+
+        /* 标题区 —— 极简，仅留一横 */
+        .log-header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            border-bottom: 1px solid #e6e0d8;
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.8rem;
+        }
+
+        .log-title {
+            font-size: 1.5rem;
+            font-weight: 400;
+            letter-spacing: 4px;
+            color: #2b241e;
+            background: #f0ece6;
+            padding: 0.1rem 1rem 0.1rem 1.2rem;
+            border-radius: 40px;
+            font-family: 'Times New Roman', '宋体', serif;
+            font-weight: 350;
+        }
+
+        .log-tag {
+            font-size: 0.75rem;
+            letter-spacing: 1.5px;
+            color: #a39484;
+            text-transform: uppercase;
+            background: #f4f1ec;
+            padding: 0.2rem 0.9rem;
+            border-radius: 30px;
+            border: 1px solid #e3dbd2;
+            font-weight: 350;
+        }
+
+        /* 内容区域 —— 内容为主，不加修饰 */
+        .log-content {
+            padding: 0.4rem 0 0.8rem;
+        }
+
+        /* 日志正文 —— 干净、清晰、可读 */
+        .log-entry {
+            font-size: 1.15rem;
+            line-height: 1.7;
+            color: #1f1b17;
+            background: #faf9f7;
+            padding: 1.6rem 1.8rem;
+            border-radius: 20px;
+            border: 1px solid #efebe6;
+            word-break: break-word;
+            white-space: pre-wrap;
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            font-weight: 380;
+            letter-spacing: 0.01em;
+            box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.01);
+        }
+
+        /* 如果 data 为空或只有一行，保留舒适间距 */
+        .log-entry:empty::before {
+            content: "（无记录）";
+            color: #bfb2a4;
+            font-style: italic;
+            font-weight: 300;
+        }
+
+        /* 底部极简装饰 —— 可有可无，但增加呼吸 */
+        .log-footer {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.7rem;
+            color: #c6b9ab;
+            letter-spacing: 1px;
+            border-top: 1px solid #f0ebe5;
+            padding-top: 1.2rem;
+        }
+
+        .log-footer span {
+            opacity: 0.6;
+        }
+
+        .dot-sep {
+            display: inline-block;
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            background: #d6cbc0;
+            opacity: 0.4;
+        }
+
+        /* 响应式 —— 小屏舒适 */
+        @media (max-width: 480px) {
+            .log-card {
+                padding: 1.8rem 1.2rem 1.2rem;
+                border-radius: 24px;
+            }
+            .log-title {
+                font-size: 1.2rem;
+                letter-spacing: 2px;
+                padding: 0.1rem 0.8rem;
+            }
+            .log-entry {
+                font-size: 1rem;
+                padding: 1.2rem 1rem;
+            }
+            .log-header {
+                flex-wrap: wrap;
+                gap: 0.4rem;
+            }
+            .log-tag {
+                font-size: 0.65rem;
+                padding: 0.1rem 0.7rem;
+            }
+        }
+
+        /* 悬停微动 —— 不打扰 */
+        .log-card:hover {
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.02), 0 4px 12px rgba(0, 0, 0, 0.01);
+            border-color: #e3dbd2;
+        }
+    </style>
+</head>
+<body>
+<div class="log-card">
+    <!-- 头部：日志 + 状态标签（极简） -->
+    <div class="log-header">
+        <span class="log-title">翱三通史</span>
+        <span class="log-tag">· 日志 ·</span>
+    </div>
+
+    <!-- 内容：data 占位，保留原模板语义 -->
+    <div class="log-content">
+        <div class="log-entry">{{ data|safe }}</div>
+    </div>
+
+    <!-- 脚注：仅一点气息，不抢眼 -->
+    <div class="log-footer">
+        <span>📄 记录</span>
+        <span class="dot-sep"></span>
+        <span>静·阅</span>
+        <span class="dot-sep"></span>
+        <span style="font-variant-numeric: tabular-nums;">2026 · 夏</span>
+    </div>
+</div>
+</body>
+</html>
