@@ -1,4 +1,5 @@
 __pycache__/
+.idea/
 functions/db/known_faces/
 functions/test/
 functions/__pycache__/
