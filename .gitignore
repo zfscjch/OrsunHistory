@@ -8,3 +8,4 @@ functions/config.py
 *.bat
 *.log
 *.db
+users.backup.sql
