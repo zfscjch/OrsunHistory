@@ -134,6 +134,7 @@
             </div>
             <div class="video-controls">
                 <button id="startCameraBtn" class="btn btn-primary">📷 启动摄像头</button>
+                <button id="changeCameraBtn" class="btn btn-primary">📷 切换摄像头</button>
                 <button id="captureBtn" class="btn btn-success" disabled>🎯 注册当前人脸</button>
                 <button id="stopCameraBtn" class="btn btn-warning" disabled>⏹️ 关闭摄像头</button>
             </div>
@@ -169,9 +170,10 @@
 <script>
     // ==================== 原有变量与函数 ====================
     let videoStream = null;
-    let isRecognizing = false;
+    let facingMode = "user";
 
     const startCameraBtn = document.querySelector("#startCameraBtn");
+    const changeCameraBtn = document.querySelector("#changeCameraBtn");
     const captureBtn = document.querySelector("#captureBtn");
     const stopCameraBtn = document.querySelector("#stopCameraBtn");
     const overlayCanvas = document.querySelector("#overlayCanvas");
@@ -191,13 +193,13 @@
     });
 
     // ==================== 摄像头相关 ====================
-    async function startCamera() {
+    async function startCamera(change=false) {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({
                 video: {
                     width: { ideal: 640 },
                     height: { ideal: 480 },
-                    facingMode: 'user'
+                    facingMode: facingMode
                 }
             });
 
@@ -212,11 +214,17 @@
             captureBtn.disabled = false;
             stopCameraBtn.disabled = false;
 
-            console.log('摄像头已启动');
+            if (change) console.log("已切换摄像头");
+            else console.log('摄像头已启动');
         } catch (error) {
             console.error('摄像头启动失败:', error);
             alert('无法访问摄像头，请检查权限设置');
         }
+    }
+
+    async function changeCamera() {
+        facingMode = facingMode === "user" ? "environment" : "user";
+        await startCamera(true);
     }
 
     function stopCamera() {
@@ -226,6 +234,7 @@
             video.srcObject = null;
 
             startCameraBtn.disabled = false;
+            changeCameraBtn.disabled = true;
             captureBtn.disabled = true;
             stopCameraBtn.disabled = true;
 
@@ -363,6 +372,7 @@
 
     // ==================== 事件绑定 ====================
     startCameraBtn.addEventListener('click', startCamera);
+    changeCameraBtn.addEventListener('click', changeCamera);
     stopCameraBtn.addEventListener('click', stopCamera);
     captureBtn.addEventListener('click', registerFace);
 
