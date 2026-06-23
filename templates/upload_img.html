@@ -172,6 +172,7 @@
     let videoStream = null;
     let facingMode = "user";
 
+    const video = document.querySelector("#video");
     const startCameraBtn = document.querySelector("#startCameraBtn");
     const changeCameraBtn = document.querySelector("#changeCameraBtn");
     const captureBtn = document.querySelector("#captureBtn");
@@ -202,6 +203,11 @@
                     facingMode: facingMode
                 }
             });
+            if (facingMode === "environment") {
+                video.style.transform = "scaleX(1)";
+            } else {
+                video.style.transform = "scaleX(-1)";
+            }
 
             videoStream = stream;
             video.srcObject = stream;
