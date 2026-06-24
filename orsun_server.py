@@ -381,7 +381,7 @@ def upload():
 
         article = data["article"]
 
-        mgr = psg_mgr if data.get_log("type", "article") == "article" else students_mgr
+        mgr = psg_mgr if data.get("type", "article") == "article" else students_mgr
 
         if data["request"] == "upload":
             msg, code = mgr.insert(**article)
