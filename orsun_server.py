@@ -14,7 +14,7 @@ students_mgr = StudentsMgr()
 comments_mgr = CommentsMgr()
 os.chdir(os.path.dirname(__file__))
 locker = AccountLocker("functions/db/login_locks.json")
-log_mgr = LogMgr("functions/db/website.log")
+log_mgr = LogMgr("../logs/OrsunHistory/website.log")
 
 
 @app.errorhandler(503)
@@ -83,6 +83,7 @@ def login():
     user_id, is_active, msg = user_mgr.authenticate(user, password)
 
     if user_id:
+        log_mgr.info(user, "登录成功", request.remote_addr)
         return api_response("success", msg, {"user_id": user_id, "isT": 49 <= user_id <= 60 or user_id == 68, "isActive": is_active})
     else:
         return api_response("error", msg)
