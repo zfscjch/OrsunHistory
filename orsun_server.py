@@ -313,8 +313,8 @@ def get_comments():
             return api_response("error", "请求必须为 JSON", http_code=400)
 
         data = request.get_json()
-        article_id = data.get_log("article_id")
-        student_id = data.get_log("student_id")
+        article_id = data.get("article_id")
+        student_id = data.get("student_id")
 
         if not article_id and not student_id:
             return api_response("error", "必须提供 article_id 或 student_id", http_code=400)
@@ -350,10 +350,10 @@ def insert_comments():
         msg, code = comments_mgr.insert_comment(
             content=data['content'],
             user_id=data['user_id'],
-            parent_id=data.get_log('parent_id'),
-            article_id=data.get_log('article_id'),
-            student_id=data.get_log('student_id'),
-            anonymous=data.get_log('anonymous'),
+            parent_id=data.get('parent_id'),
+            article_id=data.get('article_id'),
+            student_id=data.get('student_id'),
+            anonymous=data.get('anonymous'),
         )
 
         if code != 200:
