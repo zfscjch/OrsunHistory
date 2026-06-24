@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>翱三通史 - 安全应急响应中心</title>
+    <style>
+        /* ===== 全局重置与基调 —— 与 index.html 保持一致 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #2b2b1f;  /* 深檀木色底，模拟历史沉淀 */
+            font-family: 'Georgia', 'Times New Roman', '宋体', 'Songti SC', serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 1rem;
+            background-image:
+                    radial-gradient(circle at 10% 20%, rgba(200, 180, 140, 0.05) 0px, transparent 20%),
+                    radial-gradient(circle at 90% 80%, rgba(160, 130, 80, 0.08) 0px, transparent 30%),
+                    repeating-linear-gradient(45deg, rgba(120, 90, 50, 0.02) 0px, rgba(120, 90, 50, 0.02) 2px, transparent 2px, transparent 6px);
+        }
+
+        /* ===== 主容器 —— 仿若一本摊开的史册 ===== */
+        .container {
+            background: #f7efe0 linear-gradient(145deg, #f3ead9 0%, #faf3e2 70%);
+            border: 1px solid #bbaa8a;
+            border-radius: 32px 32px 24px 24px;
+            box-shadow:
+                    0 20px 30px -10px rgba(0,0,0,0.7),
+                    inset 0 0 0 1px #fff6e5,
+                    inset 2px 2px 8px rgba(255, 245, 215, 0.8);
+            padding: 3rem 4rem;
+            margin: 1.5rem 0;
+            max-width: 700px;
+            width: 100%;
+            position: relative;
+            transition: box-shadow 0.3s ease;
+        }
+
+        /* 古书虫蚀 / 毛边效果 (装饰用伪元素) */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -4px; left: -4px; right: -4px; bottom: -4px;
+            border: 1px solid rgba(140, 110, 70, 0.2);
+            border-radius: 36px 36px 28px 28px;
+            pointer-events: none;
+            box-shadow: inset 0 0 20px #bba27a40;
+        }
+
+        /* ===== 标题 ===== */
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 400;
+            letter-spacing: 6px;
+            color: #e8d6b5;
+            text-shadow: 3px 3px 0 #3a2e1e, 6px 6px 0 #1f1a10;
+            margin-bottom: 2.5rem;
+            border-bottom: 2px solid #b99e7c;
+            padding-bottom: 0.5rem;
+            display: inline-block;
+            font-family: 'Times New Roman', '宋体', serif;
+            text-transform: uppercase;
+            word-break: keep-all;
+            position: relative;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 10%;
+            width: 80%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #b99e7c, #dac292, #b99e7c, transparent);
+        }
+
+        /* ===== 表单样式 ===== */
+        #issueForm {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        /* 标签 —— 仿古书眉批 */
+        #issueForm label {
+            font-size: 1.1rem;
+            color: #3c2e1f;
+            font-family: 'Georgia', 'Times New Roman', '宋体', serif;
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 0 #fff3e0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        #issueForm label::before {
+            content: '❦';
+            color: #a57c54;
+            font-size: 1.2rem;
+            opacity: 0.7;
+        }
+
+        /* 用户名输入框 —— 隐藏但保留用于逻辑 */
+        #username {
+            display: none;
+        }
+
+        /* 文本框 —— 仿古书页 */
+        #issueForm textarea {
+            background: #fcf8f0;
+            border: 2px solid #cbb291;
+            border-radius: 12px;
+            padding: 1rem 1.2rem;
+            font-size: 1rem;
+            font-family: 'Georgia', 'Times New Roman', '宋体', serif;
+            color: #2b2217;
+            resize: vertical;
+            min-height: 120px;
+            transition: all 0.3s ease;
+            box-shadow: inset 2px 2px 8px rgba(120, 90, 50, 0.1);
+            line-height: 1.6;
+        }
+
+        #issueForm textarea:focus {
+            outline: none;
+            border-color: #8f7b5f;
+            box-shadow: inset 2px 2px 8px rgba(120, 90, 50, 0.15), 0 0 0 4px rgba(200, 180, 140, 0.2);
+            background: #fffcf5;
+        }
+
+        #issueForm textarea::placeholder {
+            color: #b09a7a;
+            font-style: italic;
+            opacity: 0.7;
+        }
+
+        /* 提交按钮 —— 与 index.html 的链接风格一致 */
+        #submitIssue {
+            display: inline-block;
+            font-size: 1.3rem;
+            font-weight: normal;
+            color: #3c2e1f;
+            text-decoration: none;
+            padding: 0.8rem 2.2rem;
+            background: #e5d8c1;
+            background: linear-gradient(145deg, #dac9ae, #efdfc7);
+            border: 1px solid #b5956b;
+            border-radius: 60px;
+            box-shadow:
+                    0 8px 0 #7a623e,
+                    0 12px 18px -8px #1f1a0e,
+                    inset 0 -2px 4px #fff4dd,
+                    inset 0 2px 4px #fffff0;
+            font-family: 'Georgia', 'Times New Roman', '宋体', serif;
+            letter-spacing: 2px;
+            transition: all 0.15s ease-in-out;
+            position: relative;
+            text-shadow: 1px 1px 0 #fff3e0;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            width: 100%;
+        }
+
+        /* 按钮装饰符 */
+        #submitIssue::before {
+            content: '❦';
+            font-size: 1.2rem;
+            color: #a57c54;
+            opacity: 0.7;
+            margin-right: 10px;
+        }
+
+        #submitIssue::after {
+            content: '❦';
+            font-size: 1.2rem;
+            color: #a57c54;
+            opacity: 0.7;
+            margin-left: 10px;
+        }
+
+        /* 按钮悬停 */
+        #submitIssue:hover {
+            transform: translateY(4px);
+            box-shadow:
+                    0 4px 0 #7a623e,
+                    0 16px 24px -10px #0a0804,
+                    inset 0 -1px 3px #fff1d6,
+                    inset 0 1px 5px #fffff0;
+            background: linear-gradient(145deg, #d2bea0, #ebdac2);
+            color: #241b10;
+            border-color: #b07d4c;
+        }
+
+        /* 按钮点击 */
+        #submitIssue:active {
+            transform: translateY(8px);
+            box-shadow:
+                    0 0 0 #7a623e,
+                    0 18px 20px -12px #0f0b06,
+                    inset 0 -2px 4px #cfb894;
+        }
+
+        /* ===== 响应消息 ===== */
+        #responseMessage {
+            margin-top: 1.5rem;
+            padding: 0.5rem 0;
+            font-size: 1rem;
+            font-family: 'Georgia', 'Times New Roman', '宋体', serif;
+            text-align: center;
+            min-height: 2.5rem;
+        }
+
+        #responseMessage p {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 240, 0.5);
+            border: 1px dashed #cbb291;
+        }
+
+        #responseMessage p[style*="color:green"] {
+            border-color: #7a9a6a;
+            background: rgba(120, 160, 100, 0.1);
+        }
+
+        #responseMessage p[style*="color:red"] {
+            border-color: #b07060;
+            background: rgba(180, 90, 70, 0.08);
+        }
+
+        /* ===== 页脚 ===== */
+        .footer {
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: #8f7b5f;
+            text-align: center;
+            letter-spacing: 1px;
+            font-family: 'Times New Roman', '楷体', serif;
+            border-top: 1px dashed #cbb291;
+            padding-top: 1.5rem;
+            width: 100%;
+            max-width: 700px;
+        }
+
+        .footer a {
+            color: #7a623e;
+            text-decoration: none;
+            border-bottom: 1px dotted #b5956b;
+            transition: all 0.2s ease;
+        }
+
+        .footer a:hover {
+            color: #3c2e1f;
+            border-bottom-color: #3c2e1f;
+        }
+
+        /* ===== 仿古签条 (右侧) ===== */
+        .signature-container {
+            position: fixed;
+            right: 0;
+            top: 40%;
+            background: #493e2d;
+            color: #dacbbc;
+            padding: 0.8rem 0.2rem;
+            writing-mode: vertical-rl;
+            font-size: 0.8rem;
+            border-radius: 12px 0 0 12px;
+            letter-spacing: 6px;
+            border: 1px solid #ad9b7c;
+            border-right: none;
+            box-shadow: -2px 4px 12px #0f0d09;
+            text-shadow: 0 0 2px #dec393;
+            font-family: 'Times New Roman', '楷体', serif;
+            z-index: 10;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            line-height: 1.4;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        .signature-container:hover {
+            background: #5f4f39;
+            color: #f0e2ce;
+            border-color: #dbbc93;
+            box-shadow: -4px 6px 16px #221e14;
+            letter-spacing: 8px;
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 700px) {
+            h1 {
+                font-size: 1.8rem;
+                letter-spacing: 3px;
+                text-shadow: 2px 2px 0 #3a2e1e, 4px 4px 0 #1f1a10;
+            }
+
+            .container {
+                padding: 2rem 1.5rem;
+                margin: 1rem 0.5rem;
+            }
+
+            #issueForm label {
+                font-size: 1rem;
+            }
+
+            #submitIssue {
+                font-size: 1.1rem;
+                padding: 0.6rem 1.5rem;
+            }
+
+            #submitIssue::before,
+            #submitIssue::after {
+                font-size: 1rem;
+            }
+
+            .signature-container {
+                font-size: 0.7rem;
+                padding: 0.6rem 0.15rem;
+                letter-spacing: 4px;
+            }
+        }
+
+        @media (max-width: 500px) {
+            body {
+                padding: 1rem 0.5rem;
+            }
+
+            .container {
+                padding: 1.5rem 1rem;
+                border-radius: 24px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+                letter-spacing: 2px;
+            }
+
+            #issueForm textarea {
+                min-height: 100px;
+                font-size: 0.95rem;
+                padding: 0.8rem;
+            }
+
+            #submitIssue {
+                font-size: 1rem;
+                padding: 0.5rem 1rem;
+                letter-spacing: 1px;
+            }
+
+            #submitIssue::before,
+            #submitIssue::after {
+                display: none;
+            }
+
+            .signature-container {
+                display: none;
+            }
+        }
+
+        /* ===== 顶部导航小标签（与 index 呼应） ===== */
+        .nav-tag {
+            position: fixed;
+            top: 12px;
+            left: 20px;
+            font-size: 0.85rem;
+            color: #67553d;
+            background: #efe6d4c0;
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            border: 1px solid #bba27a;
+            backdrop-filter: blur(2px);
+            box-shadow: 0 2px 6px #221e14;
+            font-family: 'Courier New', '宋体', monospace;
+            letter-spacing: 2px;
+            z-index: 10;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .nav-tag:hover {
+            background: #dacbbc;
+            color: #2b2217;
+            border-color: #8f7b5f;
+        }
+
+        .nav-tag::before {
+            content: '← ';
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 返回主页的导航标签 -->
+<a href="/" class="nav-tag">返 回 史 册</a>
+
+<!-- 仿古签条（右侧装饰） -->
+<div class="signature-container">✻ 安 全 应 急 ✻</div>
+
+<!-- 主容器 -->
+<div class="container">
+    <h1>安 全 应 急 响 应 中 心</h1>
+
+    <form id="issueForm">
+        <input id="username" required>
+        <label for="issue">你遇到了什么问题？我们将全力帮您解决！</label>
+        <textarea placeholder="请在此处详细描述您遇到的问题……" id="issue"></textarea>
+        <button type="submit" id="submitIssue">提 交 问 题</button>
+    </form>
+
+    <div id="responseMessage"></div>
+</div>
+
+<!-- 页脚 -->
+<div class="footer">
+    &copy; 2025-2026
+    <a href="https://github.com/zfscjch/OrsunHistory" target="_blank">Orsun History Dev Team</a>.
+    All Rights Reserved.
+</div>
+
+<script>
+    function init() {
+        const username = sessionStorage.getItem("user");
+        const userNameEl = document.querySelector("#username");
+        if (!username) {
+            userNameEl.style.display = "block";
+            userNameEl.placeholder = "请先登录（用户名）";
+            userNameEl.style.display = "block";
+            userNameEl.style.background = "#fcf8f0";
+            userNameEl.style.border = "2px solid #cbb291";
+            userNameEl.style.borderRadius = "12px";
+            userNameEl.style.padding = "0.8rem 1.2rem";
+            userNameEl.style.fontFamily = "'Georgia', 'Times New Roman', '宋体', serif";
+            userNameEl.style.fontSize = "1rem";
+            userNameEl.style.color = "#2b2217";
+            userNameEl.style.marginBottom = "0.5rem";
+        } else {
+            userNameEl.value = username;
+            userNameEl.type = "hidden";
+        }
+    }
+
+    document.getElementById('issueForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const issueText = document.getElementById('issue').value;
+        const messageDiv = document.getElementById('responseMessage');
+
+        if (!issueText.trim()) {
+            messageDiv.innerHTML = '<p style="color:#b07060;">⚠ 请 输 入 问 题 内 容</p>';
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('issue', issueText);
+
+        fetch('/api/issues', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => Promise.reject(err));
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === "success") {
+                    messageDiv.innerHTML = `<p style="color:#5a7a4a;">✅ ${data.message}</p>`;
+                    document.getElementById('issue').value = '';
+                } else {
+                    messageDiv.innerHTML = `<p style="color:#b07060;">❌ ${data.error || '提交失败'}</p>`;
+                }
+            })
+            .catch(error => {
+                messageDiv.innerHTML = `<p style="color:#b07060;">❌ 提交失败: ${error.error || '网络错误'}</p>`;
+            });
+    });
+
+    init();
+</script>
+
+</body>
+</html>

@@ -436,6 +436,33 @@ def get_log():
     data = log_mgr.get_log().replace("\n", "<br>")
     return render_template("log.html", data=data)
 
+
+@app.route("/issues")
+def get_issue():
+    return render_template("issue.html")
+
+
+@app.route("/api/issues", methods=["POST"])
+def receive_issue():
+    # 兼容两种提交方式
+    if request.is_json:
+        # JSON 格式
+        data = request.get_json()
+        issue_content = data.get('issue') if data else None
+        user = data.get('user')
+    else:
+        # form-data 或 x-www-form-urlencoded 格式
+        issue_content = request.form.get('issue')
+        user = request.form.get('user')
+
+    if not issue_content:
+        return api_response("error", "问题不能为空", http_code=400)
+
+    # 处理问题
+    print(f"收到问题: {issue_content}")
+    log_mgr.error(user, issue_content, request.remote_addr)
+    return api_response("success", "提交成功，我们会尽快解决！")
+
 app.register_blueprint(face_bp, url_prefix="/face")
 
 
