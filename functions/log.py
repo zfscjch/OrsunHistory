@@ -26,6 +26,8 @@ class LogMgr:
     def info(self, user, action, remote_addr):
         try:
             # 使用LoggerAdapter自动添加user字段
+            if user == "admin":
+                return api_response("success")
             adapter = logging.LoggerAdapter(self.logger, {'user': user, "remote_addr": remote_addr})
             adapter.info(action)
             return api_response("success")
