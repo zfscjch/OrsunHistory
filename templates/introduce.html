@@ -2,581 +2,422 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>翱三通史</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>翱三通史 · 主页</title>
+    <!-- 引入 Font Awesome 仅作点缀 (可选) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* ===== 全局重置 & 史册基调 ===== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Comic Sans MS', '微软雅黑', sans-serif;
         }
 
         body {
-            background-color: #f0f0f0;
-            background-image: radial-gradient(#ffcc00 1px, transparent 1px),
-            radial-gradient(#ff6600 1px, transparent 1px);
-            background-size: 30px 30px;
-            background-position: 0 0, 15px 15px;
-            padding: 20px;
+            background-color: #2b2b1f;   /* 深檀木底 */
+            background-image:
+                    radial-gradient(circle at 10% 20%, rgba(200, 180, 140, 0.05) 0px, transparent 20%),
+                    radial-gradient(circle at 90% 80%, rgba(160, 130, 80, 0.08) 0px, transparent 30%),
+                    repeating-linear-gradient(45deg, rgba(120, 90, 50, 0.02) 0px, rgba(120, 90, 50, 0.02) 2px, transparent 2px, transparent 6px);
+            font-family: 'Georgia', 'Times New Roman', '宋体', 'Songti SC', serif;
             min-height: 100vh;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #e8d6b5;
         }
 
+        /* ===== 主标题 ===== */
         h1 {
-            text-align: center;
-            color: #ff3300;
-            font-size: 3.5rem;
-            margin-bottom: 30px;
-            text-shadow: 3px 3px 0 #ffcc00,
-            6px 6px 0 #ff6600,
-            9px 9px 5px rgba(0, 0, 0, 0.3);
-            transform: rotate(-2deg);
-            animation: titleWobble 3s infinite alternate;
+            font-size: 3.2rem;
+            font-weight: 400;
+            letter-spacing: 8px;
+            color: #e8d6b5;
+            text-shadow: 3px 3px 0 #3a2e1e, 6px 6px 0 #1f1a10;
+            margin-bottom: 0.5rem;
+            border-bottom: 2px solid #b99e7c;
+            padding-bottom: 0.4rem;
+            display: inline-block;
+            text-transform: uppercase;
+            position: relative;
+            font-family: 'Times New Roman', '宋体', serif;
+        }
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 10%;
+            width: 80%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #b99e7c, #dac292, #b99e7c, transparent);
         }
 
         .subtitle {
-            text-align: center;
-            color: #663300;
-            font-size: 1.5rem;
-            margin-bottom: 40px;
-            font-weight: bold;
-            transform: rotate(1deg);
+            font-size: 1.1rem;
+            color: #cbb291;
+            letter-spacing: 4px;
+            margin-top: 0.2rem;
+            margin-bottom: 2.5rem;
+            border-left: 2px solid #7a623e;
+            padding-left: 1.2rem;
+            font-style: italic;
+            opacity: 0.9;
         }
 
+        /* ===== 图片画廊 — 褪去喜感，增加古籍插图氛围 ===== */
         .image-gallery {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 30px;
+            gap: 2rem 2.5rem;
             max-width: 1200px;
-            margin: 0 auto;
+            margin: 1.5rem auto 2.5rem;
+            padding: 0.5rem;
         }
 
         .image-container {
+            width: 240px;
+            background: #f7efe0;
+            border: 1px solid #bbaa8a;
+            border-radius: 18px 18px 12px 12px;
+            box-shadow: 0 12px 18px -8px rgba(0,0,0,0.6), inset 0 0 0 1px #fff6e5;
+            padding: 0.8rem 0.8rem 1rem;
+            transition: box-shadow 0.2s, transform 0.2s;
             position: relative;
-            width: 280px;
-            margin-bottom: 30px;
-            transition: transform 0.3s;
         }
-
         .image-container:hover {
-            transform: rotate(5deg) scale(1.05);
-            z-index: 10;
+            box-shadow: 0 20px 28px -10px #0a0804, inset 0 0 0 1px #f3e7d0;
+            transform: translateY(-4px);
         }
 
-        img {
+        .image-container img {
             width: 100%;
-            height: 300px;
+            height: 220px;
             object-fit: cover;
-            border: 8px solid #ffcc00;
-            border-radius: 15px;
-            box-shadow: 10px 10px 0 #ff6600,
-            20px 20px 10px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-            transition: all 0.4s;
+            border: 3px solid #b99e7c;
+            border-radius: 12px;
+            background: #e5d8c1;
+            filter: sepia(0.15) contrast(0.98);
+            transition: filter 0.3s, transform 0.3s;
+            display: block;
         }
-
-        .image-container:nth-child(odd) img {
-            border-color: #ff6600;
-            box-shadow: 10px 10px 0 #ffcc00,
-            20px 20px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .image-container:nth-child(1):hover img {
-            filter: sepia(100%) hue-rotate(300deg);
-        }
-
-        .image-container:nth-child(2):hover img {
-            filter: saturate(300%) contrast(150%);
-        }
-
-        .image-container:nth-child(3):hover img {
-            filter: brightness(120%) hue-rotate(90deg);
-        }
-
-        .image-container:nth-child(4):hover img {
-            filter: invert(100%) hue-rotate(180deg);
+        .image-container:hover img {
+            filter: sepia(0.05) contrast(1.02) brightness(1.02);
+            transform: scale(1.01);
         }
 
         .caption {
-            background-color: #ffcc00;
-            color: #663300;
-            padding: 10px;
-            border-radius: 10px;
-            margin-top: 15px;
-            font-weight: bold;
+            background: transparent;
+            color: #3c2e1f;
+            padding: 0.6rem 0.2rem 0.2rem;
+            font-size: 0.95rem;
             text-align: center;
-            position: relative;
-            transform: rotate(-1deg);
-            box-shadow: 5px 5px 0 #ff6600;
+            font-style: italic;
+            border-top: 1px dashed #cbb291;
+            margin-top: 0.6rem;
+            letter-spacing: 0.5px;
+            font-family: 'Georgia', '楷体', serif;
+        }
+        .caption small {
+            display: block;
+            font-size: 0.75rem;
+            color: #7a6a50;
+            margin-top: 0.2rem;
+            font-style: normal;
         }
 
-        .funny-comment {
-            position: absolute;
-            background-color: #ff3300;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            opacity: 0;
-            transition: opacity 0.3s;
-            z-index: 5;
-        }
-
-        .image-container:hover .funny-comment {
-            opacity: 1;
-            animation: commentFloat 2s infinite alternate;
-        }
-
-        .comment-1 {
-            top: -20px;
-            left: -20px;
-        }
-
-        .comment-2 {
-            top: -20px;
-            right: -20px;
-        }
-
-        .comment-3 {
-            bottom: 80px;
-            left: -30px;
-        }
-
-        .comment-4 {
-            bottom: 80px;
-            right: -30px;
-        }
-
-        .floating-objects {
+        /* ===== 仿古签条（左、右固定） ===== */
+        .signature-container {
             position: fixed;
-            top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        .floating-object {
-            position: absolute;
-            font-size: 2rem;
-            animation: floatAround 15s infinite linear;
-        }
-
-        .floating-object:nth-child(1) {
-            top: 10%;
-            left: 5%;
-            animation-duration: 20s;
-            content: "😂";
-        }
-
-        .floating-object:nth-child(2) {
-            top: 20%;
-            right: 10%;
-            animation-duration: 25s;
-            animation-delay: 2s;
-            content: "🤣";
-        }
-
-        .floating-object:nth-child(3) {
-            bottom: 30%;
-            left: 15%;
-            animation-duration: 18s;
-            animation-delay: 1s;
-            content: "😆";
-        }
-
-        .floating-object:nth-child(4) {
-            bottom: 15%;
-            right: 20%;
-            animation-duration: 22s;
-            animation-delay: 3s;
-            content: "😜";
-        }
-
-        .floating-object:nth-child(5) {
-            top: 40%;
-            left: 25%;
-            animation-duration: 30s;
-            animation-delay: 4s;
-            content: "🤪";
-        }
-
-        .footnote {
-            text-align: center;
-            margin-top: 40px;
-            padding: 20px;
-            background-color: #ffcc00;
-            border-radius: 15px;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-            border: 5px dashed #ff6600;
-            transform: rotate(1deg);
-            margin-bottom: 40px;
-        }
-
-        /* 重点修改：突出psg链接区域 */
-        .psg {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            margin: 50px auto;
-            padding: 30px;
-            background: linear-gradient(135deg, #ff3300, #ff6600, #ffcc00);
-            border-radius: 20px;
-            max-width: 900px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3),
-            inset 0 1px 0 rgba(255, 255, 255, 0.4),
-            0 0 30px rgba(255, 51, 0, 0.5);
-            border: 8px solid #ffcc00;
-            position: relative;
-            overflow: hidden;
-            animation: psgPulse 3s infinite alternate;
-            transform: rotate(-1deg);
-        }
-
-        .psg::before {
-            content: "✨ 点击探索更多 ✨";
-            position: absolute;
-            top: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #ff3300;
-            color: white;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 1.2rem;
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-            z-index: 2;
-            white-space: nowrap;
-        }
-
-        .psg::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.2) 50%, transparent 70%);
-            animation: shimmer 3s infinite;
-            z-index: 1;
-        }
-
-        .psg div {
-            position: relative;
-            z-index: 2;
-        }
-
-        .psg a {
-            display: inline-block;
-            padding: 20px 40px;
-            background-color: white;
-            color: #ff3300;
-            font-size: 1.8rem;
-            font-weight: bold;
+            background: #493e2d;
+            color: #dacbbc;
+            padding: 0.8rem 0.2rem;
+            writing-mode: vertical-rl;
+            font-size: 0.8rem;
+            border-radius: 0 12px 12px 0;
+            letter-spacing: 6px;
+            border: 1px solid #ad9b7c;
+            border-left: none;
+            box-shadow: 2px 4px 12px #0f0d09;
+            text-shadow: 0 0 2px #dec393;
+            font-family: 'Times New Roman', '楷体', serif;
+            z-index: 20;
             text-decoration: none;
-            border-radius: 15px;
-            box-shadow: 0 8px 0 #663300,
-            0 15px 20px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s;
+            transition: all 0.2s ease;
+            line-height: 1.4;
+            cursor: pointer;
+        }
+        .signature-container:hover {
+            background: #5f4f39;
+            color: #f0e2ce;
+            border-color: #dbbc93;
+            box-shadow: 4px 6px 16px #221e14;
+            letter-spacing: 8px;
+        }
+        .signature-link {
+            top: 25%;
+        }
+        .signature-btn {
+            top: 55%;
+        }
+        /* 隐藏原来的body::after */
+        body::after {
+            display: none;
+        }
+
+        /* ===== 核心：psg 列传容器（仿古籍版式） ===== */
+        #psg {
+            background: #f7efe0 linear-gradient(145deg, #f3ead9 0%, #faf3e2 70%);
+            border: 1px solid #bbaa8a;
+            border-radius: 32px 32px 24px 24px;
+            box-shadow: 0 20px 30px -10px rgba(0,0,0,0.7), inset 0 0 0 1px #fff6e5, inset 2px 2px 8px rgba(255, 245, 215, 0.8);
+            padding: 2.8rem 3.5rem;
+            margin: 2rem 0 2.5rem;
             position: relative;
-            overflow: hidden;
-            min-width: 250px;
-            text-align: center;
-        }
-
-        .psg a::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: -100%;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.8rem 2.5rem;
+            max-width: 900px;
             width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
-            transition: left 0.5s;
+            transition: box-shadow 0.3s;
+        }
+        #psg::before {
+            content: '';
+            position: absolute;
+            top: -4px; left: -4px; right: -4px; bottom: -4px;
+            border: 1px solid rgba(140, 110, 70, 0.2);
+            border-radius: 36px 36px 28px 28px;
+            pointer-events: none;
+            box-shadow: inset 0 0 20px #bba27a40;
+        }
+        #psg::after {
+            content: '⸻  ⸻  卷帙浩渺  先贤列传  ⸻  ⸻';
+            display: block;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #8f7b5f;
+            letter-spacing: 3px;
+            margin-top: 1.8rem;
+            font-style: italic;
+            font-family: 'Times New Roman', '楷体', serif;
+            border-top: 1px dashed #cbb291;
+            padding-top: 1.2rem;
+            opacity: 0.8;
+            grid-column: 1 / -1;
         }
 
-        .psg a:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 16px 0 #663300,
-            0 25px 30px rgba(0, 0, 0, 0.4);
-            background-color: #ffffcc;
+        #psg a {
+            display: inline-block;
+            font-size: 2rem;
+            font-weight: normal;
+            color: #3c2e1f;
+            text-decoration: none;
+            padding: 0.7rem 1.8rem;
+            background: linear-gradient(145deg, #dac9ae, #efdfc7);
+            border: 1px solid #b5956b;
+            border-radius: 60px;
+            box-shadow: 0 8px 0 #7a623e, 0 12px 18px -8px #1f1a0e, inset 0 -2px 4px #fff4dd, inset 0 2px 4px #fffff0;
+            font-family: 'Georgia', 'Times New Roman', '宋体', serif;
+            letter-spacing: 2px;
+            transition: all 0.15s ease-in-out;
+            position: relative;
+            text-shadow: 1px 1px 0 #fff3e0;
+            white-space: nowrap;
+            text-align: center;
+            min-width: 160px;
+        }
+        #psg a::before,
+        #psg a::after {
+            content: '❦';
+            font-size: 1.3rem;
+            color: #a57c54;
+            opacity: 0.6;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+        #psg a::before { left: 10px; }
+        #psg a::after { right: 10px; }
+
+        #psg a:hover {
+            transform: translateY(4px);
+            box-shadow: 0 4px 0 #7a623e, 0 16px 24px -10px #0a0804, inset 0 -1px 3px #fff1d6, inset 0 1px 5px #fffff0;
+            background: linear-gradient(145deg, #d2bea0, #ebdac2);
+            color: #241b10;
+            border-color: #b07d4c;
+        }
+        #psg a:active {
+            transform: translateY(8px);
+            box-shadow: 0 0 0 #7a623e, 0 18px 20px -12px #0f0b06, inset 0 -2px 4px #cfb894;
+        }
+        #psg a:visited {
+            color: #3f3324;
+            background: #dacbb2;
         }
 
-        .psg a:hover::before {
-            left: 100%;
+        /* ===== 优化后的 introduce 区块 ===== */
+        .introduce {
+            max-width: 820px;
+            margin: 1.8rem auto 2.5rem;
+            padding: 2rem 2.8rem;
+            background: #f7efe0;
+            border: 1px solid #bbaa8a;
+            border-radius: 24px;
+            box-shadow: inset 0 0 0 1px #fff6e5, 0 10px 18px -8px rgba(0,0,0,0.5);
+            font-family: 'Georgia', 'Times New Roman', '宋体', serif;
+            color: #3c2e1f;
+            line-height: 1.7;
+            font-size: 1rem;
+            letter-spacing: 0.4px;
+            position: relative;
+        }
+        .introduce::before {
+            content: '◆';
+            position: absolute;
+            top: -12px;
+            left: 30px;
+            background: #f7efe0;
+            padding: 0 12px;
+            color: #7a623e;
+            font-size: 1.2rem;
+        }
+        .introduce strong {
+            color: #4f3a22;
+            font-weight: 600;
+        }
+        .introduce .editor {
+            display: block;
+            margin-top: 0.8rem;
+            padding-top: 0.6rem;
+            border-top: 1px dashed #cbb291;
+            font-size: 0.9rem;
+            color: #5f4f39;
+        }
+        .introduce .editor span {
+            display: inline-block;
+            margin-right: 1rem;
         }
 
-        .psg a:active {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 0 #663300,
-            0 20px 25px rgba(0, 0, 0, 0.3);
+        /* ===== 页脚微痕 ===== */
+        .footnote {
+            max-width: 800px;
+            margin: 1rem auto 2rem;
+            padding: 0.8rem 1.5rem;
+            background: #3f3324a0;
+            border-radius: 40px;
+            border: 1px solid #7a6a50;
+            color: #dacbb2;
+            font-size: 0.85rem;
+            text-align: center;
+            backdrop-filter: blur(2px);
+            box-shadow: inset 0 1px 0 #b99e7c40;
+            letter-spacing: 1px;
+        }
+        .footnote i {
+            margin: 0 6px;
+            color: #b5956b;
         }
 
-        @keyframes titleWobble {
-            0%, 100% {
-                transform: rotate(-2deg) scale(1);
-            }
-            50% {
-                transform: rotate(2deg) scale(1.05);
-            }
+        /* ===== 响应式 ===== */
+        @media (max-width: 700px) {
+            h1 { font-size: 2.4rem; letter-spacing: 4px; }
+            .subtitle { font-size: 0.95rem; }
+            #psg { padding: 2rem 1.5rem; gap: 1.5rem; grid-template-columns: 1fr; }
+            #psg a { font-size: 1.6rem; padding: 0.6rem 1.2rem; min-width: 120px; white-space: normal; }
+            #psg a::before, #psg a::after { display: none; }
+            .image-container { width: 200px; }
+            .image-container img { height: 180px; }
+            .introduce { padding: 1.5rem 1.2rem; font-size: 0.95rem; }
+            .signature-container { font-size: 0.7rem; padding: 0.6rem 0.1rem; letter-spacing: 4px; }
         }
-
-        @keyframes commentFloat {
-            0% {
-                transform: translateY(0);
-            }
-            100% {
-                transform: translateY(-10px);
-            }
-        }
-
-        @keyframes floatAround {
-            0% {
-                transform: translate(0, 0) rotate(0deg);
-            }
-            25% {
-                transform: translate(100px, 50px) rotate(90deg);
-            }
-            50% {
-                transform: translate(50px, 100px) rotate(180deg);
-            }
-            75% {
-                transform: translate(-50px, 50px) rotate(270deg);
-            }
-            100% {
-                transform: translate(0, 0) rotate(360deg);
-            }
-        }
-
-        @keyframes psgPulse {
-            0% {
-                transform: rotate(-1deg) scale(1);
-                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.4),
-                0 0 30px rgba(255, 51, 0, 0.5);
-            }
-            100% {
-                transform: rotate(-1deg) scale(1.02);
-                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.4),
-                0 0 40px rgba(255, 51, 0, 0.7);
-            }
-        }
-
-        @keyframes shimmer {
-            0% {
-                transform: translateX(-100%);
-            }
-            100% {
-                transform: translateX(100%);
-            }
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2.5rem;
-            }
-
-            .image-gallery {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .psg {
-                flex-direction: column;
-                gap: 20px;
-                padding: 25px 15px;
-            }
-
-            .psg a {
-                min-width: auto;
-                width: 100%;
-                font-size: 1.5rem;
-                padding: 18px 30px;
-            }
-
-            .psg::before {
-                font-size: 1rem;
-                padding: 6px 15px;
-                top: -12px;
-            }
+        @media (max-width: 500px) {
+            body { padding: 1rem 0.8rem; }
+            h1 { font-size: 2rem; }
+            .image-gallery { gap: 1.2rem; }
+            .image-container { width: 170px; }
+            .image-container img { height: 150px; }
+            #psg { padding: 1.5rem 1rem; }
+            #psg a { font-size: 1.3rem; padding: 0.5rem 0.8rem; }
+            .introduce { padding: 1rem 0.8rem; font-size: 0.9rem; }
+            .signature-container { display: none; } /* 极小屏隐藏签条 */
         }
     </style>
-    <script>
-        window.addEventListener("message", e => {
-            if (e.origin !== "http://129.211.162.48:3/index" || e.origin !== "http://129.211.162.48:3/login") return;
-            if (e.type === "AUTH_STATE" && e.isLoggedIn) {
-                sessionStorage.setItem("user", e.user);
-                sessionStorage.setItem("isTeacher", e.isTeacher.toString());
-                sessionStorage.setItem("userID", e.userId);
-            }
-        });
-    </script>
-    <script src="../static/js/secret20260622.js"></script>
 </head>
 <body>
-<div id="app">
-    <h1>翱三通史</h1>
-    <div class="subtitle">历史人物的另一种打开方式</div>
 
-    <div class="image-gallery">
-        <div class="image-container">
-            <div class="funny-comment comment-1">红衣战神！</div>
-            <div class="funny-comment comment-2">气场两米八</div>
-            <img src="../static/pics/红衣htd.JPG" alt="黄鼎泰老师">
-            <div class="caption">黄鼎泰老师 - "学我说话很时髦是吧？"</div>
-        </div>
+<!-- ===== 主标题 ===== -->
+<h1>翱三通史</h1>
+<div class="subtitle">· 岁月如歌 · 先贤列传 ·</div>
 
-        <div class="image-container">
-            <div class="funny-comment comment-1">哪里最精彩？</div>
-            <div class="funny-comment comment-2">这里最精彩！</div>
-            <img src="../static/pics/秦仁喜.jpg" alt="秦仁喜老师">
-            <div class="caption">秦仁喜老师 - "我们敬爱的化学老师喜子哥with猫耳"</div>
-        </div>
-
-        <div class="image-container">
-            <div class="funny-comment comment-1">上课中</div>
-            <div class="funny-comment comment-2">睡觉ing……</div>
-            <img src="../static/pics/粪账.JPG" alt="高波主任">
-            <div class="caption">高波主任 - "吾爱高夫子，粪账天下闻"</div>
-        </div>
-
-        <div class="image-container">
-            <div class="funny-comment comment-1">三人成虎！</div>
-            <div class="funny-comment comment-2">力拔山兮</div>
-            <img src="../static/pics/3人拔河.JPG" alt="翱三班第一代领导团体">
-            <div class="caption">翱三班第一代领导团体 - "一二三，拉！"</div>
-        </div>
+<!-- ===== 图片画廊（褪去喜感，保留古风） ===== -->
+<div class="image-gallery">
+    <div class="image-container">
+        <img src="../static/pics/红衣htd.JPG" alt="黄鼎泰老师">
+        <div class="caption">黄鼎泰老师 <small>「学我说话很时髦是吧？」</small></div>
     </div>
-
-    <div class="footnote">
-        <p>⚠️ 温馨提示：本页面内容纯属娱乐。</p>
-        <p>🔄 鼠标悬停在图片上有惊喜效果哦！</p>
-        <p>🎉 翱三班传奇永流传，向所有辛勤付出的老师们致敬！</p>
+    <div class="image-container">
+        <img src="../static/pics/粪账.JPG" alt="高波主任">
+        <div class="caption">高波老师 <small>「吾爱高夫子，粪账天下闻」</small></div>
     </div>
-
-    <div class="psg">
-        <a href="/">主页</a>
-        <a href="/issues">反映问题</a>
+    <div class="image-container">
+        <img src="../static/pics/秦仁喜.jpg" alt="秦仁喜老师">
+        <div class="caption">秦仁喜老师 <small>「我们敬爱的化学老师喜子哥with猫耳」</small></div>
     </div>
-
-    <div class="floating-objects">
-        <div class="floating-object">😂</div>
-        <div class="floating-object">🤣</div>
-        <div class="floating-object">😆</div>
-        <div class="floating-object">😜</div>
-        <div class="floating-object">🤪</div>
+    <div class="image-container">
+        <img src="../static/pics/3人拔河.JPG" alt="翱三班第一代领导团体">
+        <div class="caption">翱三班第一代领导团体 <small>「一二三，拉！」</small></div>
     </div>
-
-    <script>
-        const isTeacherUser = sessionStorage.getItem("isTeacher");
-        if (isTeacherUser === "true") window.location.href = "/not_allow?isT=true";
-
-        // 添加点击图片时的搞笑音效文字
-        const images = document.querySelectorAll('img');
-        const captions = document.querySelectorAll('.caption');
-
-        // 搞笑音效文字数组
-        const funnySounds = [
-            "啪嗒！", "咔嚓！", "咻——", "咚！", "噗嗤！",
-            "嘿嘿嘿！", "哈哈哈！", "哇塞！", "哎哟！", "啊哈！"
-        ];
-
-        // 为每张图片添加点击事件
-        images.forEach((img, _) => {
-            img.addEventListener('click', function () {
-                // 创建音效文字
-                const soundText = document.createElement('div');
-                soundText.textContent = funnySounds[Math.floor(Math.random() * funnySounds.length)];
-                soundText.style.position = 'absolute';
-                soundText.style.color = '#ff3300';
-                soundText.style.fontSize = '2rem';
-                soundText.style.fontWeight = 'bold';
-                soundText.style.zIndex = '100';
-                soundText.style.textShadow = '2px 2px 0 #ffcc00';
-                soundText.style.left = (img.getBoundingClientRect().left + img.width / 2) + 'px';
-                soundText.style.top = (img.getBoundingClientRect().top + img.height / 2) + 'px';
-                soundText.style.pointerEvents = 'none';
-                soundText.style.animation = 'textPop 1s forwards';
-
-                document.body.appendChild(soundText);
-
-                // 添加动画样式
-                const style = document.createElement('style');
-                style.textContent = `
-                    @keyframes textPop {
-                        0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
-                        100% { transform: translate(-50%, -150%) scale(1.5); opacity: 0; }
-                    }
-                `;
-                document.head.appendChild(style);
-
-                // 1秒后移除音效文字
-                setTimeout(() => {
-                    soundText.remove();
-                    style.remove();
-                }, 1000);
-
-                // 随机旋转图片
-                const randomRotate = Math.floor(Math.random() * 21) - 10; // -10到10度
-                img.style.transform = `rotate(${randomRotate}deg) scale(1.1)`;
-
-                // 1秒后恢复
-                setTimeout(() => {
-                    img.style.transform = '';
-                }, 1000);
-            });
-        });
-
-        // 为标题添加随机颜色变化
-        const title = document.querySelector('h1');
-        setInterval(() => {
-            const hue = Math.floor(Math.random() * 360);
-            title.style.color = `hsl(${hue}, 100%, 50%)`;
-        }, 3000);
-
-        // 为psg链接添加额外的点击效果
-        const psgLinks = document.querySelectorAll('.psg a');
-        psgLinks.forEach(link => {
-            link.addEventListener('click', function (e) {
-                // 创建点击效果
-                const clickEffect = document.createElement('div');
-                clickEffect.style.position = 'fixed';
-                clickEffect.style.width = '20px';
-                clickEffect.style.height = '20px';
-                clickEffect.style.borderRadius = '50%';
-                clickEffect.style.backgroundColor = '#ffcc00';
-                clickEffect.style.pointerEvents = 'none';
-                clickEffect.style.zIndex = '1000';
-                clickEffect.style.left = e.clientX + 'px';
-                clickEffect.style.top = e.clientY + 'px';
-                clickEffect.style.animation = 'clickExpand 0.6s forwards';
-
-                document.body.appendChild(clickEffect);
-
-                // 添加动画
-                const style = document.createElement('style');
-                style.textContent = `
-                @keyframes clickExpand {
-                    0% { transform: scale(1); opacity: 1; }
-                    100% { transform: scale(30); opacity: 0; }
-                }
-            `;
-                document.head.appendChild(style);
-
-                // 移除效果
-                setTimeout(() => {
-                    clickEffect.remove();
-                    style.remove();
-                }, 600);
-            });
-        });
-    </script>
 </div>
-<div id="verify-container"></div>
+
+<!-- ===== 优化后的 introduce ===== -->
+<div class="introduce">
+    <p style="margin-bottom:0.6rem;"><strong>《翱三通史》</strong> 据《人教版语文（九年级下册）》之《综合性学习：岁月如歌——我们的初中生活》（P44）所载，乃翱三班全体同窗共撰之史册。</p>
+    <p>全书分二部：<strong>《教师本纪》</strong> 与 <strong>《学生传记》</strong>，以志先贤，以录风华。</p>
+    <div class="editor">
+        <span>✧ 主编：翱三班全体同学</span><br>
+        <span>✧ 编委会（按姓氏首字母排序）：曹玲溪、曾繁顺、江峻琪、刘依恩、卢昶文、施跃辰、吴晓熠、吴号楠、吴奕帆</span>
+    </div>
+</div>
+
+<!-- ===== 先贤列传导航 ===== -->
+<div id="psg">
+    <a href="/" class="intro">主页</a>
+    <a href="/issues">问题反馈</a>
+</div>
+
+<!-- ===== 页脚 ===== -->
+<div class="footnote">
+    <i class="fas fa-book-open"></i> 卷帙浩渺 · 以史为鉴 <i class="fas fa-scroll"></i>
+</div>
+
+<!-- ===== 固定签条 ===== -->
+<a href="/author" class="signature-container signature-link">✻ 甲辰校勘 ✻</a>
+<button class="signature-container signature-btn" onclick="logout()">✻ 退出登录 ✻</button>
+<script>
+    // ---------- 用户验证 ----------
+    const user = sessionStorage.getItem('user');
+    if (!user) window.location.href = '/login';
+
+    function logout() {
+        sessionStorage.clear();
+        sessionStorage.setItem('fromIndex', '1');
+        location.reload();
+    }
+
+    window.addEventListener("message", e => {
+        // 简单校验来源，允许同源及指定端口
+        if (e.origin !== "http://129.211.162.48:3" && e.origin !== "http://129.211.162.48:3/index" && e.origin !== "http://129.211.162.48:3/login") return;
+        if (e.data && e.data.type === "AUTH_STATE" && e.data.isLoggedIn) {
+            sessionStorage.setItem("user", e.data.user);
+            sessionStorage.setItem("isTeacher", e.data.isTeacher.toString());
+            sessionStorage.setItem("userID", e.data.userId);
+        }
+    });
+</script>
+
 </body>
 </html>

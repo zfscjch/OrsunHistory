@@ -270,7 +270,13 @@ def render_article(slug: str, mgr, is_stu: bool):
         # 如果是教师文章，添加 sayings 字段
         if not is_stu and len(psg) > 8:
             sayings = psg[8] if psg[8] else "暂未统计语录"
-            article["sayings"] = str(sayings).replace("\n", "<br>")
+            sayings_list = sayings.split("\n")
+            for idx, saying in enumerate(sayings_list[:]):
+                if len(sayings_list) == 1:
+                    break
+                saying = f"{idx+1}. {saying}"
+                sayings_list[idx] = saying
+            article["sayings"] = "<br>".join(sayings_list)
 
         # 使用统一的 article.html 模板
         return render_template("article.html", article=article)
