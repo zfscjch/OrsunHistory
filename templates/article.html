@@ -743,9 +743,13 @@
         });
     }
 
-    document.addEventListener("verifySuccess", () => {
+    function init() {
         log();
         handleSaying();
+    }
+
+    document.addEventListener("verifySuccess", () => {
+        init();
         const contentElement = document.querySelector("#content");
         const targetId = parseInt(contentElement.dataset.passageId);
         const isStu = contentElement.dataset.isStu === "True";
