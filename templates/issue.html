@@ -459,7 +459,9 @@
         }
 
         const formData = new FormData();
+        const username = sessionStorage.getItem("user");
         formData.append('issue', issueText);
+        formData.append('username', username);
 
         fetch('/api/issues', {
             method: 'POST',
@@ -473,7 +475,7 @@
             })
             .then(data => {
                 if (data.status === "success") {
-                    messageDiv.innerHTML = `<p style="color:#5a7a4a;">✅ ${data.message}</p>`;
+                    messageDiv.innerHTML = `<p style="color:#5a7a4a;">✅ ${data.msg}</p>`;
                     document.getElementById('issue').value = '';
                 } else {
                     messageDiv.innerHTML = `<p style="color:#b07060;">❌ ${data.error || '提交失败'}</p>`;

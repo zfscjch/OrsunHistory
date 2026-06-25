@@ -455,11 +455,11 @@ def receive_issue():
         # JSON 格式
         data = request.get_json()
         issue_content = data.get('issue') if data else None
-        user = data.get('user')
+        user = data.get('username')
     else:
         # form-data 或 x-www-form-urlencoded 格式
         issue_content = request.form.get('issue')
-        user = request.form.get('user')
+        user = request.form.get('username')
 
     if not issue_content:
         return api_response("error", "问题不能为空", http_code=400)
