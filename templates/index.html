@@ -54,6 +54,18 @@
             background: linear-gradient(90deg, transparent, #b99e7c, #dac292, #b99e7c, transparent);
         }
 
+        .issue {
+            color: #7a623e;
+            text-decoration: none;
+            border-bottom: 1px dotted #b5956b;
+            transition: all 0.2s ease;
+        }
+
+        .issue:hover {
+            color: #3c2e1f;
+            border-bottom-color: #3c2e1f;
+        }
+
         /* 导航/列传容器 —— 现在容纳多位先贤 */
         #psg {
             /* 浅米色纸基 */
@@ -320,6 +332,7 @@
 </head>
 <body>
 <h1>翱三通史主页</h1>
+<a href="/issues" class="issue">反映问题</a>
 <div id="psg">
     <a href="./intro" class="intro">简介</a>
     <a href="./stu">学生传记</a>
