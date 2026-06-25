@@ -215,6 +215,12 @@
             margin-left: 0.5rem;
         }
 
+        .comment .sender .admin {
+            color: white;
+            background: green;
+            border-radius: 5px;
+        }
+
         /* 评论内容 */
         .comment .message {
             font-size: 0.98rem;
@@ -481,18 +487,24 @@
                     parentUser = parentComment[3];
                     parentAnonymous = parentComment[10];
                 }
+                let username = this.anonymous ? "匿名用户" : `翱三班${this.userId}号同学`;
+                if (this.userId >= 61 && this.userId <= 67) {
+                    username = `<strong><span class="admin">管理员</span>翱三通史·管理员${this.userId - 61}号</strong>`;
+                }
+                let parentName = parentAnonymous ? '匿名用户' : `翱三班${parentUser}号`;
+                if (parentUser >= 61 && parentUser <= 67) {
+                    username = `<strong><span class="admin">管理员</span>翱三通史·管理员${parentUser - 61}号</strong>`;
+                }
 
                 const commentsShow = document.querySelector("#comments-show");
                 const commentHtml = `<div class="comment" data-id="${this.id}" data-user-id="${this.userId}" data-level="${this.getCommentLevel()}">
                     <div class="sender">
-                        ${this.anonymous ? '<strong>📝 匿名用户</strong>' : `<strong>📝 翱三班${this.userId}号同学</strong>`}
-                        ${this.parentId ?
-                    `<span class="reply-indicator">↪ 回复 ${parentAnonymous ? '匿名用户' : `翱三班${parentUser}号`}</span>` :
-                    ''}
+                        ${username}
+                        ${this.parentId ? `<span class="reply-indicator">↪ 回复 ${parentName}</span>` : ''}
                     </div>
                     <div class="message">${this.escapeHtml(this.content)}</div>
                     <div class="date">
-                        <span class="time">📅 ${new Date(this.createdAt).toLocaleString()}</span>
+                        <span class="time">📅 ${new Date(this.createdAt).toLocaleDateString()}</span>
                         <span class="likes">
                             ❤️ ${this.likes}
                         </span>
@@ -701,7 +713,7 @@
 
         <div class="input-area">
             <label for="comment-input">📝 写评论</label>
-            <input id="comment-input" placeholder="📖 分享你的想法...">
+            <input id="comment-input" placeholder="📖 虚拟空间存法度，匿名背后有青天。">
             <button id="submit-comment">发送评论</button>
         </div>
 
