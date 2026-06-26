@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>翱三通史 - 错误汇总</title>
+    <style>
+        /* 全局重置和字体 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            padding: 40px 45px;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 头部标题 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header h1 .icon {
+            font-size: 32px;
+        }
+
+        .header .badge {
+            background: #ebf8ff;
+            color: #2b6cb0;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .header .badge .count {
+            background: #2b6cb0;
+            color: white;
+            border-radius: 50%;
+            padding: 0 8px;
+            min-width: 22px;
+            height: 22px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        /* 统计卡片 */
+        .stats {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: #f7fafc;
+            padding: 12px 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #4a5568;
+            border: 1px solid #e2e8f0;
+        }
+
+        .stat-card .number {
+            font-weight: 700;
+            font-size: 18px;
+            color: #2d3748;
+        }
+
+        /* 错误列表 */
+        #show-issues {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        #show-issues li {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            transition: all 0.25s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            flex-wrap: wrap;
+        }
+
+        #show-issues li:hover {
+            border-color: #bee3f8;
+            box-shadow: 0 4px 12px rgba(43, 108, 176, 0.08);
+            transform: translateX(4px);
+            background: #f7fafc;
+        }
+
+        /* 错误内容 */
+        .issue-content {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex: 1;
+            min-width: 200px;
+            flex-wrap: wrap;
+        }
+
+        .issue-id {
+            background: #edf2f7;
+            color: #4a5568;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+            white-space: nowrap;
+        }
+
+        .issue-field {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #2d3748;
+            font-size: 15px;
+        }
+
+        .issue-field .label {
+            color: #a0aec0;
+            font-size: 13px;
+        }
+
+        .issue-field .value {
+            font-weight: 500;
+            background: #fefcbf;
+            padding: 2px 10px;
+            border-radius: 6px;
+            color: #744210;
+            word-break: break-all;
+        }
+
+        .issue-field .value.error-msg {
+            background: #fed7d7;
+            color: #9b2c2c;
+            max-width: 300px;
+        }
+
+        /* 时间戳样式 */
+        .issue-time {
+            font-size: 13px;
+            color: #a0aec0;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* 按钮样式 */
+        .resolve {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 8px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .resolve:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            background: linear-gradient(135deg, #5a67d8 0%, #6b46a1 100%);
+        }
+
+        .resolve:active {
+            transform: translateY(0px);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        }
+
+        .resolve:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #a0aec0;
+        }
+
+        .empty-state .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .empty-state p {
+            font-size: 18px;
+        }
+
+        /* Toast 提示 */
+        .toast {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: #48bb78;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(72, 187, 120, 0.3);
+            transform: translateX(120%);
+            transition: transform 0.4s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.error {
+            background: #fc8181;
+            box-shadow: 0 10px 30px rgba(252, 129, 129, 0.3);
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            #show-issues li {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+
+            .issue-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .issue-time {
+                align-self: flex-start;
+            }
+
+            .resolve {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .stats {
+                flex-direction: column;
+            }
+
+            .toast {
+                top: 20px;
+                right: 20px;
+                left: 20px;
+                font-size: 14px;
+                padding: 12px 20px;
+            }
+        }
+
+        /* 加载动画 */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #a0aec0;
+        }
+
+        .loading .spinner {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 16px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>
+            <span class="icon">📋</span>
+            错误汇总
+        </h1>
+        <div class="badge">
+            🚨 未处理
+            <span class="count" id="errorCount">0</span>
+        </div>
+    </div>
+
+    <div class="stats">
+        <div class="stat-card">
+            📊 总错误数：<span class="number" id="totalCount">0</span>
+        </div>
+        <div class="stat-card">
+            ⏳ 待处理：<span class="number" id="pendingCount">0</span>
+        </div>
+    </div>
+
+    <ul id="show-issues"></ul>
+</div>
+
+<!-- Toast 提示 -->
+<div id="toast" class="toast">
+    <span>✅</span>
+    <span id="toastMessage">操作成功！</span>
+</div>
+
+<script>
+    let errorList = [];
+
+    async function getError() {
+        const listEl = document.getElementById('show-issues');
+        listEl.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>加载错误信息中...</p>
+                </div>
+            `;
+
+        try {
+            const response = await fetch("/admin/get-issues");
+            const data = await response.text();
+            const result = JSON.parse(data);
+
+            if (result.status === "success" && result.data && result.data.length > 0) {
+                errorList = result.data;
+                renderIssues(errorList);
+                updateStats(errorList);
+            } else {
+                listEl.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">🎉</div>
+                            <p>太棒了！没有发现任何错误</p>
+                        </div>
+                    `;
+                updateStats([]);
+            }
+        } catch (e) {
+            console.error(e);
+            listEl.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">⚠️</div>
+                        <p>加载失败，请刷新重试</p>
+                    </div>
+                `;
+        }
+    }
+
+    function renderIssues(issues) {
+        const showIssues = document.querySelector('#show-issues');
+        showIssues.innerHTML = '';
+
+        issues.forEach((issue, index) => {
+            const li = document.createElement('li');
+
+            // 根据数据结构调整显示，假设 issue[0]=id, issue[1]=错误信息, issue[2]=时间
+            const id = issue[0] || `ERR-${String(index + 1).padStart(4, '0')}`;
+            const errorMsg = issue[1] || '未知错误';
+            const time = issue[2] || new Date().toLocaleString('zh-CN');
+
+            li.innerHTML = `
+                    <div class="issue-content">
+                        <span class="issue-id">#${id}</span>
+                        <span class="issue-field">
+                            <span class="label">错误信息：</span>
+                            <span class="value error-msg">${escapeHtml(errorMsg)}</span>
+                        </span>
+                        <span class="issue-time">🕐 ${time}</span>
+                    </div>
+                    <button class="resolve" data-issue-id="${id}">
+                        ✅ 标记已解决
+                    </button>
+                `;
+
+            showIssues.appendChild(li);
+        });
+
+        // 绑定事件
+        document.querySelectorAll('.resolve').forEach(button => {
+            button.addEventListener('click', handleResolve);
+        });
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function updateStats(issues) {
+        const total = issues ? issues.length : 0;
+        document.getElementById('totalCount').textContent = total;
+        document.getElementById('pendingCount').textContent = total;
+        document.getElementById('errorCount').textContent = total;
+    }
+
+    async function handleResolve(event) {
+        const button = event.currentTarget;
+        const id = button.dataset.issueId;
+        const originalText = button.innerHTML;
+
+        button.disabled = true;
+        button.innerHTML = '⏳ 处理中...';
+
+        try {
+            const res = await fetch("/admin/resolve-issues", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ error_id: id })
+            });
+
+            const data = await res.json();
+
+            if (data.status === "success") {
+                showToast('✅ 错误已成功解决！', false);
+                // 从列表中移除该项
+                const li = button.closest('li');
+                li.style.transition = 'all 0.3s ease';
+                li.style.opacity = '0';
+                li.style.transform = 'translateX(30px)';
+                setTimeout(() => {
+                    li.remove();
+                    // 更新计数
+                    const remaining = document.querySelectorAll('#show-issues li').length;
+                    updateStats(Array(remaining).fill(null));
+                    if (remaining === 0) {
+                        document.querySelector('#show-issues').innerHTML = `
+                                <div class="empty-state">
+                                    <div class="empty-icon">🎉</div>
+                                    <p>所有错误已处理完毕！</p>
+                                </div>
+                            `;
+                    }
+                }, 300);
+                console.log("数据已同步到后台！");
+            } else {
+                showToast('❌ 操作失败：' + (data.message || '未知错误'), true);
+                button.disabled = false;
+                button.innerHTML = originalText;
+            }
+        } catch (e) {
+            console.error(e);
+            showToast('❌ 网络错误，请重试', true);
+            button.disabled = false;
+            button.innerHTML = originalText;
+        }
+    }
+
+    function showToast(message, isError = false) {
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+
+        toast.className = 'toast' + (isError ? ' error' : '');
+        toastMessage.textContent = message;
+        toast.classList.add('show');
+
+        clearTimeout(toast._timeout);
+        toast._timeout = setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+
+    function init() {
+        getError();
+    }
+
+    document.addEventListener("DOMContentLoaded", init);
+</script>
+</body>
+</html>

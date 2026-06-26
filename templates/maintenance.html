@@ -368,80 +368,8 @@
             text-align: center;
         }
     </style>
-    <script>
-        /**
-         * 优雅的对话框函数
-         */
-        function dialog(message, placeholderText, type = "password", isRequired = true) {
-            return new Promise((resolve) => {
-                const dialog = document.querySelector("#ensure-sth");
-                const description = document.querySelector("#description");
-                const input = document.querySelector("#question");
-
-                description.textContent = message;
-                input.placeholder = placeholderText;
-                input.type = type;
-                input.required = isRequired;
-                input.value = "";
-
-                dialog.showModal();
-                setTimeout(() => input.focus(), 100); // 自动聚焦
-
-                const handleSubmit = () => {
-                    const answer = input.value.trim();
-                    if (!isRequired || answer) {
-                        dialog.close();
-                        cleanup();
-                        resolve(answer);
-                    }
-                };
-
-                const handleCancel = () => {
-                    dialog.close();
-                    cleanup();
-                    resolve(null);
-                };
-
-                const handleKeyPress = (e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        handleSubmit();
-                    }
-                };
-
-                const handleBackdropClick = (e) => {
-                    if (e.target === dialog) {
-                        handleCancel();
-                    }
-                };
-
-                const cleanup = () => {
-                    document.querySelector("#sure").removeEventListener('click', handleSubmit);
-                    document.querySelector("#cancel").removeEventListener('click', handleCancel);
-                    input.removeEventListener('keypress', handleKeyPress);
-                    dialog.removeEventListener('click', handleBackdropClick);
-                };
-
-                document.querySelector("#sure").addEventListener('click', handleSubmit);
-                document.querySelector("#cancel").addEventListener('click', handleCancel);
-                input.addEventListener('keypress', handleKeyPress);
-                dialog.addEventListener('click', handleBackdropClick);
-            });
-        }
-    </script>
 </head>
 <body>
-<dialog id="ensure-sth">
-    <div class="dialog-content">
-        <label for="question" id="description"></label>
-        <input id="question" autocomplete="off">
-        <div class="button-group">
-            <button class="close-btn" id="cancel">取消</button>
-            <button class="close-btn" id="sure">确认</button>
-        </div>
-    </div>
-</dialog>
-
 <div id="container" style="display: none;">
     <div class="header">
         <h1>⚙️ 服务器维护</h1>
@@ -485,7 +413,6 @@
     (function() {
         // 状态管理
         let isMaintenance = false;
-        let currentPwd = null;
 
         const container = document.querySelector("#container");
         const maintenanceBtn = document.querySelector("#maintenance");
@@ -535,68 +462,8 @@
             }
         }
 
-        // 登录验证
-        async function verifyLogin(password) {
-            try {
-                setLoading(true);
-                const res = await fetch("/api/a-login", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({"pwd": password})
-                });
-
-                const data = await res.json();
-
-                if (data.status === "success") {
-                    currentPwd = password;
-                    container.style.display = "block";
-                    await checkServerStatus();
-                    showMessage('登录成功', 'success');
-                } else {
-                    showMessage(data.message || '验证失败', 'error');
-                    // 重新尝试登录
-                    setTimeout(() => initLogin(), 1000);
-                }
-            } catch (err) {
-                console.error("登录失败:", err);
-                showMessage('网络错误，请重试', 'error');
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        // 初始化登录流程
-        async function initLogin() {
-            const urlParams = new URLSearchParams(window.location.search);
-            let pwd = urlParams.get("pwd");
-
-            if (!pwd) {
-                pwd = await dialog(
-                    "管理员身份验证",
-                    "请输入密码（学生学号 / 老师111111）",
-                    "password",
-                    true
-                );
-            }
-
-            if (pwd) {
-                await verifyLogin(pwd);
-            } else {
-                // 用户取消登录
-                document.body.innerHTML = '<div style="text-align: center; padding: 40px; color: white;">已取消登录</div>';
-            }
-        }
-
         // 监听开关变化
         maintenanceBtn.addEventListener("change", async () => {
-            if (!currentPwd) {
-                maintenanceBtn.checked = !maintenanceBtn.checked;
-                showMessage('请先登录', 'error');
-                return;
-            }
-
             const newState = maintenanceBtn.checked;
             const oldState = isMaintenance;
 
@@ -609,7 +476,6 @@
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        "pwd": currentPwd,
                         "m": newState
                     })
                 });
@@ -637,8 +503,13 @@
             }
         });
 
-        // 页面加载完成后启动
-        document.addEventListener('DOMContentLoaded', initLogin);
+        function init() {
+            container.style.display = 'block';
+            checkServerStatus();
+            updateStatusDisplay();
+        }
+
+        document.addEventListener("DOMContentLoaded", init);
     })();
 </script>
 </body>

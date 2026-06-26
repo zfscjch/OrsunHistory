@@ -1,7 +1,7 @@
 import os
 import traceback
 from typing import Literal
-from flask import Flask, request, jsonify, abort, render_template, redirect
+from flask import Flask, request, jsonify, abort, render_template, redirect, Response, g
 from flask_cors import CORS
 from functions import *
 
@@ -25,6 +25,8 @@ def handle_503(error):
 @app.before_request
 def check():
     """检查访问浏览器和服务器是否符合要求"""
+    g.log_mgr = log_mgr
+
     # 先禁止IE访问
     user_agent = request.headers.get("User-Agent", "").lower()
     if "msie" in user_agent or "trident" in user_agent:
@@ -84,7 +86,11 @@ def login():
 
     if user_id:
         log_mgr.info(user, "登录成功", request.remote_addr)
-        return api_response("success", msg, {"user_id": user_id, "isT": 49 <= user_id <= 60 or user_id == 68, "isActive": is_active})
+        status, select_msg, code = check_user(user)
+        print(select_msg, code)
+        return api_response("success", msg,
+            {"user_id": user_id, "isT": 49 <= user_id <= 60 or user_id == 68,
+             "isActive": is_active, "error_hint": select_msg})
     else:
         return api_response("error", msg)
 
@@ -161,12 +167,20 @@ def update_maintenance():
             return api_response("error", "请求必须为 JSON", http_code=400)
 
         data = request.get_json()
-        print(data)
         if not "m" in data:
             return api_response("error", "缺少参数", http_code=400)
 
-        if not "pwd" in data or data["pwd"] != Config.MASTER_PASSWORD:
-            return api_response("error", "密码错误", http_code=403)
+        auth = request.authorization
+        if not auth:
+            return Response('需要认证', 401,
+                            {'WWW-Authenticate': 'Basic realm="Admin Panel"'})
+        username = auth.username
+        password = auth.password
+        if not username or not password:
+            return Response('需要认证', 401,
+                            {'WWW-Authenticate': 'Basic realm="Admin Panel"'})
+        elif username != "admin" or password != Config.MASTER_PASSWORD:
+            return api_response("error", "用户名或密码错误", http_code=403)
 
         maintenance_mode = bool(data["m"])
         Config.set_maintenance(maintenance_mode)
@@ -437,12 +451,6 @@ def log():
         return api_response("error", f"发生错误: {e}", http_code=500)
 
 
-@app.route("/api/get-log")
-def get_log():
-    data = log_mgr.get_log().replace("\n", "<br>")
-    return render_template("log.html", data=data)
-
-
 @app.route("/issues")
 def get_issue():
     return render_template("issue.html")
@@ -467,9 +475,11 @@ def receive_issue():
     # 处理问题
     print(f"收到问题: {issue_content}")
     log_mgr.error(user, issue_content, request.remote_addr)
+    upload_error(user, issue_content)
     return api_response("success", "提交成功，我们会尽快解决！")
 
 app.register_blueprint(face_bp, url_prefix="/face")
+app.register_blueprint(admin_bp, url_prefix="/admin")
 
 
 if __name__ == '__main__':
