@@ -90,10 +90,18 @@ class BaseArticleMgr:
         try:
             with self._get_connection() as cnx:
                 with cnx.cursor() as cursor:
-                    cursor.execute(
-                        f"SELECT title, slug FROM {self.table_name} WHERE author REGEXP %s",
-                        (author,)
-                    )
+                    sql = f"SELECT title, slug FROM {self.table_name} WHERE author REGEXP %s"
+                    cursor.execute(sql,(author,))
+                    data = cursor.fetchall()
+                    return data, 200
+        except Exception as e:
+            return str(e), 500
+
+    def get_draft(self):
+        try:
+            with self._get_connection() as conn:
+                with conn.cursor() as cursor:
+                    cursor.execute(f"SELECT title, slug FROM {self.table_name} WHERE status = 'draft'")
                     data = cursor.fetchall()
                     return data, 200
         except Exception as e:

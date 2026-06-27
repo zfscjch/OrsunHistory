@@ -346,11 +346,11 @@
         </div>
         <div>
             <label for="author">作者ID</label>
-            <input type="text" id="author" placeholder="如：aoshan_writer">
+            <input type="text" id="author" placeholder="如：黄鼎泰">
         </div>
         <div>
             <label for="slug">URL关键词</label>
-            <input type="text" id="slug" placeholder="unique-page-name">
+            <input type="text" id="slug" placeholder="文章对象拼音首字母">
         </div>
         <div>
             <label for="content">正文</label>
@@ -497,7 +497,8 @@
                     article: article,
                     pwd: passwordEl.value,
                     request: isChanged ? "change" : "upload",
-                    type: currentType  // 添加类型标识
+                    type: currentType,  // 添加类型标识
+                    isReview: isReview
                 })
             })
                 .then(res => res.json())
@@ -522,6 +523,14 @@
         const urlParams = new URLSearchParams(window.location.search);
         let slug = urlParams.get("slug");
         const typeParam = urlParams.get("type");
+        const isReview = urlParams.get("r") === "true";
+        if (isReview) {
+            document.querySelector("button[type='submit']").innerText = "提交审核";
+            document.querySelector("option[value='draft']").innerText = "📄 驳回文章";
+            document.querySelector("option[value='published']").innerText = "🌐 允许发布";
+            contentEl.disabled = true;
+            sayingEl.disabled = true;
+        }
         if (typeParam === 'student') {
             setArticleType('student');
         }

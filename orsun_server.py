@@ -1,4 +1,5 @@
 import os
+import re
 import traceback
 from typing import Literal
 from flask import Flask, request, jsonify, abort, render_template, redirect, Response, g
@@ -13,6 +14,7 @@ psg_mgr = PsgMgr()
 students_mgr = StudentsMgr()
 comments_mgr = CommentsMgr()
 os.chdir(os.path.dirname(__file__))
+psg_reviewer = PsgReviewer()
 locker = AccountLocker("functions/db/login_locks.json")
 log_mgr = LogMgr("../logs/OrsunHistory/website.log")
 
@@ -26,6 +28,8 @@ def handle_503(error):
 def check():
     """检查访问浏览器和服务器是否符合要求"""
     g.log_mgr = log_mgr
+    g.psg_mgr = psg_mgr
+    g.students_mgr = students_mgr
 
     # 先禁止IE访问
     user_agent = request.headers.get("User-Agent", "").lower()
@@ -34,9 +38,10 @@ def check():
 
     # 再检测服务器是否正在维护
     if Config.MAINTENANCE_MODE:
-        allow_requests = ["/api/a-login", "/health", "/maintenance", "/api/admin/maintenance"]
-        if request.path in allow_requests:
-            return None
+        allow_requests = [r"/api/a-login", r"/health", r"/api/admin/maintenance", r"/admin/*"]
+        for allow_request in allow_requests:
+            if re.match(allow_request, request.path):
+                return None
 
         if request.headers.get("Content-Type") == "application/json":
             return api_response("error", "服务器正在维护，请稍后访问", {"retry-after": 3600}, 503)
@@ -87,11 +92,11 @@ def login():
     if user_id:
         log_mgr.info(user, "登录成功", request.remote_addr)
         status, select_msg, code = check_user(user)
-        print(select_msg, code)
         return api_response("success", msg,
             {"user_id": user_id, "isT": 49 <= user_id <= 60 or user_id == 68,
              "isActive": is_active, "error_hint": select_msg})
     else:
+        log_mgr.warn(user, "尝试登录账号失败", request.remote_addr)
         return api_response("error", msg)
 
 
@@ -272,6 +277,12 @@ def render_article(slug: str, mgr, is_stu: bool):
             content = str(content) if content else "[内容格式错误]"
         content = content.replace("\n", "<br>")
 
+        if psg[7] == "draft":
+            content = "[文章还在审核中……]"
+        elif psg[7] == "rejected":
+            content = ("<strong>该稿件存在根本性的价值导向问题，不予通过。请深刻反思创作导向，重新审视表达边界。</strong>" +
+                       "\n——翱三通史传记审核系统")
+
         article = {
             "id": int(psg_id) if psg_id else 0,
             "title": str(title),
@@ -392,7 +403,7 @@ def upload():
             return api_response("error", "请求必须为 JSON", http_code=400)
 
         data = request.get_json()
-        required = ["user", "pwd", "request", "article"]
+        required = ["user", "pwd", "request", "article", "isReview"]
         if not all(k in data for k in required):
             return api_response("error", "缺少参数", http_code=400)
 
@@ -401,6 +412,12 @@ def upload():
             return api_response("error", "密码错误！", http_code=401)
 
         article = data["article"]
+        if not data["isReview"]:
+            auto_status, reviews = psg_reviewer.check_psg(article)
+            article["status"] = "draft"
+        else:
+            if article["status"] == "draft":
+                article["status"] = "rejected"
 
         mgr = psg_mgr if data.get("type", "article") == "article" else students_mgr
 
@@ -412,8 +429,11 @@ def upload():
             return api_response("error", "没有此操作", http_code=400)
 
         status = "success" if code == 200 else "error"
-        return api_response(status, msg, http_code=code)
+        if data["isReview"]:
+            return api_response(status, "操作成功")
+        return api_response(status, msg + reviews + "已加入审核列表。", http_code=code)
     except Exception as e:
+        print(traceback.format_exc())
         return api_response("error", f"发生错误：{e}", http_code=500)
 
 

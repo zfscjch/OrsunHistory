@@ -1,3 +1,4 @@
+import mysql.connector
 from flask import Blueprint, render_template, request, abort, Response, g
 from .api_response import api_response
 from .error_handlers import get_all, resolve_error
@@ -5,9 +6,19 @@ from .config import Config
 
 admin_bp = Blueprint("admin", __name__)
 
+def check_admins(user_id):
+    with mysql.connector.connect(**Config.MySQLConfig) as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT is_admin FROM users WHERE id = %s", (str(user_id),))
+            is_admin = cursor.fetchone()
+            return is_admin
 
 @admin_bp.before_request
 def check_admin():
+    allow_paths = ["/admin/check", "/admin/get-draft"]
+    if request.path in allow_paths:
+        return None
+
     auth = request.authorization
     if not auth:
         return Response('需要认证', 401,
@@ -61,3 +72,28 @@ def get_log():
     log_mgr = g.log_mgr
     data = log_mgr.get_log().replace("\n", "<br>")
     return render_template("log.html", data=data)
+
+@admin_bp.route("/check", methods=["POST"])
+def post_check_admin():
+    try:
+        if not request.is_json:
+            return api_response("error", "请求必须为 JSON", http_code=400)
+
+        data = request.get_json()
+        if not 'userID' in data:
+            return api_response("error", "缺少userID字段", http_code=400)
+
+        user_id = data["userID"]
+        res = check_admins(user_id)
+        return api_response("success", "", {"isAdmin": res})
+    except Exception as e:
+        print(f"发生错误:{e}")
+        return api_response("error", f"发生错误:{e}", http_code=500)
+
+@admin_bp.route("/get-draft")
+def get_all_drafts():
+    students_mgr = g.students_mgr
+    student_data, code_stu = students_mgr.get_draft()
+    if code_stu == 200:
+        return api_response("success", "", {"a": student_data})
+    return api_response("error", student_data, http_code=500)

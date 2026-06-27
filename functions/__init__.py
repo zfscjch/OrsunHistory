@@ -8,3 +8,4 @@ from .face_recognizer import face_bp
 from .log import LogMgr
 from .error_handlers import upload_error, check_user
 from .admin import admin_bp
+from .psg_reviewer import PsgReviewer

@@ -69,7 +69,7 @@ class UserMgr:
                 else:
                     # 增加失败次数
                     attempts += 1
-                    if attempts >= 5:
+                    if attempts >= 3:
                         cursor.execute("""
                                    UPDATE users
                                    SET account_locked = 1, login_attempts = %s

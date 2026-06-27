@@ -90,7 +90,7 @@
         }
 
         /* 文章列表容器 —— 仿古籍版心 */
-        #psg-li {
+        .psg {
             font-family: 'Georgia', 'Times New Roman', '宋体', serif;
             color: #3c2e1f;
             min-height: 200px;
@@ -98,7 +98,7 @@
         }
 
         /* 加载提示 / 空状态 */
-        #psg-li p {
+        .psg p {
             font-size: 1.3rem;
             color: #6b5a45;
             font-style: italic;
@@ -112,7 +112,7 @@
         }
 
         /* 文章列表样式 —— 竖排笺草 */
-        #psg-li ul {
+        .psg ul {
             list-style: none;
             padding: 0;
             margin: 0;
@@ -124,7 +124,7 @@
             overflow: hidden;
         }
 
-        #psg-li li {
+        .psg li {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -134,16 +134,16 @@
             transition: background 0.2s ease;
         }
 
-        #psg-li li:last-child {
+        .psg li:last-child {
             border-bottom: none;
         }
 
-        #psg-li li:hover {
+        .psg li:hover {
             background: #efe3cf;
         }
 
         /* 文章标题（或编号） */
-        #psg-li li span {
+        .psg li span {
             font-weight: 500;
             color: #2f2419;
             letter-spacing: 1px;
@@ -164,7 +164,7 @@
         }
 
         /* 编辑链接 —— 古籍刻本风格 */
-        #psg-li li a {
+        .psg li a {
             display: inline-block;
             font-size: 1.2rem;
             padding: 0.4rem 1.6rem;
@@ -182,14 +182,14 @@
         }
 
         /* 编辑链接装饰 */
-        #psg-li li a::before {
+        .psg li a::before {
             content: '✎';
             margin-right: 6px;
             font-size: 1.1rem;
             opacity: 0.8;
         }
 
-        #psg-li li a:hover {
+        .psg li a:hover {
             transform: translateY(3px);
             box-shadow: 0 2px 0 #7a623e, 0 8px 12px -6px #1f1a0e, inset 0 1px 4px #fffff0;
             background: linear-gradient(145deg, #cbb59a, #e6d2b8);
@@ -197,7 +197,7 @@
             border-color: #9e6e3f;
         }
 
-        #psg-li li a:active {
+        .psgli a:active {
             transform: translateY(6px);
             box-shadow: 0 0 0 #7a623e, 0 8px 12px -6px #0f0b06;
         }
@@ -211,16 +211,16 @@
                 font-size: 2rem;
                 letter-spacing: 4px;
             }
-            #psg-li li {
+            .psg li {
                 padding: 1rem 1.2rem;
                 font-size: 1.1rem;
                 flex-wrap: wrap;
                 gap: 0.8rem;
             }
-            #psg-li li span {
+            .psg li span {
                 padding-left: 1.5rem;
             }
-            #psg-li li a {
+            .psg li a {
                 font-size: 1rem;
                 padding: 0.3rem 1.2rem;
             }
@@ -228,14 +228,14 @@
 
         /* 极窄屏完全纵向 */
         @media (max-width: 420px) {
-            #psg-li li {
+            .psg li {
                 flex-direction: column;
                 align-items: flex-start;
             }
-            #psg-li li span::before {
+            .psg li span::before {
                 left: -5px;
             }
-            #psg-li li a {
+            .psg li a {
                 align-self: flex-end;
             }
         }
@@ -302,7 +302,7 @@
             fetch("/api/get-articles", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"   // 修正大小写
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify(data)
             })
@@ -315,7 +315,7 @@
                         li.innerHTML = "<p>📜 您尚未撰写任何文章</p>";
                         return;
                     }
-                    showArticle(data.data);
+                    showArticle(data.data, "#psg-li");
                 })
                 .catch((err) => {
                     console.log(err);
@@ -323,8 +323,24 @@
                 });
         }
 
-        function showArticle(d) {
-            const li = document.querySelector("#psg-li");
+        function getDraftArticle() {
+            fetch("/admin/get-draft")
+            .then((res) => res.text())
+            .then((data) => {
+                const json = JSON.parse(data);
+                console.log(json);
+                const drafts = json.a;
+                if (!drafts) {
+                    const li = document.querySelector("#review-li");
+                    li.innerHTML = "<p>📜 没有任何文章需要审核</p>";
+                    return;
+                }
+                showArticle(drafts, "#review-li", true);
+            })
+        }
+
+        function showArticle(d, elId, isReview=false) {
+            const li = document.querySelector(elId);
             // 确保 d 是数组且有内容
             if (!Array.isArray(d) || d.length === 0) {
                 li.innerHTML = "<p>📭 这里没有文章</p>";
@@ -336,7 +352,7 @@
                 html += `
                 <li>
                     <span>${escapeHtml(item[0]) || '无题'}</span>
-                    <a href="/edit?slug=${encodeURIComponent(item[1])}">编辑</a>
+                    <a href="/edit?slug=${encodeURIComponent(item[1])}&r=${isReview}&type=student">${isReview ? '审核' : '编辑'}</a>
                     <a href="/psg/${encodeURIComponent(item[1])}">预览</a>
                 </li>
                 `;
@@ -356,22 +372,36 @@
                 .replace(/'/g, "&#039;");
         }
     </script>
+    <script src="./../static/js/checkAdmin.js" type="module"></script>
 </head>
 <body>
 <div id="container">
     <h3>作者编辑</h3>
     <a href="/edit">新建文章</a>
-    <div id="psg-li">
+    <div id="psg-li" class="psg">
+        <p>📖 加载中……</p>
+    </div>
+    <div id="review-li" class="psg">
         <p>📖 加载中……</p>
     </div>
 </div>
-<script>
+<script type="module">
+    import {isAdmin} from "../static/js/checkAdmin.js";
     const user = sessionStorage.getItem("user");
+    const userId = sessionStorage.getItem("userID");
     const isTeacher = sessionStorage.getItem("isTeacher");
     if (!user) window.location.href = "/login";
-    if (isTeacher === "true") window.location.href = "/not_allow?code=403";
-    if (user === "admin") getArticle(".*");
-    else getArticle(user);
+    isAdmin(userId)
+        .then(res => {
+            console.log(res);
+            if (res) {
+                getArticle(".*");
+                getDraftArticle()
+            } else {
+                document.querySelector("#review-li").style.display = "none";
+                getArticle(user);
+            }
+        });
 </script>
 </body>
 </html>
