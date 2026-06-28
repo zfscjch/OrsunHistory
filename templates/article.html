@@ -641,8 +641,7 @@
             }
 
             // 特定用户隐藏语录
-            const isT = sessionStorage.getItem("isTeacher") === "true";
-            if (isT) {
+            if (!settings.showSayings) {
                 if (sayingsSection) sayingsSection.style.display = 'none';
                 const hideParas = document.querySelectorAll(".hide");
                 hideParas.forEach(hidePara => hidePara.style.display = 'none');
@@ -678,7 +677,7 @@
             }
         });
     </script>
-    <script src="../static/js/secret20260622.js"></script>
+    <script src="../static/js/secret20260628.js"></script>
 </head>
 <body>
 <div id="app">

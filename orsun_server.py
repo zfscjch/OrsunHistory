@@ -123,7 +123,7 @@ def get_question():
         return api_response("error", f"no such a request named {data['request']}", http_code=400)
     except Exception as e:
         print(f"服务器错误: {str(e)}")
-        print(traceback.format_exc())
+        log_mgr.error("sys", f"防泄漏验证发生错误：{e}", "127.0.0.1")
         return jsonify({"status": "error", "error": str(e)}), 500
 
 
@@ -243,6 +243,7 @@ def search():
         status = "success" if code == 200 else "error"
         return api_response(status, "", msg, code)
     except Exception as e:
+        log_mgr.error("sys", f"搜索文章时发生错误：{e}", "127.0.0.1")
         return api_response("error", f"发生错误：{e}", http_code=500)
 
 
@@ -334,6 +335,7 @@ def get_articles_by_aid():
             return api_response("error", str(articles), http_code=code)
         return api_response("success", "", articles)
     except Exception as e:
+        log_mgr.error("sys", f"获取文章时发生错误：{e}", "127.0.0.1")
         return api_response("error", f"发生错误：{e}", http_code=500)
 
 
@@ -363,6 +365,7 @@ def get_comments():
 
         return api_response("success", "", comments_res)
     except Exception as e:
+        log_mgr.error("sys", f"获取评论时发生错误：{e}", "127.0.0.1")
         return api_response("error", f"发生错误：{e}", http_code=500)
 
 
@@ -392,6 +395,7 @@ def insert_comments():
             return api_response("error", msg, http_code=code)
         return api_response("success", msg)
     except Exception as e:
+        log_mgr.error("sys", f"插入评论时发生错误：{e}", "127.0.0.1")
         return api_response("error", f"发生错误：{e}", http_code=500)
 
 
@@ -433,23 +437,24 @@ def upload():
             return api_response(status, "操作成功")
         return api_response(status, msg + reviews + "已加入审核列表。", http_code=code)
     except Exception as e:
-        print(traceback.format_exc())
+        log_mgr.error("sys", f"上传文章时发生错误：{e}", "127.0.0.1")
         return api_response("error", f"发生错误：{e}", http_code=500)
 
 
-@app.route("/api/savePwd", methods=["POST"])
-def reset_password():
+@app.route("/api/saveUser", methods=["POST"])
+def update_user():
     try:
         if not request.is_json:
             return api_response("error", "请求必须为 JSON", http_code=400)
 
         data = request.get_json()
-        if "user_id" not in data or "pwd" not in data:
+        if "user_id" not in data or "pwd" not in data or not "settings" in data:
             return api_response("error", "缺少参数", http_code=400)
 
-        user_mgr.reset_password(data["user_id"], data["pwd"])
+        user_mgr.update_user(data["user_id"], data["pwd"], data["settings"])
         return api_response("success")
     except Exception as e:
+        log_mgr.error("sys", f"重置密码时发生错误：{e}", "127.0.0.1")
         return api_response("error", f"发生错误: {e}", http_code=500)
 
 
@@ -468,6 +473,7 @@ def log():
 
         return log_mgr.info(user, action, request.remote_addr)
     except Exception as e:
+        log_mgr.error("sys", f"写入日志时发生错误：{e}", "127.0.0.1")
         return api_response("error", f"发生错误: {e}", http_code=500)
 
 
@@ -497,6 +503,28 @@ def receive_issue():
     log_mgr.error(user, issue_content, request.remote_addr)
     upload_error(user, issue_content)
     return api_response("success", "提交成功，我们会尽快解决！")
+
+@app.route('/api/settings', methods=["POST"])
+def get_settings():
+    try:
+        if not request.is_json:
+            return api_response("error", "请求必须为 JSON", http_code=400)
+
+        data = request.get_json()
+        if not "userID" in data:
+            return api_response("error", "缺少参数", http_code=400)
+
+        user_id = data["userID"]
+        settings = user_mgr.get_settings(user_id)
+        return api_response("success", "", {"settings": settings})
+    except Exception as e:
+        log_mgr.error("sys", f"获取用户设置时发生错误：{e}", "127.0.0.1")
+        traceback.print_exc()
+        return api_response("error", f"发生错误: {e}", http_code=500)
+
+@app.route('/user')
+def get_user():
+    return render_template("user.html")
 
 app.register_blueprint(face_bp, url_prefix="/face")
 app.register_blueprint(admin_bp, url_prefix="/admin")

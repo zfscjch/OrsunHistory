@@ -306,12 +306,12 @@
 
     // ==================== 保存密码（已存在） ====================
     function savePassword(id, pwd) {
-        fetch("/api/savePwd", {
+        fetch("/api/saveUser", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ user_id: id, pwd: pwd })
+            body: JSON.stringify({ user_id: id, pwd: pwd, settings: "default" })
         })
             .then(res => res.json())
             .then(data => {

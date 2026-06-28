@@ -1,5 +1,7 @@
 import bcrypt
 import mysql.connector
+import json
+
 from .config import Config
 
 class UserMgr:
@@ -98,5 +100,38 @@ class UserMgr:
                                (password_hash, user_id))
                 conn.commit()
 
+    def update_user(self, user_id, password, settings="default"):
+        password_hash = bcrypt.hashpw(
+            password.encode('utf-8'),
+            bcrypt.gensalt()
+        ).decode('utf-8')
+
+        if type(settings) != str:
+            settings = json.dumps(settings)
+
+        with mysql.connector.connect(**Config.MySQLConfig) as conn:
+            with conn.cursor() as cursor:
+                if settings == "default":
+                    sql = "UPDATE users SET password_hash = %s WHERE id = %s"
+                    args = (password_hash, user_id)
+                elif password == "default":
+                    sql = "UPDATE users SET settings = %s WHERE id = %s"
+                    args = (settings, user_id)
+                else:
+                    sql = "UPDATE users SET password_hash = %s, settings = %s WHERE id = %s"
+                    args = (password_hash, settings, user_id)
+                cursor.execute(sql, args)
+                conn.commit()
+
+    def get_settings(self, user_id):
+        with mysql.connector.connect(**Config.MySQLConfig) as conn:
+            with conn.cursor() as cursor:
+                sql = "SELECT settings FROM users WHERE id = %s"
+                cursor.execute(sql, (user_id,))
+                result = cursor.fetchone()
+                if not result:
+                    return {}
+                data = json.loads(result[0])
+                return data
 
 

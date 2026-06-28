@@ -1,5 +1,6 @@
 async function initApp() {
-    if (username === "admin" || isTeacher) {
+    settings = await getSettings();
+    if (!settings.showVerify) {
         handleVerifySuccess();
         return;
     }
@@ -139,6 +140,20 @@ function handleVerifySuccess() {
     }, 1);
 }
 
+async function getSettings() {
+    const userId = sessionStorage.getItem("userID");
+    const res = await fetch("/api/settings", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({userID: userId})
+    });
+    const data = await res.json();
+    console.log(data);
+    return data.settings;
+}
+
 const urlSearchParams = new URLSearchParams(window.location.search);
 const username = sessionStorage.getItem("user");
 const isTeacher = sessionStorage.getItem("isTeacher");
@@ -147,8 +162,9 @@ if (!username) {
     window.location.href = "/login";
 }
 
-let loop, body, app, verifyContainer;
+let loop, body, app, verifyContainer, settings;
 loop = null;
+settings = {showVerify: null, showSayings: null};
 let titles = [];
 let num = -1;
 const currentHash = window.location.hash;
