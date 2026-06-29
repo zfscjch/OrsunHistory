@@ -1,3 +1,4 @@
+import ssl
 from gevent import pywsgi
 from orsun_server import app
 
@@ -10,7 +11,9 @@ server = pywsgi.WSGIServer(
     ('0.0.0.0', 3),
     app,
     keyfile=KEY_FILE,
-    certfile=CERT_FILE
+    certfile=CERT_FILE,
+    ssl_version=ssl.PROTOCOL_TLS_SERVER,
+    ciphers='HIGH:!aNULL:!MD5'
 )
 
 print("Gevent WSGI server starting up on https://0.0.0.0:3 ...")
