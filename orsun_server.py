@@ -416,7 +416,7 @@ def upload():
             return api_response("error", "密码错误！", http_code=401)
 
         article = data["article"]
-        if not data["isReview"]:
+        if not data["isReview"] and data.get("type", "article") == "student":
             auto_status, reviews = psg_reviewer.check_psg(article)
             article["status"] = "draft"
         else:
@@ -430,11 +430,11 @@ def upload():
         elif data["request"] == "change":
             msg, code = mgr.update(**article)
         else:
-            return api_response("error", "没有此操作", http_code=400)
+            return api_response("error", "没有此操作！", http_code=400)
 
         status = "success" if code == 200 else "error"
-        if data["isReview"]:
-            return api_response(status, "操作成功")
+        if data["isReview"] or not 'reviews' in locals():
+            return api_response(status, "操作成功！")
         return api_response(status, msg + reviews + "已加入审核列表。", http_code=code)
     except Exception as e:
         log_mgr.error("sys", f"上传文章时发生错误：{e}", "127.0.0.1")

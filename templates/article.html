@@ -77,6 +77,13 @@
             font-size: 1.05rem;
         }
 
+        #content .psg-tab {
+            background: gray;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            color: white;
+        }
+
         #content img {
             max-width: 100%;
             height: auto;
@@ -414,6 +421,21 @@
             userName: null
         };
 
+        const Teachers = {
+            49: "黄鼎泰",
+            50: "陈莲芳",
+            51: "何亚琴",
+            52: "黄伏云",
+            53: "姜慧敏",
+            54: "钱忠明",
+            55: "高波",
+            56: "宁志梅",
+            57: "聂林",
+            58: "黄海山",
+            59: "张迟",
+            60: "秦仁喜"
+        }
+
         // 获取评论列表
         function getComments(targetId, isStu) {
             const requestBody = isStu
@@ -487,7 +509,12 @@
                     parentUser = parentComment[3];
                     parentAnonymous = parentComment[10];
                 }
+
                 let username = this.anonymous ? "匿名用户" : `翱三班${this.userId}号同学`;
+                if (this.userId >= 49 && this.userId <= 60 && !this.anonymous) {
+                    username = "<spanv class='admin'>教师</spanv>" + Teachers[this.userId] + "老师";
+                }
+
                 if (this.userId >= 61 && this.userId <= 67) {
                     username = `<strong><span class="admin">管理员</span>翱三通史·管理员${this.userId - 61}号</strong>`;
                 }
