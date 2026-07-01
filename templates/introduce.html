@@ -767,6 +767,17 @@
         location.reload();
     }
 
+    async function log() {
+        const user = sessionStorage.getItem("user");
+        await fetch("/api/log", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({user: user, action: "浏览简介"})
+        });
+    }
+
     window.addEventListener("message", e => {
         // 简单校验来源，允许同源及指定端口
         if (e.origin !== "https://www.cjchcoderchat:3") return;
