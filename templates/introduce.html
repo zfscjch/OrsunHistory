@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -302,6 +302,209 @@
             margin-right: 1rem;
         }
 
+        /* ===== 表格通用样式 ===== */
+        .introduce table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0.8rem 0 1.2rem;
+            font-size: 0.95rem;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        /* ===== 表头样式 ===== */
+        .introduce table thead th {
+            background: linear-gradient(145deg, #dac9ae, #c4b08a);
+            color: #2b1f12;
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: 3px;
+            padding: 0.7rem 1rem;
+            border-bottom: 2px solid #b5956b;
+            font-family: 'Georgia', '楷体', serif;
+            text-shadow: 0 1px 0 rgba(255, 245, 215, 0.4);
+            position: relative;
+        }
+
+        /* ===== 表头装饰性下划线 ===== */
+        .introduce table thead th::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            left: 15%;
+            width: 70%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(90, 65, 40, 0.3), transparent);
+        }
+
+        /* ===== 时间对照表表头 ===== */
+        .introduce table:first-of-type thead th {
+            background: linear-gradient(145deg, #cbb291, #b99e7c);
+            font-size: 1.05rem;
+            padding: 0.6rem 2rem;
+            letter-spacing: 4px;
+            border-bottom: 3px solid #8f7b5f;
+        }
+
+        /* ===== 教师表表头 ===== */
+        .introduce .teachers thead th {
+            background: linear-gradient(145deg, #d4be9e, #c4ad89);
+            font-size: 1.05rem;
+            padding: 0.7rem 1.2rem;
+            letter-spacing: 4px;
+            border-bottom: 3px solid #a57c54;
+        }
+
+        /* ===== 表头悬停效果 ===== */
+        .introduce table thead th:hover {
+            background: linear-gradient(145deg, #d8c4a8, #c8b494);
+            transition: background 0.3s ease;
+        }
+
+        /* ===== 去除表头第一个单元格的特殊边框 ===== */
+        .introduce .teachers thead th:first-child {
+            border-right: 2px solid #b5956b;
+        }
+
+        .introduce table th,
+        .introduce table td {
+            padding: 0.6rem 1rem;
+            border: 1px solid #d4c5ad;
+            text-align: center;
+            vertical-align: middle;
+            background-color: #fcf8f0;
+            color: #3c2e1f;
+        }
+
+        /* ===== 时间对照表 ===== */
+        .introduce table:first-of-type {
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .introduce table:first-of-type td {
+            padding: 0.5rem 1.5rem;
+            font-family: 'Georgia', 'Times New Roman', serif;
+        }
+
+        .introduce table:first-of-type tr:first-child td {
+            background-color: #dac9ae;
+            font-weight: 600;
+            color: #2b1f12;
+            letter-spacing: 2px;
+        }
+
+        .introduce table:first-of-type tr:not(:first-child) td:first-child {
+            font-weight: 600;
+            color: #6a5236;
+            letter-spacing: 1px;
+        }
+
+        /* ===== 教师体系表 ===== */
+        .introduce .teachers {
+            font-size: 0.92rem;
+        }
+
+        .introduce .teachers td {
+            padding: 0.5rem 0.8rem;
+            line-height: 1.5;
+        }
+
+        .introduce .teachers .name {
+            font-family: "微软雅黑", "PingFang SC", "Segoe UI", sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #4a3520;
+            letter-spacing: 0.5px;
+        }
+
+        .introduce .teachers td small {
+            font-size: 0.8rem;
+            font-family: "楷体", sans-serif;
+            color: #7a6a50;
+            display: block;
+            margin-top: 0.1rem;
+            line-height: 1.4;
+            font-style: italic;
+        }
+
+        /* ===== 科目列（第一列）样式 ===== */
+        .introduce .teachers tr td:first-child {
+            font-weight: 700;
+            color: #6a5236;
+            background-color: #f0e8d8;
+            width: 56px;
+            min-width: 56px;
+            font-size: 0.95rem;
+            letter-spacing: 2px;
+            font-family: 'Georgia', '楷体', serif;
+        }
+
+        /* ===== 交替行背景 ===== */
+        .introduce .teachers tr:nth-child(even) td {
+            background-color: #f5ede0;
+        }
+
+        .introduce .teachers tr:nth-child(even) td:first-child {
+            background-color: #ebe2d0;
+        }
+
+        /* ===== 行悬停效果 ===== */
+        .introduce .teachers tr:hover td {
+            background-color: #f0e6d4;
+        }
+
+        .introduce .teachers tr:hover td:first-child {
+            background-color: #e5d9c2;
+        }
+
+        /* ===== 合并列的特殊边框处理 ===== */
+        .introduce .teachers td[colspan],
+        .introduce .teachers td[colspan] + td {
+            border-left: none;
+        }
+
+        .introduce .teachers tr:first-child td {
+            border-top-width: 2px;
+            border-top-color: #b99e7c;
+        }
+
+        .introduce .teachers tr:last-child td {
+            border-bottom-width: 2px;
+            border-bottom-color: #b99e7c;
+        }
+
+        /* ===== 表格标题装饰 ===== */
+        .introduce h3 {
+            font-size: 1.05rem;
+            color: #4f3a22;
+            margin-top: 1.2rem;
+            margin-bottom: 0.4rem;
+            font-weight: 400;
+            letter-spacing: 2px;
+            font-family: 'Georgia', '楷体', serif;
+            border-left: 3px solid #b99e7c;
+            padding-left: 0.8rem;
+        }
+
+        .introduce h3:first-of-type {
+            margin-top: 0.8rem;
+        }
+
+        /* ===== 附注样式 ===== */
+        .introduce p:last-of-type {
+            margin-top: 0.6rem;
+            font-size: 0.85rem;
+            color: #8f7b5f;
+            font-style: italic;
+            padding: 0.4rem 0.8rem;
+            background: #f0e8d8;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
         /* ===== 页脚微痕 ===== */
         .footnote {
             max-width: 800px;
@@ -381,6 +584,161 @@
         <span>✧ 主编：翱三班全体同学</span><br>
         <span>✧ 编委会（按姓氏首字母排序）：曹玲溪、曾繁顺、江峻琪、刘依恩、卢昶文、施跃辰、吴晓熠、吴号楠、吴奕帆</span>
     </div>
+    <h3>✧ 附A 《翱三通史》时间对照表</h3>
+    <table>
+        <thead>
+        <tr>
+            <th>翱三纪年</th>
+            <th>公元纪年</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr><td>元（一）</td><td>2023/9 - 2024/8</td></tr>
+        <tr><td>二</td><td>2024/9 - 2025/8</td></tr>
+        <tr><td>三</td><td>2025/9 - 2026/8 或 2026/6</td></tr>
+        </tbody>
+    </table>
+    <br>
+    <h3>✧ 附B 翱三班体系</h3>
+    <table class="teachers">
+        <thead>
+        <tr>
+            <th>学科</th>
+            <th colspan="3">教师（按时间顺序）</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>语文</td>
+            <td>
+                <div class="name">黄鼎泰</div>
+                <small>老黄、谨言慎行、蜉蝣之羽、鼎泰黄/蓝、苦瓜3号</small>
+            </td>
+            <td>
+                <div class="name">陈莲芳</div>
+                <small>CBA(球员)</small>
+            </td>
+            <td>
+                <div class="name">宁志梅</div>
+                <small>拧螺丝、小宁、志梅</small>
+            </td>
+        </tr>
+        <tr>
+            <td>数学</td>
+            <td colspan="3">
+                <div class="name">何亚琴</div>
+                <small>几何老祖/登、(何)曼巴、(几)何奶奶、何主任、headteacher、琴姐、(可)业今</small>
+            </td>
+        </tr>
+        <tr>
+            <td>英语</td>
+            <td colspan="2">
+                <div class="name">黄伏云</div>
+                <small>云姐、大黄、背书有效、一片云、伏云(姐)、黄姓清洁工、黄老</small>
+            </td>
+            <td>
+                <div class="name">聂林</div>
+                <small>列宁、苏联国母、卡皮巴拉</small>
+            </td>
+        </tr>
+        <tr>
+            <td>历史</td>
+            <td colspan="3">
+                <div class="name">姜慧敏</div>
+                <small>小姜</small>
+            </td>
+        </tr>
+        <tr>
+            <td>道法</td>
+            <td colspan="2">
+                <div class="name">钱忠明</div>
+                <small>老钱、钱桑、我rnm、温州大佐、天圆地方中心日月、(史)铁生</small>
+            </td>
+            <td>
+                <div class="name">张迟</div>
+                <small>(没有昵称)</small>
+            </td>
+        </tr>
+        <tr>
+            <td>物理</td>
+            <td>(七年级无物理)</td>
+            <td>
+                <div class="name">高波</div>
+                <small>(高)主任、搞波、波波、搞代搞酸钠</small>
+            </td>
+            <td>
+                <div class="name">黄海山</div>
+                <small>闪/山哥</small>
+            </td>
+        </tr>
+        <tr>
+            <td>化学</td>
+            <td colspan="2">(七、八年级无化学)</td>
+            <td>
+                <div class="name">秦仁喜</div>
+                <small>老秦、仁喜、喜子哥</small>
+            </td>
+        </tr>
+        <tr>
+            <td>体育</td>
+            <td>
+                <div class="name">刘港</div>
+                <small>(没有昵称)</small>
+            </td>
+            <td colspan="2">
+                <div class="name">叶爽</div>
+                <small>(没有昵称)</small>
+            </td>
+        </tr>
+        <tr>
+            <td>生物</td>
+            <td>
+                <div class="name">张薇</div>
+                <small>(没有昵称)</small>
+            </td>
+            <td>
+                <div class="name">胡慧玲</div>
+                <small>(没有昵称)</small>
+            </td>
+            <td>(九年级无生物)</td>
+        </tr>
+        <tr>
+            <td>地理</td>
+            <td>
+                <div class="name">范金耀</div>
+                <small>Peter、金耀范、范叫</small>
+            </td>
+            <td>
+                <div class="name">(原八年级一班语文老师)</div>
+                <small>(没有昵称)</small>
+            </td>
+            <td>(九年级无地理)</td>
+        </tr>
+        <tr>
+            <td>美术</td>
+            <td colspan="3">
+                <div class="name">熊静</div>
+                <small>熊熊之家</small>
+            </td>
+        </tr>
+        <tr>
+            <td>音乐</td>
+            <td colspan="3">
+                <div class="name">崔曦月</div>
+                <small>曦月</small>
+            </td>
+        </tr>
+        <tr>
+            <td>信息技术</td>
+            <td colspan="2">
+                <div class="name">郑云如</div>
+                <small>小郑、祸根、爽文(姐)</small>
+            </td>
+            <td>(九年级无信息)</td>
+        </tr>
+        </tbody>
+    </table>
+    <p>【注】1. 九年级实际无美术、音乐课，这里是依据课表书写的；<br>2. 教师下方小楷为昵称。</p>
 </div>
 
 <!-- ===== 先贤列传导航 ===== -->

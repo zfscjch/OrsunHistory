@@ -357,7 +357,7 @@
                 html += `
                 <li>
                     <span>${escapeHtml(item[0]) || '无题'}</span>
-                    <a href="/edit?slug=${encodeURIComponent(item[1])}&r=${isReview}&type=student">${isReview ? '审核' : '编辑'}</a>
+                    <a href="/edit?slug=${encodeURIComponent(item[1])}&r=${isReview}&type=${isReview ? 'student' : 'article'}">${isReview ? '审核' : '编辑'}</a>
                     <a href="/psg/${encodeURIComponent(item[1])}">预览</a>
                 </li>
                 `;
