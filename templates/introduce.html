@@ -769,7 +769,7 @@
 
     window.addEventListener("message", e => {
         // 简单校验来源，允许同源及指定端口
-        if (e.origin !== "http://129.211.162.48:3" && e.origin !== "http://129.211.162.48:3/index" && e.origin !== "http://129.211.162.48:3/login") return;
+        if (e.origin !== "https://www.cjchcoderchat:3" && e.origin !== "http://129.211.162.48:3/" && e.origin !== "http://129.211.162.48:3/login") return;
         if (e.data && e.data.type === "AUTH_STATE" && e.data.isLoggedIn) {
             sessionStorage.setItem("user", e.data.user);
             sessionStorage.setItem("isTeacher", e.data.isTeacher.toString());
