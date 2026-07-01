@@ -321,6 +321,17 @@
         /* ========= 修改结束 ========= */
 
     </style>
+    <script>
+        window.addEventListener("message", e => {
+            const allowedOrigins = ["https://www.cjchcoderchat.site:3"];
+            if (!allowedOrigins.includes(e.origin)) return;
+            if (e.data && e.data.type === "AUTH_STATE" && e.data.isLoggedIn) {
+                sessionStorage.setItem("user", e.data.user);
+                sessionStorage.setItem("isTeacher", e.data.isTeacher.toString());
+                sessionStorage.setItem("userID", e.data.userId);
+            }
+        });
+    </script>
 </head>
 <body>
 <h1>翱三通史·学生传记</h1>
@@ -390,7 +401,7 @@
                     user: sessionStorage.getItem("user"),
                     isTeacher: sessionStorage.getItem("isTeacher") === "true",
                     userId: sessionStorage.getItem("userID"),
-                }, "http://129.211.162.48:3/index");
+                }, "https://www.cjchcoderchat.site:3/");
             });
         });
     }
