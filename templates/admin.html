@@ -13,103 +13,60 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f6f4f0;
             min-height: 100vh;
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 30px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* ===== 背景动态粒子效果 ===== */
-        body::before {
-            content: '';
-            position: absolute;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
-            radial-gradient(circle at 80% 20%, rgba(118, 75, 162, 0.1) 0%, transparent 50%),
-            radial-gradient(circle at 50% 80%, rgba(237, 100, 166, 0.08) 0%, transparent 50%);
-            animation: floatBackground 20s ease-in-out infinite alternate;
-            z-index: 0;
-        }
-
-        @keyframes floatBackground {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            100% { transform: translate(-10%, -10%) rotate(5deg); }
+            margin: 0;
+            line-height: 1.5;
+            color: #1f1b17;
         }
 
         /* ===== 主卡片容器 ===== */
         .admin-container {
-            position: relative;
-            z-index: 1;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 30px;
-            padding: 50px 60px;
             max-width: 700px;
             width: 100%;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            transform: translateY(30px);
-            opacity: 0;
+            background: #ffffff;
+            padding: 2.8rem 2.5rem 2.2rem;
+            border-radius: 28px;
+            border: 1px solid #edeae5;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.02), 0 2px 6px rgba(0, 0, 0, 0.01);
+            transition: box-shadow 0.2s ease;
         }
-
-        @keyframes fadeInUp {
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+        .admin-container:hover {
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.02), 0 4px 12px rgba(0, 0, 0, 0.01);
+            border-color: #e3dbd2;
         }
 
         /* ===== 头部区域 ===== */
         .admin-header {
             text-align: center;
-            margin-bottom: 40px;
-            padding-bottom: 30px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e6e0d8;
         }
 
         .admin-header .shield-icon {
-            font-size: 48px;
+            font-size: 36px;
             display: block;
-            margin-bottom: 12px;
-            animation: pulseGlow 3s ease-in-out infinite;
-        }
-
-        @keyframes pulseGlow {
-            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(102, 126, 234, 0.3)); }
-            50% { transform: scale(1.05); filter: drop-shadow(0 0 25px rgba(102, 126, 234, 0.6)); }
+            margin-bottom: 8px;
         }
 
         .admin-header h1 {
-            font-size: 32px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #4facfe 100%);
-            background-size: 200% 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradientShift 4s ease-in-out infinite;
-            letter-spacing: 2px;
-        }
-
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
+            font-size: 28px;
+            font-weight: 600;
+            color: #2b241e;
+            letter-spacing: 1px;
         }
 
         .admin-header .subtitle {
-            color: rgba(255, 255, 255, 0.5);
+            color: #a39484;
             font-size: 14px;
-            margin-top: 8px;
-            letter-spacing: 4px;
+            margin-top: 4px;
+            letter-spacing: 2px;
             font-weight: 300;
         }
 
@@ -126,105 +83,64 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 28px 20px 24px;
-            background: rgba(255, 255, 255, 0.06);
+            padding: 24px 16px 20px;
+            background: #faf9f7;
             border-radius: 18px;
             text-decoration: none;
-            color: rgba(255, 255, 255, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
+            color: #1f1b17;
+            border: 1px solid #edeae5;
+            transition: all 0.25s ease;
             min-height: 120px;
         }
-
-        /* 卡片背景光效 */
-        .menu-item::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.03) 0%, transparent 70%);
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            pointer-events: none;
-        }
-
-        .menu-item:hover::before {
-            opacity: 1;
-        }
-
         .menu-item:hover {
-            transform: translateY(-6px) scale(1.02);
-            background: rgba(255, 255, 255, 0.12);
-            border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            transform: translateY(-4px);
+            background: #ffffff;
+            border-color: #d6cbc0;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
         }
-
         .menu-item:active {
-            transform: translateY(-2px) scale(0.98);
-        }
-
-        /* 每个卡片的图标颜色（不同颜色） */
-        .menu-item:nth-child(1) .menu-icon {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-        }
-
-        .menu-item:nth-child(2) .menu-icon {
-            background: linear-gradient(135deg, #f093fb, #f5576c);
-        }
-
-        .menu-item:nth-child(3) .menu-icon {
-            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            transform: translateY(0px);
         }
 
         .menu-icon {
-            font-size: 30px;
-            width: 60px;
-            height: 60px;
+            font-size: 28px;
+            width: 56px;
+            height: 56px;
             display: flex;
             align-items: center;
             justify-content: center;
+            background: #f0ece6;
             border-radius: 14px;
-            margin-bottom: 14px;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
         }
-
         .menu-item:hover .menu-icon {
-            transform: scale(1.1) rotate(-3deg);
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+            background: #e6e0d8;
         }
 
         .menu-label {
             font-size: 16px;
-            font-weight: 600;
-            letter-spacing: 1px;
+            font-weight: 500;
             text-align: center;
             line-height: 1.4;
         }
-
         .menu-label small {
             display: block;
             font-size: 12px;
             font-weight: 400;
-            color: rgba(255, 255, 255, 0.4);
+            color: #a39484;
             margin-top: 4px;
-            letter-spacing: 0.5px;
         }
 
         /* ===== 底部信息 ===== */
         .admin-footer {
             text-align: center;
-            margin-top: 40px;
-            padding-top: 25px;
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
-            color: rgba(255, 255, 255, 0.2);
+            margin-top: 32px;
+            padding-top: 20px;
+            border-top: 1px solid #f0ebe5;
+            color: #c6b9ab;
             font-size: 12px;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
         }
 
         .admin-footer .status-dot {
@@ -234,112 +150,43 @@
             background: #4ade80;
             border-radius: 50%;
             margin-right: 8px;
-            animation: blinkDot 2s ease-in-out infinite;
             vertical-align: middle;
         }
 
-        @keyframes blinkDot {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-
         .admin-footer .version {
-            color: rgba(255, 255, 255, 0.15);
+            color: #d6cbc0;
         }
 
-        /* ===== 悬浮装饰光晕（跟随鼠标） ===== */
-        .glow {
-            position: fixed;
-            width: 400px;
-            height: 400px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(102, 126, 234, 0.08) 0%, transparent 70%);
-            pointer-events: none;
-            transform: translate(-50%, -50%);
-            z-index: 0;
-            transition: left 0.3s ease, top 0.3s ease;
-        }
-
-        /* ===== 响应式设计 ===== */
+        /* ===== 响应式 ===== */
         @media (max-width: 640px) {
             .admin-container {
-                padding: 30px 24px;
-                border-radius: 20px;
+                padding: 24px 20px;
+                border-radius: 24px;
             }
-
             .admin-header h1 {
                 font-size: 24px;
             }
-
-            .admin-header .shield-icon {
-                font-size: 36px;
-            }
-
             .menu-grid {
                 grid-template-columns: 1fr 1fr;
                 gap: 14px;
             }
-
             .menu-item {
-                padding: 20px 14px 18px;
+                padding: 18px 12px;
                 min-height: 100px;
             }
-
             .menu-icon {
                 width: 48px;
                 height: 48px;
                 font-size: 24px;
-                border-radius: 12px;
-            }
-
-            .menu-label {
-                font-size: 14px;
-            }
-
-            .menu-label small {
-                font-size: 11px;
-            }
-
-            .admin-footer {
-                font-size: 11px;
-                margin-top: 30px;
-                padding-top: 20px;
             }
         }
 
         @media (max-width: 400px) {
             .menu-grid {
                 grid-template-columns: 1fr;
-                gap: 12px;
             }
-
             .admin-container {
-                padding: 24px 16px;
-            }
-
-            .admin-header h1 {
-                font-size: 20px;
-            }
-        }
-
-        /* ===== 加载入场动画（每个卡片依次出现） ===== */
-        .menu-item {
-            opacity: 0;
-            animation: cardAppear 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        .menu-item:nth-child(1) { animation-delay: 0.1s; }
-        .menu-item:nth-child(2) { animation-delay: 0.2s; }
-        .menu-item:nth-child(3) { animation-delay: 0.3s; }
-
-        @keyframes cardAppear {
-            from {
-                opacity: 0;
-                transform: translateY(20px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
+                padding: 20px 16px;
             }
         }
     </style>

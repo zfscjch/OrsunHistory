@@ -54,6 +54,10 @@ def check():
 def handle_login():
     return render_template("login.html")
 
+@app.route("/outdatedLogin")
+def outdated_login():
+    return render_template("login_outdated.html")
+
 
 @app.route("/")
 def get_index():

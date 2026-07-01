@@ -3,30 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>翱三通史 · 作者编辑</title>
+    <link rel="stylesheet" href="./../static/css/common.css">
     <style>
-        /* ========== 全局基调 —— 延续主页的古籍沉檀 ========== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        /* ===== author.html 特有样式 ===== */
 
-        body {
-            background-color: #2b2b1f;  /* 深檀木色底 */
-            font-family: 'Georgia', 'Times New Roman', '宋体', 'Songti SC', serif;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 2rem 1rem;
-            background-image:
-                    radial-gradient(circle at 10% 20%, rgba(200, 180, 140, 0.05) 0px, transparent 20%),
-                    radial-gradient(circle at 90% 80%, rgba(160, 130, 80, 0.08) 0px, transparent 30%),
-                    repeating-linear-gradient(45deg, rgba(120, 90, 50, 0.02) 0px, rgba(120, 90, 50, 0.02) 2px, transparent 2px, transparent 6px);
-        }
-
-        /* 主容器 —— 仿书卷画轴 */
+        /* 主容器 —— 区别于 common 的 #psg */
         #container {
             background: #f7efe0 linear-gradient(145deg, #f3ead9 0%, #faf3e2 70%);
             border: 1px solid #bbaa8a;
@@ -43,7 +24,6 @@
             transition: box-shadow 0.3s ease;
         }
 
-        /* 虫蚀毛边装饰 */
         #container::before {
             content: '';
             position: absolute;
@@ -54,7 +34,7 @@
             box-shadow: inset 0 0 20px #bba27a40;
         }
 
-        /* 标题 —— 史传卷首 */
+        /* 标题 —— h3 风格 */
         h3 {
             font-size: 2.4rem;
             font-weight: 400;
@@ -83,18 +63,13 @@
             white-space: nowrap;
         }
 
-        a[href="/edit"] {
-            text-decoration: none;
-            background: #fdf7ec;
-            color: #6b5a45;
-        }
-
+        /* 辅助类 */
         .type {
             font-family: "微软雅黑", "Segoe UI", sans-serif;
             font-size: 1.4rem;
         }
 
-        /* 文章列表容器 —— 仿古籍版心 */
+        /* 文章列表容器 (与 common 的 #psg 区分) */
         .psg {
             font-family: 'Georgia', 'Times New Roman', '宋体', serif;
             color: #3c2e1f;
@@ -102,7 +77,6 @@
             padding: 1rem 0.5rem;
         }
 
-        /* 加载提示 / 空状态 */
         .psg p {
             font-size: 1.3rem;
             color: #6b5a45;
@@ -116,7 +90,7 @@
             box-shadow: inset 0 0 12px #e2d3ba;
         }
 
-        /* 文章列表样式 —— 竖排笺草 */
+        /* 文章列表 */
         .psg ul {
             list-style: none;
             padding: 0;
@@ -147,7 +121,6 @@
             background: #efe3cf;
         }
 
-        /* 文章标题（或编号） */
         .psg li span {
             font-weight: 500;
             color: #2f2419;
@@ -156,8 +129,7 @@
             padding-left: 1.2rem;
         }
 
-        /* 手写装饰点 */
-        #psg-li li span::before {
+        .psg li span::before {
             content: '❦';
             position: absolute;
             left: -8px;
@@ -168,12 +140,11 @@
             opacity: 0.7;
         }
 
-        /* 编辑链接 —— 古籍刻本风格 */
+        /* 编辑 / 预览 链接 (与 common 的 #psg a 不同) */
         .psg li a {
             display: inline-block;
             font-size: 1.2rem;
             padding: 0.4rem 1.6rem;
-            background: #dac9ae;
             background: linear-gradient(145deg, #d2bc9c, #ecdbbc);
             border: 1px solid #b07d4c;
             border-radius: 40px;
@@ -186,7 +157,6 @@
             white-space: nowrap;
         }
 
-        /* 编辑链接装饰 */
         .psg li a::before {
             content: '✎';
             margin-right: 6px;
@@ -202,12 +172,31 @@
             border-color: #9e6e3f;
         }
 
-        .psgli a:active {
+        .psg li a:active {
             transform: translateY(6px);
             box-shadow: 0 0 0 #7a623e, 0 8px 12px -6px #0f0b06;
         }
 
-        /* 移动端优化 */
+        /* 右下题跋 (保留，common 未定义 body::before) */
+        body::before {
+            content: '翱三通史 · 文心雕龙';
+            position: fixed;
+            bottom: 12px;
+            right: 20px;
+            font-size: 0.85rem;
+            color: #67553d;
+            background: #efe6d4c0;
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            border: 1px solid #bba27a;
+            backdrop-filter: blur(2px);
+            box-shadow: 0 2px 6px #221e14;
+            font-family: 'Courier New', '宋体', monospace;
+            letter-spacing: 2px;
+            z-index: 10;
+        }
+
+        /* 移动端针对列表的优化 (与 common 的媒体查询互补) */
         @media (max-width: 600px) {
             #container {
                 padding: 1.8rem 1.2rem;
@@ -231,7 +220,6 @@
             }
         }
 
-        /* 极窄屏完全纵向 */
         @media (max-width: 420px) {
             .psg li {
                 flex-direction: column;
@@ -244,57 +232,11 @@
                 align-self: flex-end;
             }
         }
-
-        /* 仿古题跋——固定在右下 (类似主页风格) */
-        body::before {
-            content: '翱三通史 · 文心雕龙';
-            position: fixed;
-            bottom: 12px;
-            right: 20px;
-            font-size: 0.85rem;
-            color: #67553d;
-            background: #efe6d4c0;
-            padding: 0.3rem 1rem;
-            border-radius: 30px;
-            border: 1px solid #bba27a;
-            backdrop-filter: blur(2px);
-            box-shadow: 0 2px 6px #221e14;
-            font-family: 'Courier New', '宋体', monospace;
-            letter-spacing: 2px;
-            z-index: 10;
-        }
-
-        /* 左侧签条 (可点击的链接，保持与主页互动相似) */
-        body::after {
-            content: '✻ 甲辰校勘 ✻';
-            position: fixed;
-            left: 0;
-            top: 30%;
-            background: #493e2d;
-            color: #dacbbc;
-            padding: 0.8rem 0.2rem;
-            writing-mode: vertical-rl;
-            font-size: 1rem;
-            border-radius: 0 12px 12px 0;
-            letter-spacing: 6px;
-            border: 1px solid #ad9b7c;
-            border-left: none;
-            box-shadow: 2px 4px 12px #0f0d09;
-            text-shadow: 0 0 2px #dec393;
-            font-family: 'Times New Roman', '楷体', serif;
-            z-index: 10;
-            pointer-events: none;  /* 仅装饰，不干扰点击（可根据需要启用） */
-        }
-
-        /* 如果你想左侧签条可点击，可以启用下面的样式并调整content为HTML元素，但伪元素不能加链接。
-           此处保持与原主页视觉一致，仅作装饰。 */
     </style>
     <script>
         window.addEventListener("message", e => {
-            // 注意：origin 比较需要精确，此处原代码有逻辑瑕疵 (e.origin !== a && e.origin !== b) 永远为真
-            // 但为了功能，我们按预期修复：仅当来自可信源且消息类型匹配时处理
-            if (e.origin !== "http://129.211.162.48:3/index" && e.origin !== "http://129.211.162.48:3/login") return;
-            // 原代码 e.type 应为 e.data.type
+            if (e.origin !== "https://www.cjchcoderchat.site:3")
+                return;
             if (e.data && e.data.type === "AUTH_STATE" && e.data.isLoggedIn) {
                 sessionStorage.setItem("user", e.data.user);
                 sessionStorage.setItem("isTeacher", e.data.isTeacher.toString());
@@ -364,6 +306,21 @@
             });
             html += '</ul>';
             li.innerHTML = html;
+
+            const aLinks = document.querySelectorAll("a");
+            aLinks.forEach(aLink => {
+                aLink.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    const popup = window.open(aLink.href);
+                    popup.postMessage({
+                        type: "AUTH_STATE",
+                        isLoggedIn: true,
+                        user: sessionStorage.getItem("user"),
+                        isTeacher: sessionStorage.getItem("isTeacher") === "true",
+                        userId: sessionStorage.getItem("userID"),
+                    }, "https://www.cjchcoderchat.site:3");
+                });
+            });
         }
 
         // 简单的防XSS转义
@@ -382,7 +339,6 @@
 <body>
 <div id="container">
     <h3>作者编辑</h3>
-    <a href="/edit">新建文章</a>
     <div class="type"><strong> · 可编辑 · </strong></div>
     <div id="psg-li" class="psg">
         <p>📖 加载中……</p>
@@ -391,6 +347,9 @@
     <div id="review-li" class="psg">
         <p>📖 加载中……</p>
     </div>
+    <!-- 仿古签条（左侧固定） -->
+    <a href="/edit" class="signature-container signature-link">✻ 新建文章 ✻</a>
+    <button class="signature-container signature-btn" onclick="logout()">✻ 退出登录 ✻</button>
 </div>
 <script type="module">
     import {isAdmin} from "../static/js/checkAdmin.js";

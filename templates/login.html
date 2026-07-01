@@ -5,146 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>翱三通史-登录</title>
 	<link rel="icon" href="" type="image/x-icon"/>
-	<style>
-		body {
-			font-family: Arial, serif;
-			background: #f0f2f5;
-			height: 100vh;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-		}
-
-		.login-container {
-			margin: 0;
-			background: white;
-			padding: 2rem;
-			border-radius: 8px;
-			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-			width: 300px;
-		}
-
-		.form-group {
-			margin-bottom: 1rem;
-		}
-
-		input {
-			width: 100%;
-			padding: 0.8rem;
-			border: 1px solid #ddd;
-			border-radius: 6px;
-			box-sizing: border-box;
-		}
-
-		.login-btn {
-			width: 100%;
-			padding: 0.8rem;
-			background: #1877f2;
-			color: white;
-			border: none;
-			border-radius: 6px;
-			cursor: pointer;
-			transition: background 0.3s;
-		}
-
-		.login-btn:hover {
-			background: #166fe5;
-		}
-
-		.login-btn:disabled {
-			background: gray;
-		}
-
-		.error-message {
-			color: #ff4242;
-			font-size: 0.9rem;
-			margin-top: 0.5rem;
-		}
-
-		.success-message {
-			color: #42b883;
-			font-size: 0.9rem;
-			margin-top: 0.5rem;
-		}
-
-		.info-text {
-			font-size: 10px;
-			color: gray;
-			margin-top: 1rem;
-			line-height: 1.4;
-		}
-
-		.issue {
-			font-size: 0.8rem;
-			color: blue;
-			text-decoration: none;
-			margin-top: 1rem;
-			line-height: 1.4;
-		}
-
-		/* 自动登录样式 */
-		.check-area {
-			display: flex;
-			align-items: center;
-			margin-bottom: 1rem;
-			font-size: 0.9rem;
-		}
-
-		.check-area input {
-			width: auto;
-			margin-right: 8px;
-		}
-
-		.check-area label {
-			cursor: pointer;
-		}
-
-		.user-policy {
-			margin: auto !important;
-			border: none;
-		}
-
-		.show-policy {
-			color: blue;
-			cursor: pointer;
-		}
-
-		.close-dialog {
-			padding: 0.8rem;
-			border: none;
-			border-radius: 6px;
-			background: #1877f2;
-			color: white;
-			width: 100%;
-		}
-
-		.close-dialog:disabled {
-			background: gray;
-		}
-
-		/* 加载动画 */
-		.loading {
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			margin: 20px 0;
-		}
-
-		.spinner {
-			width: 30px;
-			height: 30px;
-			border: 3px solid #f3f3f3;
-			border-top: 3px solid #1877f2;
-			border-radius: 50%;
-			animation: spin 1s linear infinite;
-			margin-right: 10px;
-		}
-
-		@keyframes spin {
-			0% { transform: rotate(0deg); }
-			100% { transform: rotate(360deg); }
-		}
-	</style>
+	<link rel="stylesheet" href="./../static/css/verify.css">
 </head>
 <body>
 <div class="login-container">
@@ -196,8 +57,10 @@
 			<button type="submit" class="login-btn">登录</button>
 			<div id="message" class="error-message"></div>
 			<div class="info-text">
-				请注意：用户名为真实姓名，密码为学号。如果您是老师，请输入：真实姓名+111111
+				请注意：用户名为真实姓名，密码为学号。如果您是老师，请输入：真实姓名+111111；
+				如果您是本班的非中考学科教师或非本班教师，请输入：test+111111
 			</div>
+			<a href="/outdatedLogin" class="issue">使用怀旧版</a>
 			<a href="/issues" class="issue">无法登录？向翱三通史安全应急响应中心反映问题</a>
 		</form>
 	</div>
@@ -218,7 +81,7 @@
 			document.querySelector('#loginForm').dispatchEvent(new Event('submit'));
 		});
 		document.querySelector('.close-dialog').onclick = closeDialog;
-		console.log("init");
+		document.querySelector('#message').style.display = 'none';
 		checkAutoLogin();
 		loadAutoLoginSetting();
 	});
@@ -413,7 +276,7 @@
 
 		// 获取跳转页面
 		let jumpPage = document.referrer;
-		if (!jumpPage || jumpPage.includes(window.location.href)) {
+		if (!jumpPage || jumpPage.includes(window.location.href) || jumpPage.includes('/outdatedLogin')) {
 			jumpPage = "/";
 		}
 
@@ -473,6 +336,7 @@
 	// 显示消息
 	function showMessage(message, type) {
 		const messageElement = document.querySelector('#message');
+		messageElement.style.display = 'block';
 		messageElement.textContent = message;
 		messageElement.className = type === 'error' ? 'error-message' : 'success-message';
 	}
@@ -527,7 +391,7 @@
 
 		// 获取跳转页面
 		let jumpPage = document.referrer;
-		if (!jumpPage || jumpPage.includes(window.location.href)) {
+		if (!jumpPage || jumpPage.includes(window.location.href) || jumpPage.includes('/outdatedLogin')) {
 			jumpPage = "/";
 		}
 

@@ -4,56 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>翱三通史 · 简介</title>
+    <link rel="stylesheet" href="./../static/css/common.css">
     <!-- 引入 Font Awesome 仅作点缀 (可选) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* ===== 全局重置 & 史册基调 ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background-color: #2b2b1f;   /* 深檀木底 */
-            background-image:
-                    radial-gradient(circle at 10% 20%, rgba(200, 180, 140, 0.05) 0px, transparent 20%),
-                    radial-gradient(circle at 90% 80%, rgba(160, 130, 80, 0.08) 0px, transparent 30%),
-                    repeating-linear-gradient(45deg, rgba(120, 90, 50, 0.02) 0px, rgba(120, 90, 50, 0.02) 2px, transparent 2px, transparent 6px);
-            font-family: 'Georgia', 'Times New Roman', '宋体', 'Songti SC', serif;
-            min-height: 100vh;
-            padding: 2rem 1.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: #e8d6b5;
-        }
-
-        /* ===== 主标题 ===== */
-        h1 {
-            font-size: 3.2rem;
-            font-weight: 400;
-            letter-spacing: 8px;
-            color: #e8d6b5;
-            text-shadow: 3px 3px 0 #3a2e1e, 6px 6px 0 #1f1a10;
-            margin-bottom: 0.5rem;
-            border-bottom: 2px solid #b99e7c;
-            padding-bottom: 0.4rem;
-            display: inline-block;
-            text-transform: uppercase;
-            position: relative;
-            font-family: 'Times New Roman', '宋体', serif;
-        }
-        h1::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 10%;
-            width: 80%;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, #b99e7c, #dac292, #b99e7c, transparent);
-        }
-
         .subtitle {
             font-size: 1.1rem;
             color: #cbb291;
@@ -126,137 +80,6 @@
             color: #7a6a50;
             margin-top: 0.2rem;
             font-style: normal;
-        }
-
-        /* ===== 仿古签条（左、右固定） ===== */
-        .signature-container {
-            position: fixed;
-            left: 0;
-            background: #493e2d;
-            color: #dacbbc;
-            padding: 0.8rem 0.2rem;
-            writing-mode: vertical-rl;
-            font-size: 0.8rem;
-            border-radius: 0 12px 12px 0;
-            letter-spacing: 6px;
-            border: 1px solid #ad9b7c;
-            border-left: none;
-            box-shadow: 2px 4px 12px #0f0d09;
-            text-shadow: 0 0 2px #dec393;
-            font-family: 'Times New Roman', '楷体', serif;
-            z-index: 20;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            line-height: 1.4;
-            cursor: pointer;
-        }
-        .signature-container:hover {
-            background: #5f4f39;
-            color: #f0e2ce;
-            border-color: #dbbc93;
-            box-shadow: 4px 6px 16px #221e14;
-            letter-spacing: 8px;
-        }
-        .signature-link {
-            top: 25%;
-        }
-        .signature-btn {
-            top: 55%;
-        }
-        /* 隐藏原来的body::after */
-        body::after {
-            display: none;
-        }
-
-        /* ===== 核心：psg 列传容器（仿古籍版式） ===== */
-        #psg {
-            background: #f7efe0 linear-gradient(145deg, #f3ead9 0%, #faf3e2 70%);
-            border: 1px solid #bbaa8a;
-            border-radius: 32px 32px 24px 24px;
-            box-shadow: 0 20px 30px -10px rgba(0,0,0,0.7), inset 0 0 0 1px #fff6e5, inset 2px 2px 8px rgba(255, 245, 215, 0.8);
-            padding: 2.8rem 3.5rem;
-            margin: 2rem 0 2.5rem;
-            position: relative;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1.8rem 2.5rem;
-            max-width: 900px;
-            width: 100%;
-            transition: box-shadow 0.3s;
-        }
-        #psg::before {
-            content: '';
-            position: absolute;
-            top: -4px; left: -4px; right: -4px; bottom: -4px;
-            border: 1px solid rgba(140, 110, 70, 0.2);
-            border-radius: 36px 36px 28px 28px;
-            pointer-events: none;
-            box-shadow: inset 0 0 20px #bba27a40;
-        }
-        #psg::after {
-            content: '⸻  ⸻  卷帙浩渺  先贤列传  ⸻  ⸻';
-            display: block;
-            text-align: center;
-            font-size: 0.9rem;
-            color: #8f7b5f;
-            letter-spacing: 3px;
-            margin-top: 1.8rem;
-            font-style: italic;
-            font-family: 'Times New Roman', '楷体', serif;
-            border-top: 1px dashed #cbb291;
-            padding-top: 1.2rem;
-            opacity: 0.8;
-            grid-column: 1 / -1;
-        }
-
-        #psg a {
-            display: inline-block;
-            font-size: 2rem;
-            font-weight: normal;
-            color: #3c2e1f;
-            text-decoration: none;
-            padding: 0.7rem 1.8rem;
-            background: linear-gradient(145deg, #dac9ae, #efdfc7);
-            border: 1px solid #b5956b;
-            border-radius: 60px;
-            box-shadow: 0 8px 0 #7a623e, 0 12px 18px -8px #1f1a0e, inset 0 -2px 4px #fff4dd, inset 0 2px 4px #fffff0;
-            font-family: 'Georgia', 'Times New Roman', '宋体', serif;
-            letter-spacing: 2px;
-            transition: all 0.15s ease-in-out;
-            position: relative;
-            text-shadow: 1px 1px 0 #fff3e0;
-            white-space: nowrap;
-            text-align: center;
-            min-width: 160px;
-        }
-        #psg a::before,
-        #psg a::after {
-            content: '❦';
-            font-size: 1.3rem;
-            color: #a57c54;
-            opacity: 0.6;
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            pointer-events: none;
-        }
-        #psg a::before { left: 10px; }
-        #psg a::after { right: 10px; }
-
-        #psg a:hover {
-            transform: translateY(4px);
-            box-shadow: 0 4px 0 #7a623e, 0 16px 24px -10px #0a0804, inset 0 -1px 3px #fff1d6, inset 0 1px 5px #fffff0;
-            background: linear-gradient(145deg, #d2bea0, #ebdac2);
-            color: #241b10;
-            border-color: #b07d4c;
-        }
-        #psg a:active {
-            transform: translateY(8px);
-            box-shadow: 0 0 0 #7a623e, 0 18px 20px -12px #0f0b06, inset 0 -2px 4px #cfb894;
-        }
-        #psg a:visited {
-            color: #3f3324;
-            background: #dacbb2;
         }
 
         /* ===== 优化后的 introduce 区块 ===== */
@@ -503,50 +326,6 @@
             background: #f0e8d8;
             border-radius: 8px;
             display: inline-block;
-        }
-
-        /* ===== 页脚微痕 ===== */
-        .footnote {
-            max-width: 800px;
-            margin: 1rem auto 2rem;
-            padding: 0.8rem 1.5rem;
-            background: #3f3324a0;
-            border-radius: 40px;
-            border: 1px solid #7a6a50;
-            color: #dacbb2;
-            font-size: 0.85rem;
-            text-align: center;
-            backdrop-filter: blur(2px);
-            box-shadow: inset 0 1px 0 #b99e7c40;
-            letter-spacing: 1px;
-        }
-        .footnote i {
-            margin: 0 6px;
-            color: #b5956b;
-        }
-
-        /* ===== 响应式 ===== */
-        @media (max-width: 700px) {
-            h1 { font-size: 2.4rem; letter-spacing: 4px; }
-            .subtitle { font-size: 0.95rem; }
-            #psg { padding: 2rem 1.5rem; gap: 1.5rem; grid-template-columns: 1fr; }
-            #psg a { font-size: 1.6rem; padding: 0.6rem 1.2rem; min-width: 120px; white-space: normal; }
-            #psg a::before, #psg a::after { display: none; }
-            .image-container { width: 200px; }
-            .image-container img { height: 180px; }
-            .introduce { padding: 1.5rem 1.2rem; font-size: 0.95rem; }
-            .signature-container { font-size: 0.7rem; padding: 0.6rem 0.1rem; letter-spacing: 4px; }
-        }
-        @media (max-width: 500px) {
-            body { padding: 1rem 0.8rem; }
-            h1 { font-size: 2rem; }
-            .image-gallery { gap: 1.2rem; }
-            .image-container { width: 170px; }
-            .image-container img { height: 150px; }
-            #psg { padding: 1.5rem 1rem; }
-            #psg a { font-size: 1.3rem; padding: 0.5rem 0.8rem; }
-            .introduce { padding: 1rem 0.8rem; font-size: 0.9rem; }
-            .signature-container { display: none; } /* 极小屏隐藏签条 */
         }
     </style>
 </head>

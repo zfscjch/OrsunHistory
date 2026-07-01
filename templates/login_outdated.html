@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>翱三通史-登录</title>
+    <link rel="icon" href="" type="image/x-icon"/>
+    <style>
+        body {
+            font-family: Arial, serif;
+            background: #f0f2f5;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-container {
+            margin: 0;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 0.8rem;
+            background: #1877f2;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .login-btn:hover {
+            background: #166fe5;
+        }
+
+        .login-btn:disabled {
+            background: gray;
+        }
+
+        .error-message {
+            color: #ff4242;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .success-message {
+            color: #42b883;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .info-text {
+            font-size: 10px;
+            color: gray;
+            margin-top: 1rem;
+            line-height: 1.4;
+        }
+
+        .issue {
+            font-size: 0.8rem;
+            color: blue;
+            text-decoration: none;
+            margin-top: 1rem;
+            line-height: 1.4;
+        }
+
+        /* 自动登录样式 */
+        .check-area {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .check-area input {
+            width: auto;
+            margin-right: 8px;
+        }
+
+        .check-area label {
+            cursor: pointer;
+        }
+
+        .user-policy {
+            margin: auto !important;
+            border: none;
+        }
+
+        .show-policy {
+            color: blue;
+            cursor: pointer;
+        }
+
+        .close-dialog {
+            padding: 0.8rem;
+            border: none;
+            border-radius: 6px;
+            background: #1877f2;
+            color: white;
+            width: 100%;
+        }
+
+        .close-dialog:disabled {
+            background: gray;
+        }
+
+        /* 加载动画 */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            width: 30px;
+            height: 30px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #1877f2;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <h2>用户登录</h2>
+
+    <!-- 自动登录加载提示 -->
+    <div id="autoLoginLoading" class="loading" style="display: none;">
+        <div class="spinner"></div>
+        <span>正在自动登录...</span>
+    </div>
+
+    <div class="policy">
+        <dialog class="user-policy" id="policy-area">
+            <div id="policy"></div>
+            <button class="close-dialog" disabled>
+                <span id="disabled-hint"><span id="disabled-time">5</span>s后可以点击&nbsp;&nbsp;</span>
+                我已知晓《翱三通史官网用户信息保密协议》
+            </button>
+        </dialog>
+    </div>
+
+    <div class="allow-policy">
+        <dialog id="allow">
+            <div>登录即代表用户知晓并同意<span class="show-policy">《翱三通史官网用户信息保密协议》</span></div>
+            <button id="continue" class="login-btn" disabled>登录</button>
+        </dialog>
+    </div>
+
+    <div id="loginFormContainer">
+        <form id="loginForm">
+            <div class="form-group">
+                <input type="text" id="username" placeholder="用户名(请填写真实姓名)" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="password" placeholder="密码(请输入学号,如果您是老师,请输入111111)" required>
+            </div>
+
+            <!-- 自动登录选项 -->
+            <div class="check-area">
+                <input type="checkbox" id="autoLogin">
+                <label for="autoLogin">自动登录</label>
+            </div>
+
+            <div class="check-area">
+                <input type="checkbox" id="know-policy">
+                <label for="know-policy">已知晓</label><span id="show-p" class="show-policy">《翱三通史官网用户信息保密协议》</span>
+            </div>
+
+            <button type="submit" class="login-btn">登录</button>
+            <div id="message" class="error-message"></div>
+            <div class="info-text">
+                请注意：用户名为真实姓名，密码为学号。如果您是老师，请输入：真实姓名+111111；
+                如果您是本班的非中考学科教师或非本班教师，请输入：test+111111
+            </div>
+            <a href="/login" class="issue">返回现代版</a><br>
+            <a href="/issues" class="issue">无法登录？向翱三通史安全应急响应中心反映问题</a>
+        </form>
+    </div>
+</div>
+
+<script>
+    // 存储配置
+    const AUTO_LOGIN_KEY = 'Orsun_Auto_Login';
+    const USER_DATA_KEY = 'Orsun_User_Data';
+
+    // 页面加载时检查自动登录
+    window.addEventListener('DOMContentLoaded', function() {
+        const showPolicyButtons = document.querySelectorAll('.show-policy');
+        showPolicyButtons.forEach(btn => btn.addEventListener('click', () => showUserPolicy()));
+        const continueBtn = document.querySelector('#continue');
+        continueBtn.addEventListener('click', () => {
+            document.querySelector('#allow').close();
+            document.querySelector('#loginForm').dispatchEvent(new Event('submit'));
+        });
+        document.querySelector('.close-dialog').onclick = closeDialog;
+        console.log("init");
+        checkAutoLogin();
+        loadAutoLoginSetting();
+    });
+
+    // 检查是否应该自动登录
+    async function checkAutoLogin() {
+        try {
+            console.log("checking...");
+            if (sessionStorage.getItem("fromIndex")) return;
+            const autoLoginData = localStorage.getItem(AUTO_LOGIN_KEY);
+            if (!autoLoginData) return;
+
+            const config = JSON.parse(autoLoginData);
+            console.log(config);
+
+            // 检查配置是否有效
+            if (!config.enabled || !config.username || !config.password) return;
+
+            // 检查是否过期（可选：设置30天有效期）
+            if (config.expireTime && new Date().getTime() > config.expireTime) {
+                clearAutoLogin();
+                return;
+            }
+
+            const isContinue = confirm("上次登录的用户" + config.username + "开启了自动登录，请问是否继续自动登录？");
+            if (!isContinue) return;
+
+            // 显示自动登录提示，隐藏登录表单
+            document.querySelector('#autoLoginLoading').style.display = 'flex';
+            document.querySelector('#loginFormContainer').style.display = 'none';
+
+            // 尝试自动登录
+            await attemptAutoLogin(config.username, config.password);
+
+        } catch (e) {
+            console.error('自动登录检查失败:', e);
+            // 显示登录表单
+            document.querySelector('#autoLoginLoading').style.display = 'none';
+            document.querySelector('#loginFormContainer').style.display = 'block';
+        }
+    }
+
+    // 尝试自动登录
+    async function attemptAutoLogin(username, password) {
+        return new Promise((resolve) => {
+            showMessage('正在自动登录...', 'success');
+
+            sendMessageForAutoLogin(username, password, (success, userId, isTeacher, errorHint) => {
+                if (success) {
+                    // 自动登录成功，直接跳转
+                    handleAutoLoginSuccess(username, password, userId, isTeacher, errorHint);
+                } else {
+                    // 自动登录失败，显示登录表单
+                    document.querySelector('#autoLoginLoading').style.display = 'none';
+                    document.querySelector('#loginFormContainer').style.display = 'block';
+                    showMessage('自动登录失败，请手动登录', 'error');
+
+                    // 填充用户名
+                    document.querySelector('#username').value = username;
+
+                    // 如果是老师，填充密码
+                    if (password === '111111') {
+                        document.querySelector('#password').value = password;
+                    }
+                }
+                resolve();
+            });
+        });
+    }
+
+    async function showUserPolicy() {
+        const policyArea = document.querySelector('#policy-area');
+        const policyDiv = document.querySelector("#policy");
+        if (!policyDiv.shadowRoot) {
+            const res = await fetch("/userPolicy", { method: 'GET', credentials: 'same-origin' });
+            policyDiv.attachShadow({mode: 'open'});
+            policyDiv.shadowRoot.innerHTML = await res.text();
+        }
+        policyArea.showModal();
+        const hint = document.querySelector('#disabled-hint');
+        const timeoutSpan = document.querySelector('#disabled-time');
+        const sureBtn = document.querySelector('.close-dialog');
+        const timeLoop = setInterval(() => {
+            let time = parseInt(timeoutSpan.innerText);
+            if (time > 0) {
+                time--;
+                timeoutSpan.innerText = time.toString();
+            } else {
+                clearInterval(timeLoop);
+                hint.style.display = 'none';
+                sureBtn.disabled = false;
+                document.querySelector("#continue").disabled = false;
+            }
+        }, 1000)
+    }
+
+    function closeDialog() {
+        document.querySelector("#policy-area").close();
+        document.querySelector('#know-policy').checked = true;
+    }
+
+    // 专为自动登录的发送消息函数
+    function sendMessageForAutoLogin(username, password, callback) {
+        const data = {
+            user: username,
+            pwd: password
+        };
+
+        fetch("/api/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.status === "success") {
+                    callback(true, data.user_id, data.isT, data.error_hint);
+                } else {
+                    // 自动登录失败，清除保存的登录信息
+                    clearAutoLogin();
+                    callback(false, null);
+                }
+            })
+            .catch((err) => {
+                console.error("自动登录错误:", err);
+                callback(false);
+            });
+    }
+
+    // 加载自动登录设置
+    function loadAutoLoginSetting() {
+        try {
+            const savedConfig = localStorage.getItem(AUTO_LOGIN_KEY);
+            if (savedConfig) {
+                const config = JSON.parse(savedConfig);
+                document.querySelector('#autoLogin').checked = config.enabled || false;
+            }
+        } catch (e) {
+            console.error('加载自动登录设置失败:', e);
+        }
+    }
+
+    // 保存自动登录配置
+    function saveAutoLoginConfig(username, password) {
+        try {
+            const autoLoginCheckbox = document.querySelector('#autoLogin');
+
+            if (autoLoginCheckbox.checked) {
+                // 保存自动登录信息（30天有效期）
+                const config = {
+                    enabled: true,
+                    username: username,
+                    password: password, // 注意：实际环境中应考虑加密存储
+                    saveTime: new Date().getTime(),
+                    expireTime: new Date().getTime() + (30 * 24 * 60 * 60 * 1000) // 30天后过期
+                };
+                localStorage.setItem(AUTO_LOGIN_KEY, JSON.stringify(config));
+
+                // 同时保存用户数据用于显示
+                localStorage.setItem(USER_DATA_KEY, JSON.stringify({
+                    username: username,
+                    isTeacher: password === "111111"
+                }));
+            } else {
+                // 清除自动登录配置
+                clearAutoLogin();
+            }
+        } catch (e) {
+            console.error('保存自动登录配置失败:', e);
+        }
+    }
+
+    // 清除自动登录配置
+    function clearAutoLogin() {
+        try {
+            localStorage.removeItem(AUTO_LOGIN_KEY);
+            document.querySelector('#autoLogin').checked = false;
+        } catch (e) {
+            console.error('清除自动登录配置失败:', e);
+        }
+    }
+
+    // 处理自动登录成功
+    function handleAutoLoginSuccess(username, password, userId, isTeacher, errorHint) {
+        sessionStorage.setItem("user", username);
+        sessionStorage.setItem("isTeacher", isTeacher.toString());
+        sessionStorage.setItem("userID", userId);
+
+        if (errorHint) alert(errorHint);
+
+        // 获取跳转页面
+        let jumpPage = document.referrer;
+        if (!jumpPage || jumpPage.includes(window.location.href) || jumpPage.includes('/login')) {
+            jumpPage = "/";
+        }
+
+        // 延迟跳转
+        setTimeout(() => {
+            try {
+                if (jumpPage !== "/") {
+                    // 构建跳转URL
+                    const redirectUrl = new URL(jumpPage).toString();
+                    console.log("自动登录跳转到:", redirectUrl);
+                    window.location.href = redirectUrl;
+                } else {
+                    window.location.href = "/";
+                }
+            } catch (err) {
+                console.error('跳转失败:', err);
+                // 显示登录表单
+                document.querySelector('#autoLoginLoading').style.display = 'none';
+                document.querySelector('#loginFormContainer').style.display = 'block';
+                showMessage('自动登录跳转失败', 'error');
+            }
+        }, 500); // 给用户一点时间看到自动登录成功的提示
+    }
+
+    // 登录表单提交处理
+    document.querySelector('#loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const username = document.querySelector('#username').value.trim();
+        const password = document.querySelector('#password').value.trim();
+        const knowPolicyInput = document.querySelector('#know-policy');
+        const messageElement = document.querySelector('#message');
+
+        // 重置消息提示
+        messageElement.textContent = '';
+        messageElement.className = 'error-message';
+
+        // 基础验证
+        if (!username || !password) {
+            showMessage('用户名和密码不能为空', 'error');
+            return;
+        }
+
+        if (!knowPolicyInput.checked) {
+            const allowDialog = document.querySelector('#allow');
+            allowDialog.showModal();
+            return;
+        }
+
+        // 显示登录中状态
+        showMessage('登录中...', 'success');
+
+        // 查找用户
+        sendMessage(username, password);
+    });
+
+    // 显示消息
+    function showMessage(message, type) {
+        const messageElement = document.querySelector('#message');
+        messageElement.textContent = message;
+        messageElement.className = type === 'error' ? 'error-message' : 'success-message';
+    }
+
+    // 发送消息到服务器
+    function sendMessage(username, password) {
+        const data = {
+            user: username,
+            pwd: password
+        };
+
+        fetch("/api/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                console.log(data);
+                if (data.status === "success") {
+                    // 保存自动登录配置
+                    saveAutoLoginConfig(username, password);
+                    handleLoginSuccess(username, password, data.user_id, data.isT, data.isActive, data.error_hint);
+                } else {
+                    showMessage(data.msg, "error");
+                }
+            })
+            .catch((err) => {
+                console.error("错误:", err);
+                showMessage("网络错误，请稍后再试", 'error');
+            });
+    }
+
+    // 处理登录成功
+    function handleLoginSuccess(username, password, userId, isTeacher, isActive, errorHint) {
+        showMessage('登录成功，正在跳转...', 'success');
+        sessionStorage.setItem("user", username);
+        sessionStorage.setItem("isTeacher", isTeacher.toString());
+        sessionStorage.setItem("userID", userId);
+
+        if (errorHint) alert(errorHint);
+
+        if (!isActive) {
+            showMessage("用户账号还未激活，正在跳转激活页……", "error");
+            setTimeout(() => {
+                window.location.href = "/face/";
+            }, 1000);
+            return;
+        }
+
+        // 获取跳转页面
+        let jumpPage = document.referrer;
+        if (!jumpPage || jumpPage.includes(window.location.href) || jumpPage.includes('/login')) {
+            jumpPage = "/";
+        }
+
+        // 延迟跳转
+        setTimeout(() => {
+            try {
+                // 构建跳转URL
+                if (jumpPage !== "/") {
+                    const redirectUrl = new URL(jumpPage).toString();
+                    console.log("跳转到:", redirectUrl);
+                    window.location.href = redirectUrl;
+                } else {
+                    window.location.href = "/";
+                }
+            } catch (err) {
+                console.error('跳转失败:', err);
+                showMessage('跳转失败，请手动访问目标页面', 'error');
+            }
+        }, 500);
+    }
+</script>
+</body>
+</html>

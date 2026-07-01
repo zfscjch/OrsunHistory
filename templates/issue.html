@@ -3,30 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>翱三通史 - 安全应急响应中心</title>
+    <link rel="stylesheet" href="./../static/css/common.css">
     <style>
-        /* ===== 全局重置与基调 —— 与 index.html 保持一致 ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background-color: #2b2b1f;  /* 深檀木色底，模拟历史沉淀 */
-            font-family: 'Georgia', 'Times New Roman', '宋体', 'Songti SC', serif;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 2rem 1rem;
-            background-image:
-                    radial-gradient(circle at 10% 20%, rgba(200, 180, 140, 0.05) 0px, transparent 20%),
-                    radial-gradient(circle at 90% 80%, rgba(160, 130, 80, 0.08) 0px, transparent 30%),
-                    repeating-linear-gradient(45deg, rgba(120, 90, 50, 0.02) 0px, rgba(120, 90, 50, 0.02) 2px, transparent 2px, transparent 6px);
-        }
-
-        /* ===== 主容器 —— 仿若一本摊开的史册 ===== */
+        /* ===== issue.html 特有样式 ===== */
         .container {
             background: #f7efe0 linear-gradient(145deg, #f3ead9 0%, #faf3e2 70%);
             border: 1px solid #bbaa8a;
@@ -43,7 +22,6 @@
             transition: box-shadow 0.3s ease;
         }
 
-        /* 古书虫蚀 / 毛边效果 (装饰用伪元素) */
         .container::before {
             content: '';
             position: absolute;
@@ -54,41 +32,13 @@
             box-shadow: inset 0 0 20px #bba27a40;
         }
 
-        /* ===== 标题 ===== */
-        h1 {
-            font-size: 2.2rem;
-            font-weight: 400;
-            letter-spacing: 6px;
-            color: #e8d6b5;
-            text-shadow: 3px 3px 0 #3a2e1e, 6px 6px 0 #1f1a10;
-            margin-bottom: 2.5rem;
-            border-bottom: 2px solid #b99e7c;
-            padding-bottom: 0.5rem;
-            display: inline-block;
-            font-family: 'Times New Roman', '宋体', serif;
-            text-transform: uppercase;
-            word-break: keep-all;
-            position: relative;
-        }
-
-        h1::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 10%;
-            width: 80%;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, #b99e7c, #dac292, #b99e7c, transparent);
-        }
-
-        /* ===== 表单样式 ===== */
+        /* 表单样式 */
         #issueForm {
             display: flex;
             flex-direction: column;
             gap: 1.2rem;
         }
 
-        /* 标签 —— 仿古书眉批 */
         #issueForm label {
             font-size: 1.1rem;
             color: #3c2e1f;
@@ -107,12 +57,10 @@
             opacity: 0.7;
         }
 
-        /* 用户名输入框 —— 隐藏但保留用于逻辑 */
         #username {
             display: none;
         }
 
-        /* 文本框 —— 仿古书页 */
         #issueForm textarea {
             background: #fcf8f0;
             border: 2px solid #cbb291;
@@ -141,7 +89,7 @@
             opacity: 0.7;
         }
 
-        /* 提交按钮 —— 与 index.html 的链接风格一致 */
+        /* 提交按钮（与 common 的 #psg a 风格统一，但做了微调） */
         #submitIssue {
             display: inline-block;
             font-size: 1.3rem;
@@ -149,7 +97,6 @@
             color: #3c2e1f;
             text-decoration: none;
             padding: 0.8rem 2.2rem;
-            background: #e5d8c1;
             background: linear-gradient(145deg, #dac9ae, #efdfc7);
             border: 1px solid #b5956b;
             border-radius: 60px;
@@ -168,7 +115,6 @@
             width: 100%;
         }
 
-        /* 按钮装饰符 */
         #submitIssue::before {
             content: '❦';
             font-size: 1.2rem;
@@ -185,29 +131,20 @@
             margin-left: 10px;
         }
 
-        /* 按钮悬停 */
         #submitIssue:hover {
             transform: translateY(4px);
-            box-shadow:
-                    0 4px 0 #7a623e,
-                    0 16px 24px -10px #0a0804,
-                    inset 0 -1px 3px #fff1d6,
-                    inset 0 1px 5px #fffff0;
+            box-shadow: 0 4px 0 #7a623e, 0 16px 24px -10px #0a0804, inset 0 -1px 3px #fff1d6, inset 0 1px 5px #fffff0;
             background: linear-gradient(145deg, #d2bea0, #ebdac2);
             color: #241b10;
             border-color: #b07d4c;
         }
 
-        /* 按钮点击 */
         #submitIssue:active {
             transform: translateY(8px);
-            box-shadow:
-                    0 0 0 #7a623e,
-                    0 18px 20px -12px #0f0b06,
-                    inset 0 -2px 4px #cfb894;
+            box-shadow: 0 0 0 #7a623e, 0 18px 20px -12px #0f0b06, inset 0 -2px 4px #cfb894;
         }
 
-        /* ===== 响应消息 ===== */
+        /* 响应消息 */
         #responseMessage {
             margin-top: 1.5rem;
             padding: 0.5rem 0;
@@ -234,7 +171,7 @@
             background: rgba(180, 90, 70, 0.08);
         }
 
-        /* ===== 页脚 ===== */
+        /* 页脚 */
         .footer {
             margin-top: 2rem;
             font-size: 0.9rem;
@@ -260,8 +197,8 @@
             border-bottom-color: #3c2e1f;
         }
 
-        /* ===== 仿古签条 (右侧) ===== */
-        .signature-container {
+        /* 右侧签名条（使用独立类，避免与 common 的 .signature-container 冲突） */
+        .signature-right {
             position: fixed;
             right: 0;
             top: 40%;
@@ -285,7 +222,7 @@
             pointer-events: none;
         }
 
-        .signature-container:hover {
+        .signature-right:hover {
             background: #5f4f39;
             color: #f0e2ce;
             border-color: #dbbc93;
@@ -293,78 +230,7 @@
             letter-spacing: 8px;
         }
 
-        /* ===== 响应式 ===== */
-        @media (max-width: 700px) {
-            h1 {
-                font-size: 1.8rem;
-                letter-spacing: 3px;
-                text-shadow: 2px 2px 0 #3a2e1e, 4px 4px 0 #1f1a10;
-            }
-
-            .container {
-                padding: 2rem 1.5rem;
-                margin: 1rem 0.5rem;
-            }
-
-            #issueForm label {
-                font-size: 1rem;
-            }
-
-            #submitIssue {
-                font-size: 1.1rem;
-                padding: 0.6rem 1.5rem;
-            }
-
-            #submitIssue::before,
-            #submitIssue::after {
-                font-size: 1rem;
-            }
-
-            .signature-container {
-                font-size: 0.7rem;
-                padding: 0.6rem 0.15rem;
-                letter-spacing: 4px;
-            }
-        }
-
-        @media (max-width: 500px) {
-            body {
-                padding: 1rem 0.5rem;
-            }
-
-            .container {
-                padding: 1.5rem 1rem;
-                border-radius: 24px;
-            }
-
-            h1 {
-                font-size: 1.5rem;
-                letter-spacing: 2px;
-            }
-
-            #issueForm textarea {
-                min-height: 100px;
-                font-size: 0.95rem;
-                padding: 0.8rem;
-            }
-
-            #submitIssue {
-                font-size: 1rem;
-                padding: 0.5rem 1rem;
-                letter-spacing: 1px;
-            }
-
-            #submitIssue::before,
-            #submitIssue::after {
-                display: none;
-            }
-
-            .signature-container {
-                display: none;
-            }
-        }
-
-        /* ===== 顶部导航小标签（与 index 呼应） ===== */
+        /* 顶部导航标签 */
         .nav-tag {
             position: fixed;
             top: 12px;
@@ -393,6 +259,72 @@
         .nav-tag::before {
             content: '← ';
             opacity: 0.7;
+        }
+
+        /* 覆盖 common.css 中的 h1 大小（因为 issue 需要稍小） */
+        h1 {
+            font-size: 2.2rem; /* 覆盖 common 的 3rem */
+            margin-bottom: 2.5rem; /* 可调整 */
+        }
+
+        /* 响应式微调（保留原有的移动端调整，与 common 互补） */
+        @media (max-width: 700px) {
+            h1 {
+                font-size: 1.8rem;
+                letter-spacing: 3px;
+                text-shadow: 2px 2px 0 #3a2e1e, 4px 4px 0 #1f1a10;
+            }
+            .container {
+                padding: 2rem 1.5rem;
+                margin: 1rem 0.5rem;
+            }
+            #issueForm label {
+                font-size: 1rem;
+            }
+            #submitIssue {
+                font-size: 1.1rem;
+                padding: 0.6rem 1.5rem;
+            }
+            #submitIssue::before,
+            #submitIssue::after {
+                font-size: 1rem;
+            }
+            .signature-right {
+                font-size: 0.7rem;
+                padding: 0.6rem 0.15rem;
+                letter-spacing: 4px;
+            }
+        }
+
+        @media (max-width: 500px) {
+            body {
+                padding: 1rem 0.5rem;
+            }
+            .container {
+                padding: 1.5rem 1rem;
+                border-radius: 24px;
+            }
+            h1 {
+                font-size: 1.5rem;
+                letter-spacing: 2px;
+            }
+            #issueForm textarea {
+                min-height: 100px;
+                font-size: 0.95rem;
+                padding: 0.8rem;
+            }
+            #submitIssue {
+                font-size: 1rem;
+                padding: 0.5rem 1rem;
+                letter-spacing: 1px;
+            }
+            #submitIssue::before,
+            #submitIssue::after {
+                display: none;
+            }
+            .signature-right {
+                display: none;
+            }
         }
     </style>
 </head>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -310,7 +310,7 @@
     </style>
     <script>
         window.addEventListener("message", e => {
-            if (e.origin !== "http://129.211.162.48:3/index" || e.origin !== "http://129.211.162.48:3/login") return;
+            if (e.origin !== "https://www.cjchcoderchat.site:3") return;
             if (e.type === "AUTH_STATE" && e.isLoggedIn) {
                 sessionStorage.setItem("user", e.user);
                 sessionStorage.setItem("isTeacher", e.isTeacher.toString());
