@@ -451,7 +451,7 @@ def update_user():
         if "user_id" not in data or "pwd" not in data or not "settings" in data:
             return api_response("error", "缺少参数", http_code=400)
 
-        user_mgr.update_user(data["user_id"], data["pwd"], data["settings"])
+        user_mgr.update_user(data["user_id"], data["pwd"], data["settings"], data.get("a", False))
         return api_response("success")
     except Exception as e:
         log_mgr.error("sys", f"重置密码时发生错误：{e}", "127.0.0.1")

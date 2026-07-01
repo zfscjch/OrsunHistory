@@ -100,7 +100,7 @@ class UserMgr:
                                (password_hash, user_id))
                 conn.commit()
 
-    def update_user(self, user_id, password, settings="default"):
+    def update_user(self, user_id, password="default", settings="default", change_active=False):
         password_hash = bcrypt.hashpw(
             password.encode('utf-8'),
             bcrypt.gensalt()
@@ -121,6 +121,8 @@ class UserMgr:
                     sql = "UPDATE users SET password_hash = %s, settings = %s WHERE id = %s"
                     args = (password_hash, settings, user_id)
                 cursor.execute(sql, args)
+                if change_active:
+                    cursor.execute("UPDATE users SET is_active = 1 WHERE id = %s", (user_id,))
                 conn.commit()
 
     def get_settings(self, user_id):

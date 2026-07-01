@@ -112,8 +112,7 @@ class FaceRecognizer:
                     # 如果没有已知人脸数据库
                     results.append({
                         "name": "Unknown (No Database)",
-                        "confidence": 0,
-                        "location": face_location
+                        "confidence": 0
                     })
                     continue
 
@@ -130,13 +129,11 @@ class FaceRecognizer:
                     results.append({
                         "name": name,
                         "confidence": round(confidence, 3),
-                        "location": face_location  # (top, right, bottom, left)
                     })
                 else:
                     results.append({
                         "name": "Unknown",
                         "confidence": 0,
-                        "location": face_location
                     })
 
             return {
@@ -218,7 +215,6 @@ class FaceRecognizer:
             return {
                 "success": True,
                 "message": f"用户 {name} 注册成功",
-                "face_location": face_locations[0]
             }
 
         except Exception as e:

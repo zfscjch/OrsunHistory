@@ -9,8 +9,6 @@ def get_user(username):
                            WHERE username = %s
                            """, (username,))
             user_id = cursor.fetchone()[0]
-            cursor.execute("UPDATE users SET is_active = 1 WHERE id = %s", (user_id,))
-            conn.commit()
             if user_id:
                 is_teacher = (49 <= user_id <= 60)
                 return "success", {"user": username, "isT": is_teacher, "user_id": user_id}
