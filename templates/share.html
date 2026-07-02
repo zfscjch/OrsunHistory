@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>翱三通史 · 分享</title>
+    <link rel="stylesheet" href="./../static/css/article.css">
+    <style>
+        #content {
+            transition: font-size 0.01s;
+        }
+
+        /* 字号控制区域样式 */
+        label[for="fontSizeSelect"] {
+            display: inline-block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #2e3b2c;
+            margin-right: 12px;
+            letter-spacing: 1px;
+            font-family: 'Microsoft YaHei', 'Georgia', serif;
+        }
+
+        /* 优化选择框样式 */
+        #fontSizeSelect {
+            padding: 8px 32px 8px 16px;
+            font-size: 0.9rem;
+            font-family: 'Microsoft YaHei', 'Georgia', serif;
+            color: #2e3b2c;
+            background: #f9f5e8 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%232e3b2c' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 12px center;
+            border: 1px solid #d4c9b8;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            appearance: none;
+            -webkit-appearance: none;
+            min-width: 180px;
+        }
+
+        /* 选择框悬停效果 */
+        #fontSizeSelect:hover {
+            background-color: #efe8d8;
+            border-color: #b8aa94;
+            box-shadow: 0 2px 8px rgba(46, 59, 44, 0.06);
+        }
+
+        /* 选择框聚焦效果 */
+        #fontSizeSelect:focus {
+            outline: none;
+            border-color: #9bb88b;
+            box-shadow: 0 0 0 3px rgba(155, 184, 139, 0.15);
+        }
+
+        /* 选择框选项样式（部分浏览器支持） */
+        #fontSizeSelect option {
+            padding: 8px 12px;
+            background: #fefcf8;
+            color: #2e3b2c;
+            font-family: 'Microsoft YaHei', 'Georgia', serif;
+        }
+
+        /* 选择框选项悬停（Firefox 支持） */
+        #fontSizeSelect option:hover {
+            background: #efe8d8;
+        }
+
+        /* 将选择器组合成一行，方便布局 */
+        .article-container label[for="fontSizeSelect"],
+        .article-container #fontSizeSelect {
+            vertical-align: middle;
+        }
+
+        /* 版权区域样式 */
+        .copyright {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            text-align: center;
+            border-top: 2px solid #e8e0d6;
+            font-family: 'Microsoft YaHei', 'Georgia', serif;
+        }
+
+        .copyright a {
+            color: #5a7a4a;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            font-weight: 500;
+        }
+
+        .copyright a:hover {
+            color: #2e3b2c;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
+        .copyright p {
+            margin-top: 0.8rem;
+            font-size: 0.8rem;
+            color: #8a9a8a;
+            letter-spacing: 0.3px;
+            line-height: 1.6;
+        }
+
+        .copyright p a {
+            color: #6a8a5a;
+            font-weight: 400;
+        }
+
+        .copyright p a:hover {
+            color: #2e3b2c;
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 600px) {
+            .copyright {
+                margin-top: 2rem;
+                padding-top: 1rem;
+            }
+
+            .copyright p {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="article-container">
+    <div class="article-badge {% if article.is_stu %}badge-student{% else %}badge-teacher{% endif %}">
+        {% if article.is_stu %}🎓 学生传记{% else %}📖 教师传记{% endif %}
+    </div>
+
+    <h1 id="title">{{ article.title|default('无标题') }}</h1>
+
+    <article id="content" data-passage-id="{{ article.id }}" data-is-stu="{{ article.is_stu }}" data-slug="{{ article.slug }}">
+        {{ article.content|default('')|safe }}
+    </article>
+
+    <p id="author">{{ article.author|default('作者：未知') }}</p>
+
+    <label for="fontSizeSelect">调整字号</label>
+    <select id="fontSizeSelect">
+        <option value="1.05rem" id="normal">普通字号</option>
+        <option value="80px" id="big">老年教师友好字号</option>
+    </select>
+    <br>
+    <button id="createShareLink"> 创建分享链接 </button>
+    <div class="copyright">
+        <a href="/">预知更多，请访问翱三通史官网首页</a>
+        <p>&copy; 2025-2026
+            <a href="https://github.com/zfscjch/OrsunHistory">Orsun History Dev Team</a>.
+            All Rights Reserved.
+        </p>
+    </div>
+</div>
+<script>
+    const createShareLinkBtn = document.querySelector('#createShareLink');
+    createShareLinkBtn.addEventListener('click', async () => {
+        const url = window.location.href;
+        try {
+            await navigator.clipboard.writeText(url);
+            alert("链接已复制到剪切板！");
+        } catch (e) {
+            console.error(e);
+            alert("链接复制失败！");
+        }
+    });
+
+    document.querySelector('#fontSizeSelect').addEventListener('change', () => {
+        const normalOption = document.querySelector('#normal');
+        const bigOption = document.querySelector('#big');
+        const content = document.querySelector('#content');
+
+        if (normalOption.selected) {
+            content.style.fontSize = normalOption.value;
+        } else {
+            content.style.fontSize = bigOption.value;
+        }
+
+
+        void content.offsetHeight;
+    });
+
+    function init() {
+        const hideParas = document.querySelectorAll(".hide");
+        hideParas.forEach(hidePara => hidePara.style.display = 'none');
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

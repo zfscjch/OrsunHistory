@@ -263,7 +263,19 @@ def get_students(slug):
     return render_article(slug, students_mgr, True)
 
 
-def render_article(slug: str, mgr, is_stu: bool):
+@app.route('/share')
+def get_share():
+    args = request.args
+    slug = args.get("slug")
+    article_type = args.get("t", "t")
+    if article_type == "s":
+        mgr = students_mgr
+    else:
+        mgr = psg_mgr
+    return render_article(slug, mgr, article_type == "s", True)
+
+
+def render_article(slug: str, mgr, is_stu: bool, share=False):
     """统一渲染文章页面"""
     try:
         psg, code = mgr.get_article(slug)
@@ -286,7 +298,7 @@ def render_article(slug: str, mgr, is_stu: bool):
             content = "[文章还在审核中……]"
         elif psg[7] == "rejected":
             content = ("<strong>该稿件存在根本性的价值导向问题，不予通过。请深刻反思创作导向，重新审视表达边界。</strong>" +
-                       "\n——翱三通史传记审核系统")
+                       "<br>——翱三通史传记审核系统")
 
         article = {
             "id": int(psg_id) if psg_id else 0,
@@ -307,6 +319,10 @@ def render_article(slug: str, mgr, is_stu: bool):
                 saying = f"{idx+1}. {saying}"
                 sayings_list[idx] = saying
             article["sayings"] = "<br>".join(sayings_list)
+
+        # 使用分享文章的 share.html 模板
+        if share:
+            return render_template("share.html", article=article)
 
         # 使用统一的 article.html 模板
         return render_template("article.html", article=article)
