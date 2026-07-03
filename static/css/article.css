@@ -408,7 +408,8 @@ h1 {
 }
 
 /* 优化后的“创建分享链接”按钮样式 —— 匹配文章页复古书卷风格 */
-#createShareLink {
+.share-link {
+    text-decoration: none;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -430,7 +431,7 @@ h1 {
 }
 
 /* 按钮悬停效果 —— 呼应 .edit-link 的交互 */
-#createShareLink:hover {
+.share-link:hover {
     background: #efe8d8;
     border-color: #b8aa94;
     transform: translateY(-2px);
@@ -438,20 +439,20 @@ h1 {
 }
 
 /* 按钮点击效果 */
-#createShareLink:active {
+.share-link:active {
     transform: scale(0.97) translateY(0);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     transition-duration: 0.08s;
 }
 
 /* 键盘聚焦样式 */
-#createShareLink:focus-visible {
+.share-link:focus-visible {
     outline: 2px solid #9bb88b;
     outline-offset: 3px;
 }
 
 /* 按钮内的图标 🔗 —— 与字体协调 */
-#createShareLink::before {
+.share-link::before {
     content: "🔗";
     font-size: 1.05rem;
     line-height: 1;
@@ -460,13 +461,13 @@ h1 {
 }
 
 /* 悬停时图标微微移动，增添细腻动效 */
-#createShareLink:hover::before {
+.share-link:hover::before {
     transform: translateX(2px) scale(1.05);
 }
 
 /* 移动端适配 —— 与整体响应式一致 */
 @media (max-width: 600px) {
-    #createShareLink {
+    .share-link {
         width: 100%;
         max-width: 280px;
         padding: 14px 20px;

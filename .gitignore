@@ -4,6 +4,7 @@ functions/db/known_faces/
 functions/test/
 functions/__pycache__/
 functions/config.py
+static/doc
 
 *.bat
 *.log

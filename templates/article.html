@@ -319,9 +319,11 @@
         <h2>📜 语录</h2>
         <div id="sayings">{{ article.sayings|default('暂未统计语录')|safe }}</div>
     </div>
+
+    <a class="share-link" href="/download/{{ article.slug }}" download>下载原文</a>
     {% endif %}
 
-    <button id="createShareLink"> 创建分享链接 </button>
+    <button id="createShareLink" class="share-link"> 创建分享链接 </button>
 
     <!-- 评论区域 - 所有文章都支持评论 -->
     <div id="comments">

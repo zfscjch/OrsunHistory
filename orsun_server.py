@@ -2,7 +2,7 @@ import os
 import re
 import traceback
 from typing import Literal
-from flask import Flask, request, jsonify, abort, render_template, redirect, Response, g
+from flask import Flask, request, jsonify, abort, render_template, redirect, Response, g, current_app, url_for
 from flask_cors import CORS
 from functions import *
 
@@ -545,6 +545,50 @@ def get_settings():
 @app.route('/user')
 def get_user():
     return render_template("user.html")
+
+@app.route('/download/<slug>')
+def get_download(slug):
+    # 1. 严格验证 slug 格式（只允许小写字母）
+    if not re.match(r'^[a-z]+$', slug):
+        abort(400, description="无效的下载标识符")
+
+    # 2. 将映射数据移到配置文件或数据库
+    PSG_MAP = Config.PSG_MAP
+
+    # 3. 安全的文件名映射
+    doc_name = "翱三通史·"
+
+    if slug == "hyq":
+        doc_name += "主任本纪.docx"
+    else:
+        target = PSG_MAP.get(slug)
+        if not target:
+            abort(404, description="未找到对应的文档")
+        # 4. 清理目标名称，移除危险字符
+        safe_target = re.sub(r'[^\w\u4e00-\u9fff]', '', target)
+        if not safe_target:
+            abort(400, description="无效的文档名称")
+        doc_name += safe_target + "传.docx"
+
+    # 5. 使用安全的路径构建
+    base_dir = current_app.root_path
+    safe_path = os.path.join(base_dir, "static", "doc")
+    full_path = os.path.join(safe_path, doc_name)
+
+    # 6. 验证路径是否在允许的目录内（防止路径遍历）
+    real_path = os.path.realpath(full_path)
+    if not real_path.startswith(os.path.realpath(safe_path)):
+        abort(403, description="禁止访问此路径")
+
+    if not os.path.exists(real_path):
+        abort(404, description="文件不存在")
+
+    if not os.path.isfile(real_path):
+        abort(400, description="无效的文件类型")
+
+    # 7. 使用 url_for 生成安全的 URL
+    return redirect(url_for('static', filename=f"doc/{doc_name}"))
+
 
 app.register_blueprint(face_bp, url_prefix="/face")
 app.register_blueprint(admin_bp, url_prefix="/admin")
