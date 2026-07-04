@@ -244,6 +244,12 @@
             }
         });
 
+        function logout() {
+            sessionStorage.setItem("fromIndex", "1");
+            sessionStorage.removeItem("user");
+            window.location.href = "/login";
+        }
+
         function getArticle(author) {
             const data = {author: author, type: "article"};
             fetch("/api/get-articles", {
@@ -309,6 +315,7 @@
 
             const aLinks = document.querySelectorAll("a");
             aLinks.forEach(aLink => {
+                if (!aLink.href) return;
                 aLink.addEventListener("click", (e) => {
                     e.preventDefault();
                     const popup = window.open(aLink.href);
@@ -352,11 +359,6 @@
     <a class="signature-container signature-btn" onclick="logout()">✻ 退出登录 ✻</a>
 </div>
 <script type="module">
-    function logout() {
-        sessionStorage.setItem("fromIndex", "1");
-        sessionStorage.removeItem("user");
-        window.location.href = "/login";
-    }
     import { isAdmin } from "../static/js/checkAdmin.js";
     const user = sessionStorage.getItem("user");
     const userId = sessionStorage.getItem("userID");
