@@ -4,7 +4,8 @@ from .admin_locker import AccountLocker
 from .config import Config
 from .psg_mgr import PsgMgr, CommentsMgr, StudentsMgr
 from .api_response import api_response
-from .face_recognizer import face_bp
+# from .face_recognizer import face_bp
+from .face_recognizer_new import face_bp
 from .log import LogMgr
 from .error_handlers import upload_error, check_user
 from .admin import admin_bp
