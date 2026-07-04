@@ -12,9 +12,5 @@
   ],
   "author": "翱三通史编委会",
   "license": "ISC",
-  "description": "记录奥山实验初级中学2023届3班初中生活的网站。",
-  "dependencies": {
-    "glob": "^13.0.6",
-    "html-minifier-terser": "^7.2.0"
-  }
+  "description": "记录奥山实验初级中学2023届3班初中生活的网站。"
 }
