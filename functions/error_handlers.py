@@ -62,7 +62,6 @@ def check_user(user):
                                "WHERE is_resolve = TRUE AND is_broadcast = FALSE "
                                "AND upload_user = %s", (user,))
                 error_ids = cursor.fetchall()
-                print(error_ids)
                 if error_ids:
                     issues_ids = []
                     for issue_id in error_ids:
