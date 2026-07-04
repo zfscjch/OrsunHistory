@@ -452,6 +452,8 @@ def upload():
         else:
             return api_response("error", "没有此操作！", http_code=400)
 
+        log_mgr.info(data["user"], f"修改文章:{article['title']}", request.remote_addr)
+
         status = "success" if code == 200 else "error"
         if data["isReview"] or not 'reviews' in locals():
             return api_response(status, "操作成功！")

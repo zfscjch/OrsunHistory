@@ -1,4 +1,5 @@
 import logging
+from logging.handlers import RotatingFileHandler
 from .api_response import api_response
 
 class LogMgr:
@@ -14,11 +15,16 @@ class LogMgr:
             self.logger.handlers.clear()
 
         # 创建文件handler
-        file_handler = logging.FileHandler(path, encoding='utf-8')
+        file_handler = RotatingFileHandler(
+            path,
+            maxBytes=10*1024*1024,  # 10MB
+            backupCount=5,
+            encoding='utf-8'
+        )
         file_handler.setLevel(logging.INFO)
 
         # 设置日志格式
-        formatter = logging.Formatter('%(asctime)s - %(remote_addr)s - %(user)s - %(message)s')
+        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(remote_addr)s - %(user)s - %(message)s')
         file_handler.setFormatter(formatter)
 
         self.logger.addHandler(file_handler)

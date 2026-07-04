@@ -349,10 +349,15 @@
     </div>
     <!-- 仿古签条（左侧固定） -->
     <a href="/edit" class="signature-container signature-link">✻ 新建文章 ✻</a>
-    <button class="signature-container signature-btn" onclick="logout()">✻ 退出登录 ✻</button>
+    <a class="signature-container signature-btn" onclick="logout()">✻ 退出登录 ✻</a>
 </div>
 <script type="module">
-    import {isAdmin} from "../static/js/checkAdmin.js";
+    function logout() {
+        sessionStorage.setItem("fromIndex", "1");
+        sessionStorage.removeItem("user");
+        window.location.href = "/login";
+    }
+    import { isAdmin } from "../static/js/checkAdmin.js";
     const user = sessionStorage.getItem("user");
     const userId = sessionStorage.getItem("userID");
     const isTeacher = sessionStorage.getItem("isTeacher");
