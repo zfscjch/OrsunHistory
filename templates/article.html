@@ -186,7 +186,6 @@
             const targetId = parseInt(document.querySelector("#content").dataset.passageId);
             const isStu = document.querySelector("#content").dataset.isStu === "True";
             const isAnonymous = document.querySelector("#anonymous-checkbox").checked;
-            console.log(isAnonymous);
 
             const commentData = {
                 user_id: user.id,
@@ -323,6 +322,8 @@
     <a class="share-link" href="/download/{{ article.slug }}" download>下载原文</a>
     {% endif %}
 
+    <a class="share-link" href="/user?show=sayings" id="setSayings">看不到教师语录？点击这里</a>
+
     <button id="createShareLink" class="share-link"> 创建分享链接 </button>
 
     <!-- 评论区域 - 所有文章都支持评论 -->
@@ -367,6 +368,9 @@
     function init() {
         log();
         handleSaying();
+        if (settings.showSayings) {
+            document.querySelector('#setSayings').style.display = 'none';
+        }
         const createShareLinkBtn = document.querySelector('#createShareLink');
         createShareLinkBtn.addEventListener('click', async () => {
             const contentEl = document.querySelector('#content');

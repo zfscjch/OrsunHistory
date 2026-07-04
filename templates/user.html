@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>翱三通史 - 用户信息设置</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         /* ===== 全局重置 ===== */
         * {
@@ -246,6 +247,26 @@
             color: #991b1b;
         }
 
+        .highlight {
+            /* 关键：用外发光和巨大阴影遮盖周围 */
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7);
+            /* 让元素浮在遮罩上面 */
+            position: relative;
+            z-index: 999;
+            /* 加点动画吸引注意 */
+            animation: pulse 2s infinite;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
         /* ===== 响应式 ===== */
         @media (max-width: 600px) {
             body {
@@ -340,6 +361,15 @@
     const userId = sessionStorage.getItem('userID');
 
     async function init() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const show = urlParams.get("show");
+        if (show === "verify") {
+            const verifyEl = showVerifyEl.parentNode;
+            highlightElement(verifyEl, "点击这里以开启/关闭验证");
+        } else if (show === "sayings") {
+            const sayingsEl = showSayingsEl.parentNode;
+            highlightElement(sayingsEl, "点击这里以开启/关闭语录");
+        }
         if (!userName) window.location.href = "/login";
         if (userName === "test") {
             originalPassword.disabled = true;
@@ -363,8 +393,30 @@
         showSayingsEl.checked = settings.showSayings;
     }
 
+    function highlightElement(targetEl, msg, timeout=3000) {
+        targetEl.classList.add("highlight");
+        const hint = document.createElement("div");
+        hint.innerText = msg;
+        hint.style.color = "red";
+        hint.style.textAlign = "center";
+        targetEl.appendChild(hint);
+        setTimeout(() => {
+            targetEl.classList.remove("highlight");
+            hint.remove();
+            targetEl.style.backgroundColor = "#faf9a7";
+            const targetInput = targetEl.querySelector('input');
+            const listener = () => {
+                targetInput.removeEventListener("click", listener);
+                targetEl.style.backgroundColor = "#faf9f7";
+            }
+            targetInput.addEventListener("click", listener);
+        }, timeout);
+    }
+
     userForm.addEventListener('submit',async (e) => {
         e.preventDefault();
+        showMessage("提交中……");
+        window.scrollTo(0, document.body.scrollHeight);
 
         const pwd = newPassword.value || "default";
         if (pwd !== "default" && originalPassword.value) {
@@ -387,7 +439,12 @@
         .then((data) => {
             console.log(data);
             if (data.status === "success") {
-                showMessage("修改成功！");
+                showMessage("修改成功！正在返回原网页……");
+                setTimeout(() => {
+                    const originUrl = document.referrer;
+                    if (!originUrl || originUrl.includes('/user')) window.location.href = '/';
+                    else window.location.href = originUrl;
+                }, 2000);
             } else {
                 showMessage("修改失败，" + data.msg, "error");
             }
