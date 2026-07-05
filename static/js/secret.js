@@ -4,6 +4,7 @@ async function initApp() {
         handleVerifySuccess();
         return;
     }
+
     try {
         // 等待fetch完成
         const response = await fetch("/avoid_titles");
@@ -24,20 +25,13 @@ async function initApp() {
 
             // 显示登录中状态
             showMessage('验证中...', 'success');
-            const isRight = answer === titles[num].answer;
-            sendMessage(username, "POST", {num: num, isRight: isRight}, (data) => {
-                console.log(data);
-                if (data.status === 'success' && isRight) {
-                    handleVerifySuccess();
-                } else if (data.status === 'success' && !isRight) {
-                    window.location.href = "/not_allow?code=401";
-                } else {
-                    showMessage(data.msg, "error");
-                }
-            });
+            const rightAnswer = titles[num].answer;
+            const isRight = answer === rightAnswer;
+            showMessage(`回答${ isRight ? "正确" : "错误，正确答案是：" + rightAnswer }。即将跳转……`);
+            setTimeout(handleVerifySuccess, 3000);
         });
 
-        sendMessage(username, "GET",null, (data) => {
+        await sendMessage((data) => {
             titles = data.msg;
             if (titles.length > 0) {
                 num = Math.floor(Math.random() * titles.length);
@@ -61,7 +55,7 @@ function mainLoop() {
 
         if (time <= 0) {
             clearInterval(loop);
-            window.location.href = "/not_allow?code=403";
+            handleVerifySuccess();
         }
     }, 1000);
 }
@@ -75,47 +69,20 @@ function showMessage(message, type) {
 }
 
 // 发送消息到服务器
-function sendMessage(username, request="GET", d=null, handler = (r) => {console.log(r)}) {
-    const data = {
-        name: username,
-        request: request,
-        msg: d
-    };
-
-    if (!d) delete data.msg;
-
-    fetch("/api/titles", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-    })
-        .then((res) => {
-            if (!res.ok) {
-                throw new Error(`HTTP error! status: ${res.status}`);
-            }
-            return res.json();
-        })
-        .then(data => {
-            console.log("服务器响应:", data);
-
-            if (data.status === "error") {
-                showMessage(data.message || "服务器错误", 'error');
-                return;
-            }
-
-            handler(data);
-        })
-        .catch((err) => {
-            console.error("请求错误:", err);
-            showMessage("网络错误或服务器无响应", 'error');
-        });
+async function sendMessage(handler = (r) => {console.log(r)}) {
+    try {
+        const res = await fetch('/api/titles');
+        const data = await res.text();
+        handler(JSON.parse(data));
+    } catch (e) {
+        console.error(e);
+        showMessage("获取题目时发生错误：" + e, "error");
+    }
 }
 
 // 处理登录成功
 function handleVerifySuccess() {
-    showMessage('验证成功，正在跳转...', 'success');
+    showMessage('验证结束，正在跳转...', 'success');
     if (loop) clearInterval(loop);
     setTimeout(() => {
         verifyContainer.style.display = "none";
@@ -137,7 +104,7 @@ function handleVerifySuccess() {
             }
         }
         document.dispatchEvent(new Event("verifySuccess"));
-    }, 1);
+    }, 500);
 }
 
 async function getSettings() {

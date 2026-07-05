@@ -318,7 +318,7 @@
             try {
                 setLoading(true);
 
-                const res = await fetch("/api/admin/maintenance", {
+                const res = await fetch("/admin/change-status", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",

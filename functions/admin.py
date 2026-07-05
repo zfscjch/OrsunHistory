@@ -1,6 +1,6 @@
 import mysql.connector
 from flask import Blueprint, render_template, request, abort, Response, g
-from .api_response import api_response
+from .api_response import api_response, request_not_json_res, request_miss_arg_res, server_error_res
 from .error_handlers import get_all, resolve_error
 from .config import Config
 
@@ -57,11 +57,11 @@ def get_issues():
 @admin_bp.route("/resolve-issues", methods=["POST"])
 def resolve_issues():
     if not request.is_json:
-        return api_response("error", "请求必须为 JSON", http_code=400)
+        return request_not_json_res()
 
     data = request.get_json()
     if not "error_id" in data:
-        return api_response("error", "缺少error_id字段")
+        return request_miss_arg_res()
 
     error_id = data["error_id"]
     status, msg, code = resolve_error(error_id)
@@ -77,18 +77,17 @@ def get_log():
 def post_check_admin():
     try:
         if not request.is_json:
-            return api_response("error", "请求必须为 JSON", http_code=400)
+            return request_not_json_res()
 
         data = request.get_json()
         if not 'userID' in data:
-            return api_response("error", "缺少userID字段", http_code=400)
+            return request_miss_arg_res()
 
         user_id = data["userID"]
         res = check_admins(user_id)
         return api_response("success", "", {"isAdmin": res})
     except Exception as e:
-        print(f"发生错误:{e}")
-        return api_response("error", f"发生错误:{e}", http_code=500)
+        return server_error_res("检查用户是否为管理员", e)
 
 @admin_bp.route("/get-draft")
 def get_all_drafts():
@@ -97,3 +96,31 @@ def get_all_drafts():
     if code_stu == 200:
         return api_response("success", "", {"a": student_data})
     return api_response("error", student_data, http_code=500)
+
+@admin_bp.route("/change-status", methods=["POST"])
+def update_maintenance():
+    try:
+        if not request.is_json:
+            return request_not_json_res()
+
+        data = request.get_json()
+        if not "m" in data:
+            return request_miss_arg_res()
+
+        auth = request.authorization
+        if not auth:
+            return Response('需要认证', 401,
+                            {'WWW-Authenticate': 'Basic realm="Admin Panel"'})
+        username = auth.username
+        password = auth.password
+        if not username or not password:
+            return Response('需要认证', 401,
+                            {'WWW-Authenticate': 'Basic realm="Admin Panel"'})
+        elif username != "admin" or password != Config.MASTER_PASSWORD:
+            return api_response("error", "用户名或密码错误", http_code=403)
+
+        maintenance_mode = bool(data["m"])
+        Config.set_maintenance(maintenance_mode)
+        return api_response("success", f"服务器是否维护：{'是' if maintenance_mode else '否'}")
+    except Exception as e:
+        return server_error_res("更新maintenance", e)
