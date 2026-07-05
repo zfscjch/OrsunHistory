@@ -161,7 +161,6 @@ async function autoLogin() {
     }
 }
 
-const urlSearchParams = new URLSearchParams(window.location.search);
 const username = sessionStorage.getItem("user");
 const isTeacher = sessionStorage.getItem("isTeacher");
 
@@ -188,4 +187,3 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     await initApp();
 });
-
