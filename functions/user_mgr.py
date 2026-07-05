@@ -136,4 +136,14 @@ class UserMgr:
                 data = json.loads(result[0])
                 return data
 
+    def get_id(self, user):
+        with mysql.connector.connect(**Config.MySQLConfig) as conn:
+            with conn.cursor() as cursor:
+                sql = "SELECT id FROM users WHERE username = %s"
+                cursor.execute(sql, (user,))
+                result = cursor.fetchone()
+                if not result:
+                    return 0
+                return result[0]
+
 

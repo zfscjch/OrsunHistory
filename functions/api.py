@@ -306,3 +306,21 @@ def get_settings():
         return api_response("success", "", {"settings": settings})
     except Exception as e:
         return server_error_res("获取用户设置", e)
+
+
+@api_bp.route('/get-id', methods=["POST"])
+def get_user_id():
+    try:
+        if not request.is_json:
+            return request_not_json_res()
+
+        data = request.get_json()
+        if not "user" in data:
+            return request_miss_arg_res()
+
+        user_id = data["user"]
+        user_mgr = g.user_mgr
+        uid = user_mgr.get_id(user_id)
+        return api_response("success", "", {"id": uid})
+    except Exception as e:
+        return server_error_res("获取用户ID", e)
