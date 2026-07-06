@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
@@ -143,23 +143,5 @@
         All Rights Reserved.
     </div>
 </div>
-
-<!-- 可微调表单提交提示 (保留原始行为，无侵入) -->
-<script>
-    (function() {
-        // 仅为增强用户体验: 若表单提交前无用户名或密码，给出轻提醒（但不会阻止原有提交流程，尊重原始逻辑）
-        const form = document.getElementById('upload-request');
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                const username = document.getElementById('username');
-                const password = document.getElementById('password');
-                if (!username.value.trim() || !password.value.trim()) {
-                    // 仅友好提醒，不阻止提交（避免破坏原有机制）
-                    console.log('用户名或密码未填写完整，将尝试提交空凭据');
-                }
-            });
-        }
-    })();
-</script>
 </body>
 </html>

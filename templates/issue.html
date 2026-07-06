@@ -391,7 +391,7 @@
         }
 
         const formData = new FormData();
-        const username = sessionStorage.getItem("user");
+        const username = sessionStorage.getItem("user") || document.querySelector("#username").value;
         formData.append('issue', issueText);
         formData.append('username', username);
 
