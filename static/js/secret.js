@@ -91,6 +91,8 @@ function handleVerifySuccess() {
             style.media = "all";
         });
         app.style.display = "block";
+        const currentHash = sessionStorage.getItem("articleHash");
+        sessionStorage.removeItem("articleHash");
         window.location.hash = currentHash;
 
         // 使用 pushState 确保锚点生效
@@ -121,46 +123,6 @@ async function getSettings() {
     return data.settings;
 }
 
-async function autoLogin() {
-    const autoLoginData = localStorage.getItem("Orsun_Auto_Login");
-    const userData = localStorage.getItem("Orsun_User_Data");
-    if (!autoLoginData) return false;
-
-    const config = JSON.parse(autoLoginData);
-    const data = JSON.parse(userData);
-    console.log(config, data);
-
-    // 检查配置是否有效
-    if (!config.enabled || !config.username || !config.password) return false;
-
-    // 检查是否过期（可选：设置30天有效期）
-    if (config.expireTime && new Date().getTime() > config.expireTime) return false;
-
-
-    const isContinue = confirm("(article.html)用户" + config.username + "开启了自动登录，请问是否继续自动登录？");
-    if (!isContinue) return false;
-
-    sessionStorage.setItem("user", config.username);
-    sessionStorage.setItem("isTeacher", data.isTeacher);
-
-    try {
-        const res = await fetch("/api/get-id", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ user: config.username }),
-        });
-        const d = await res.json();
-        sessionStorage.setItem("userID", d.id);
-        return true;
-    } catch (e) {
-        console.error(e);
-        alert("用户ID获取失败，请重新登录！");
-        return false;
-    }
-}
-
 const username = sessionStorage.getItem("user");
 const isTeacher = sessionStorage.getItem("isTeacher");
 
@@ -169,7 +131,7 @@ loop = null;
 settings = {showVerify: null, showSayings: null};
 let titles = [];
 let num = -1;
-const currentHash = window.location.hash;
+sessionStorage.setItem("articleHash", window.location.hash);
 const styles = document.querySelectorAll("style, link[rel='stylesheet']");
 styles.forEach(style => {
     style.media = "not-all";
@@ -182,8 +144,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     app.style.display = "none";
     verifyContainer.style.display = "block";
     if (!username) {
-        const result = await autoLogin();
-        if(!result) window.location.href = "/login";
+        window.location.href = "/login";
     }
     await initApp();
 });

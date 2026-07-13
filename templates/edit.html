@@ -307,6 +307,11 @@
         .saying-hidden {
             display: none !important;
         }
+
+        .help {
+            text-decoration: none;
+            color: blue;
+        }
     </style>
     <script>
         window.addEventListener("message", e => {
@@ -356,6 +361,7 @@
             <label for="content">正文</label>
             <textarea id="content" rows="20" cols="100" placeholder="在此书写翱三通史…… 支持HTML风格"></textarea>
         </div>
+        <a href="/help#edit-psg" class="help" target="_blank">不会编辑？查看学生传记模版</a>
         <div id="saying-container">
             <label for="saying">语录</label>
             <textarea id="saying" rows="20" cols="100" placeholder="在此书写语录……(选填) 支持HTML风格"></textarea>

@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>翱三通史 · 帮助文档</title>
+    <style>
+        /* 全局重置 & 基调 – 与 userPolicy.html 完全一致 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f5f7fc;
+            font-family: system-ui, -apple-system, 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Noto Sans', sans-serif;
+            line-height: 1.5;
+            color: #1e2a3e;
+            padding: 2rem 1rem;
+        }
+
+        .protocol-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 28px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.05), 0 4px 8px rgba(0, 0, 0, 0.02);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .protocol-inner {
+            padding: 2rem 2rem 2.8rem;
+        }
+
+        /* 头部 – 与协议页同款 */
+        .protocol-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #eef2f9;
+            padding-bottom: 1.25rem;
+        }
+
+        .protocol-header h1 {
+            font-size: 1.9rem;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+            background: linear-gradient(135deg, #1f3b4c, #2c5a6e);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .version-badge {
+            display: inline-flex;
+            gap: 1.2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: #4b6f86;
+            background: #f0f4fa;
+            padding: 0.4rem 1.2rem;
+            border-radius: 60px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .version-badge span {
+            font-weight: 500;
+        }
+
+        /* 正文段落 */
+        .md-para {
+            padding: 0.25rem 0;
+            margin: 0.9rem 0;
+            line-height: 1.6;
+            color: #2c3f4f;
+        }
+
+        /* h2 风格 – 左竖条 */
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 1.8rem 0 1rem 0;
+            padding-left: 0.5rem;
+            border-left: 5px solid #2c7a6e;
+            color: #1e3b44;
+            letter-spacing: -0.2px;
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 1.2rem 0 0.6rem 0;
+            color: #1e4a5a;
+            padding-left: 0.25rem;
+            border-bottom: 1px solid #e4eaf1;
+            padding-bottom: 0.3rem;
+        }
+
+        h4 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin: 1rem 0 0.4rem 0;
+            color: #1f5e6e;
+        }
+
+        /* 有序/无序列表 */
+        ol, ul {
+            margin: 0.75rem 0 0.75rem 1.6rem;
+            padding-left: 0.2rem;
+        }
+
+        li {
+            margin: 0.6rem 0;
+            line-height: 1.6;
+        }
+
+        li p.md-para {
+            margin: 0;
+            padding: 0;
+        }
+
+        ul ul, ol ul {
+            margin-top: 0.2rem;
+            margin-bottom: 0.2rem;
+        }
+
+        strong {
+            color: #1f5e6e;
+            font-weight: 600;
+        }
+
+        a {
+            color: #2a7f6e;
+            text-decoration: none;
+            border-bottom: 1px dashed #bdd4db;
+            transition: all 0.2s;
+        }
+
+        a:hover {
+            color: #0f4c5c;
+            border-bottom-color: #0f4c5c;
+        }
+
+        /* 高亮提示块 */
+        .highlight-note {
+            background: #fef8e7;
+            border-left: 4px solid #e6b12e;
+            padding: 0.8rem 1.2rem;
+            border-radius: 16px;
+            margin: 1.3rem 0;
+            font-size: 0.95rem;
+        }
+
+        /* 联系卡片 (保留，用于帮助页不需要也可保留占位) */
+        .contact-card {
+            background: #f8fafd;
+            border-radius: 24px;
+            padding: 1.2rem 1.5rem;
+            margin: 1.5rem 0 1rem;
+            border: 1px solid #e9edf2;
+        }
+
+        .contact-card p {
+            margin: 0.4rem 0;
+        }
+
+        .footer-thanks {
+            margin-top: 2.2rem;
+            text-align: center;
+            padding-top: 1.2rem;
+            border-top: 1px solid #e4eaf1;
+            font-size: 0.9rem;
+            color: #4a6276;
+        }
+
+        /* ——— 新增模版卡片 & 复制按钮 ——— */
+        .template-card {
+            background: #fbfdff;
+            border-radius: 24px;
+            padding: 1.2rem 1.5rem 1.5rem;
+            margin: 1.2rem 0 1.8rem;
+            border: 1px solid #e9edf2;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.01);
+            transition: box-shadow 0.15s;
+        }
+
+        .template-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        }
+
+        .template-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            gap: 0.6rem;
+        }
+
+        .template-header h4 {
+            margin: 0;
+            border-bottom: none;
+            padding-bottom: 0;
+            color: #1f3b4c;
+        }
+
+        .copy-btn {
+            background: #eef4fa;
+            border-radius: 60px;
+            padding: 0.3rem 1.2rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #1f5e6e;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            border: 1px solid transparent;
+            letter-spacing: 0.3px;
+        }
+
+        .copy-btn:hover {
+            background: #d7e3ed;
+            border-color: #b0c8d4;
+            color: #0f4c5c;
+        }
+
+        .copy-btn:active {
+            transform: scale(0.95);
+            background: #c0d3e0;
+        }
+
+        .copy-btn.copied {
+            background: #d4e6da;
+            border-color: #7aa38b;
+            color: #1d5a4a;
+        }
+
+        /* 模版内容 – 保持干净排版 */
+        .template-content {
+            background: #f8fafc;
+            padding: 1rem 1.2rem;
+            border-radius: 18px;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1e3347;
+            white-space: pre-wrap;      /* 保留换行，但不会破坏布局 */
+            word-break: break-word;
+            border: 1px solid #eef2f6;
+            margin-top: 0.4rem;
+            font-family: 'Georgia', 'Times New Roman', '宋体', serif;
+            letter-spacing: 0.02em;
+        }
+
+        .template-content p {
+            margin: 0.3rem 0;
+        }
+
+        /* 帮助文档中引用的小标签 */
+        .badge-gen {
+            display: inline-block;
+            background: #eef2f9;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            color: #4b6f86;
+            padding: 0.15rem 0.8rem;
+            margin: 0.2rem 0 0.6rem;
+            letter-spacing: 0.3px;
+        }
+
+        hr.md-hr {
+            display: none;
+        }
+
+        /* 响应式 */
+        @media (max-width: 680px) {
+            body {
+                padding: 1rem 0.8rem;
+            }
+            .protocol-inner {
+                padding: 1.5rem 1.2rem 2rem;
+            }
+            .protocol-header h1 {
+                font-size: 1.5rem;
+            }
+            h2 {
+                font-size: 1.35rem;
+            }
+            ol, ul {
+                margin-left: 1rem;
+            }
+            .version-badge {
+                font-size: 0.75rem;
+                gap: 0.8rem;
+            }
+            .template-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .copy-btn {
+                align-self: flex-start;
+            }
+            .template-content {
+                font-size: 0.9rem;
+                padding: 0.8rem 1rem;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .protocol-container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+            a {
+                text-decoration: underline;
+                color: black;
+            }
+            .copy-btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="protocol-container">
+    <div class="protocol-inner">
+
+        <!-- 头部：与用户协议保持同一家族风格 -->
+        <div class="protocol-header">
+            <h1>翱三通史官网<br>帮助文档 · 传记模版</h1>
+            <div class="version-badge">
+                <span>📚 版本：2026.01</span>
+                <span>⚡ 适用于所有用户</span>
+            </div>
+        </div>
+
+        <!-- 帮助正文 -->
+        <p class="md-para">
+            欢迎访问翱三通史官网！下面是对部分官网功能的讲解，以及为您准备的传记模版（含一键复制）。
+        </p>
+
+        <!-- 阅读传记 -->
+        <h2 id="read-psg">📖 阅读传记</h2>
+        <p class="md-para">
+            《翱三通史》提供教师传记（含语录）和学生传记，所有用户都可以浏览。<br>
+            如果看不到教师语录？没关系，“翱三通史官网”默认关闭了教师账号的语录查看权限。<br>
+            怎么打开？访问“<a href="/user">首页 >> 简介 >> 个性化设置</a>”，勾选“展示教师语录”就可以欣赏所有教师语录了。<br>
+            如果认为阅读文章前的“防泄漏验证”太麻烦了，可以访问“<a href="/user">首页 >> 简介 >> 个性化设置</a>”，取消勾选“开启防泄漏验证”即可关闭该功能。
+        </p>
+
+        <!-- 编辑传记 -->
+        <h2 id="edit-psg">✍️ 编辑传记</h2>
+        <p class="md-para">
+            “翱三通史官网”提供用户编辑自己传记的权限，并且要求用户自己完善自己的传记。
+            下方为您准备了两种风格的模版，点击「复制模版」即可粘贴到编辑器中。
+        </p>
+
+        <!-- 模版1：白话文 -->
+        <div class="template-card">
+            <div class="template-header">
+                <h4>📝 白话文传记模版</h4>
+                <button class="copy-btn" data-target="template-vernacular">📋 复制模版</button>
+            </div>
+            <div id="template-vernacular" class="template-content">
+                开头 · 我是谁
+                ×××，××人，×年×月出生。×年×月，成了翱三班的一员。第一次，×××（对班级的第一印象）。后来座位分到×××旁边，从此就×××（熟了/开始互怼/成了死党）。
+
+                性格 · 我是个什么样的人
+                我×××（用一个词概括，比如“特别能聊”“闷葫芦但心里有数”“永远在笑”）。平时喜欢×××（具体爱好，比如“追番”“踢球”“在草稿纸上画小人”）。每天早读，我×××（具体表现，比如“困得眼皮打架”“声音最大”“偷偷补作业”）。课间十分钟，×××（典型场景，比如“趴在桌上补觉”“冲到小卖部”“跟后排同学吵得脸红脖子粗”）。最怕×××（某科或某老师），最擅长×××（某科或某种技能）。
+
+                事儿 · 忘不掉的那些事
+                要说印象最深的，还得是×××那回（具体事件，运动会/文艺汇演/考试翻车/什么糗事）。那天×××（发生了什么），全班×××（大家的反应）。后来×××（后续或反转）。这事现在想起来，还是想笑/还挺感动的。
+                还有一次，×××（第二件事，最好是小事但特别能体现自我）。×××（具体过程）。当时×××说了句话，特逗/特暖：“×××。”（直接引语）
+
+                结尾 · 三年过得太快了
+                一晃就要毕业了。我×××（升学或去向）。回头想想这三年，×××（自己让人记住的是什么）。反正吧，翱三班，×××（姓名），大家应该都忘不了。
+
+                赠别（可以写一句，也可以不写）
+                ×××，×××（一句祝福或调侃）。
+            </div>
+            <div class="badge-gen">模版由DeepSeek生成</div>
+        </div>
+
+        <!-- 模版2：文言文 -->
+        <div class="template-card">
+            <div class="template-header">
+                <h4>📜 文言文传记模版</h4>
+                <button class="copy-btn" data-target="template-classical">📋 复制模版</button>
+            </div>
+            <div id="template-classical" class="template-content">
+                ×××，××人，×年×月生。×年秋，入翱三（×）班。初至，×××（形貌举止），众×××（反应）。遂与×××邻座，×××（相处状态）。
+                性×××，好×××。晨读×××，课间×××。畏×××而善×××。尝×××（具体事），人皆×××。
+                忆×××（某事件），×××（过程），全班×××。又×××（另一事），×××（细节），其自言曰：“×××。”
+                师×××曰：“×××。”同窗×××曰：“×××。”
+                三年将尽，×××（去向）。翱三岁月，×××（可忆者）。录之以存其人。
+                赞曰：×××，×××。×××，×××。
+            </div>
+            <div class="badge-gen">模版由DeepSeek生成</div>
+        </div>
+
+        <!-- 温馨提示 -->
+        <div class="highlight-note">
+            💡 提示：复制模版后，请将“×××”替换为真实内容。如需更多帮助，可联系管理员。
+        </div>
+
+        <!-- 底部 (与协议页呼应) -->
+        <div class="footer-thanks">
+            <strong>翱三通史 · 留存记忆</strong>  —  愿每一段青春都被认真书写。
+        </div>
+
+    </div>
+</div>
+
+<!-- 复制功能脚本 -->
+<script>
+    (function() {
+        // 获取所有复制按钮
+        const copyBtns = document.querySelectorAll('.copy-btn');
+
+        copyBtns.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const targetId = this.getAttribute('data-target');
+                if (!targetId) return;
+
+                const contentEl = document.getElementById(targetId);
+                if (!contentEl) return;
+
+                // 获取模版文本 – 保留原有格式 (使用 innerText 可保留换行)
+                let textToCopy = contentEl.innerText;
+
+                // 如果内容为空则忽略
+                if (!textToCopy.trim()) {
+                    alert('模版内容为空，请刷新后重试。');
+                    return;
+                }
+
+                // 使用 Clipboard API 复制
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        // 成功反馈
+                        setCopiedState(this, true);
+                        setTimeout(() => setCopiedState(this, false), 2000);
+                    }).catch(err => {
+                        console.warn('Clipboard 复制失败，使用 fallback', err);
+                        fallbackCopy(textToCopy, this);
+                    });
+                } else {
+                    // fallback
+                    fallbackCopy(textToCopy, this);
+                }
+            });
+        });
+
+        // 临时改变按钮文字
+        function setCopiedState(btn, copied) {
+            if (copied) {
+                const originalText = btn.textContent.trim();
+                btn.classList.add('copied');
+                btn.textContent = '✅ 已复制';
+                // 保存原始文本以便还原 (用 data 属性)
+                btn.dataset.original = btn.dataset.original || originalText;
+            } else {
+                btn.classList.remove('copied');
+                btn.textContent = btn.dataset.original || '📋 复制模版';
+            }
+        }
+
+        // fallback 复制 (使用 textarea)
+        function fallbackCopy(text, btn) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.setAttribute('readonly', '');
+            textarea.style.position = 'fixed';
+            textarea.style.top = '-9999px';
+            textarea.style.left = '-9999px';
+            document.body.appendChild(textarea);
+            try {
+                textarea.select();
+                const success = document.execCommand('copy');
+                if (success) {
+                    setCopiedState(btn, true);
+                    setTimeout(() => setCopiedState(btn, false), 2000);
+                } else {
+                    alert('复制失败，请手动选择文本复制。');
+                }
+            } catch (e) {
+                alert('复制失败，请手动选择文本复制。');
+            } finally {
+                document.body.removeChild(textarea);
+            }
+        }
+    })();
+</script>
+</body>
+</html>

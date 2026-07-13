@@ -201,6 +201,10 @@ def get_issue():
 def get_user():
     return render_template("user.html")
 
+@app.route('/help')
+def get_help():
+    return render_template("help.html")
+
 @app.route('/download/<slug>')
 def get_download(slug):
     # 1. 严格验证 slug 格式（只允许小写字母）
