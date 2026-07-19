@@ -476,3 +476,53 @@ h1 {
         justify-content: center;
     }
 }
+
+/* 一键催更按钮 - 仿古雅致风格 */
+#update-comment {
+    display: inline-block;
+    padding: 0.4rem 1.2rem;
+    margin: 0.8rem 0 0.2rem;
+    font-size: 0.9rem;
+    font-family: 'Courier New', '宋体', monospace;
+    letter-spacing: 2px;
+    color: #4a3f2e;
+    background: linear-gradient(to bottom, #e8ddcd, #d4c4ae);
+    border: 1px solid #b8a07e;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 3px 0 #a88d6a, 0 2px 8px rgba(60, 45, 30, 0.12);
+    text-shadow: 0 1px 0 rgba(255, 245, 230, 0.4);
+    backdrop-filter: blur(2px);
+}
+
+#update-comment:hover {
+    background: linear-gradient(to bottom, #f0e6d6, #dccdb8);
+    border-color: #a68860;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 0 #a68860, 0 6px 16px rgba(60, 45, 30, 0.18);
+    color: #2f261a;
+}
+
+#update-comment:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 #a68860;
+    transition-duration: 0.05s;
+}
+
+/* 为按钮添加装饰性前缀（仿古籍批注感） */
+#update-comment::before {
+    content: '⚡ ';
+    font-size: 0.85rem;
+    opacity: 0.7;
+}
+
+/* 小屏适配 */
+@media (max-width: 480px) {
+    #update-comment {
+        padding: 0.35rem 1rem;
+        font-size: 0.82rem;
+        letter-spacing: 1px;
+        margin: 0.6rem 0 0.1rem;
+    }
+}

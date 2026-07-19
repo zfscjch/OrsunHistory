@@ -216,3 +216,17 @@ class CommentsMgr:
             return "success", 200
         except Exception as e:
             return str(e), 500
+
+    def get_update_hint(self, user_id):
+        with mysql.connector.connect(**Config.MySQLConfig) as conn:
+            with conn.cursor() as cursor:
+                sql = "SELECT id, user_id FROM comments WHERE content='[系统提示，无需回复]催更' AND student_id=%s AND status='unrevealed'"
+                cursor.execute(sql, (user_id,))
+                comments = cursor.fetchall()
+                user_ids = []
+                for comment in comments:
+                    edit = "UPDATE comments SET status = 'approved' WHERE id=%s"
+                    cursor.execute(edit, (comment[0],))
+                    user_ids.append(str(comment[1]))
+                conn.commit()
+                return user_ids

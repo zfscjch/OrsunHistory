@@ -174,6 +174,7 @@ def insert_comments():
             article_id=data.get('article_id'),
             student_id=data.get('student_id'),
             anonymous=data.get('anonymous'),
+            status=data.get('status')
         )
 
         if code != 200:
@@ -324,3 +325,20 @@ def get_user_id():
         return api_response("success", "", {"id": uid})
     except Exception as e:
         return server_error_res("获取用户ID", e)
+
+@api_bp.route('/check', methods=["POST"])
+def check_user_msg():
+    try:
+        if not request.is_json:
+            return request_not_json_res()
+
+        data = request.get_json()
+        if not "user_id" in data:
+            return request_miss_arg_res()
+
+        user_id = data["user_id"]
+        res = comments_mgr.get_update_hint(user_id)
+
+        return api_response("success", data={"users": res})
+    except Exception as e:
+        return server_error_res("初始检查用户", e)

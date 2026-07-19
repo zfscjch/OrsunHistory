@@ -12,7 +12,7 @@
             userName: null
         };
 
-        const Teachers = {
+        const specialUsers = {
             49: "黄鼎泰",
             50: "陈莲芳",
             51: "何亚琴",
@@ -103,7 +103,7 @@
 
                 let username = this.anonymous ? "匿名用户" : `翱三班${this.userId}号同学`;
                 if (this.userId >= 49 && this.userId <= 60 && !this.anonymous) {
-                    username = "<spanv class='admin'>教师</spanv>" + Teachers[this.userId] + "老师";
+                    username = "<spanv class='admin'>教师</spanv>" + specialUsers[this.userId] + "老师";
                 }
 
                 if (this.userId >= 61 && this.userId <= 67) {
@@ -167,7 +167,7 @@
         }
 
         // 发送评论
-        function sendComment() {
+        function sendComment(isUpdate=false) {
             const input = document.querySelector("#comment-input");
             const content = input.value.trim();
 
@@ -191,7 +191,8 @@
                 user_id: user.id,
                 content: content,
                 parent_id: currentReply.parentId || null,
-                anonymous: isAnonymous
+                anonymous: isAnonymous,
+                status: isUpdate ? 'unrevealed' : 'approved'
             };
 
             if (isStu) {
@@ -344,6 +345,10 @@
             <button id="cancel-reply">取消回复</button>
         </div>
 
+        {% if article.is_stu %}
+        <button id="update-comment">一键催更</button>
+        {% endif %}
+
         <div id="for-anonymous">
             <input type="checkbox" id="anonymous-checkbox">
             <label for="anonymous-checkbox">开启匿名</label>
@@ -406,6 +411,7 @@
         const commentInput = document.querySelector("#comment-input");
         const cancelReplyBtn = document.querySelector("#cancel-reply");
         const commentsShow = document.querySelector("#comments-show");
+        const updateBtn = document.querySelector("#update-comment");
 
         if (submitBtn) {
             submitBtn.addEventListener("click", sendComment);
@@ -433,6 +439,13 @@
                     setReply(parseInt(commentId), userName, anonymous);
                 }
             });
+        }
+
+        if (updateBtn) {
+            updateBtn.addEventListener("click", () => {
+                commentInput.value = "[系统提示，无需回复]催更";
+                sendComment(true);
+            })
         }
     });
 </script>

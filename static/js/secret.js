@@ -110,6 +110,8 @@ function handleVerifySuccess() {
 }
 
 async function getSettings() {
+    const settings = sessionStorage.getItem("settings");
+    if (settings) return JSON.parse(settings);
     const userId = sessionStorage.getItem("userID");
     const res = await fetch("/api/settings", {
         method: "POST",

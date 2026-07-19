@@ -33,12 +33,112 @@
             letter-spacing: 2px;
             z-index: 10;
         }
+
+        /* dialog 容器样式 - 居中弹窗 */
+        #msg-dialog {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 480px;
+            padding: 2rem 1.8rem 1.8rem;
+            border: 1px solid #b8a07e;
+            border-radius: 16px;
+            background: #f6efe2;
+            box-shadow: 0 20px 40px rgba(20, 16, 10, 0.5), inset 0 1px 0 #fff3e0;
+            backdrop-filter: blur(6px);
+            z-index: 999;
+            display: none;          /* 默认隐藏，由 JS 控制 flex 显示 */
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            font-family: 'Times New Roman', '宋体', serif;
+            transition: opacity 0.25s ease;
+        }
+
+        /* 对话框内容文字 */
+        #msg-content {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #3a3122;
+            text-align: center;
+            letter-spacing: 0.3px;
+            word-break: break-word;
+            padding: 0.2rem 0.4rem;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        /* "知道了" 按钮 —— 仿古籍雅致风格 */
+        #known {
+            border: 1px solid #b3956a;
+            border-radius: 40px;
+            padding: 0.5rem 2.2rem;
+            font-size: 1rem;
+            font-family: 'Courier New', '宋体', monospace;
+            letter-spacing: 2px;
+            color: #2f281b;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 3px 0 #ab8d66, 0 4px 8px rgba(0,0,0,0.1);
+            background: #dacbb2 linear-gradient(to bottom, #e6dac8, #cfbea3);
+        }
+
+        #known:hover {
+            background: #d4c0a6;
+            border-color: #9f7f56;
+            transform: translateY(-1px);
+            box-shadow: 0 5px 0 #9f7f56, 0 8px 14px rgba(0,0,0,0.12);
+        }
+
+        #known:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #9f7f56;
+        }
+
+        /* 可选：添加仿古卷轴装饰线（仅点缀） */
+        #msg-dialog::before,
+        #msg-dialog::after {
+            content: '✦';
+            position: absolute;
+            font-size: 0.8rem;
+            color: #b3956a;
+            opacity: 0.5;
+        }
+        #msg-dialog::before {
+            top: 10px;
+            left: 18px;
+        }
+        #msg-dialog::after {
+            bottom: 10px;
+            right: 18px;
+        }
+
+        /* 小屏适配 */
+        @media (max-width: 480px) {
+            #msg-dialog {
+                padding: 1.6rem 1.2rem 1.2rem;
+                width: 92%;
+            }
+            #msg-content {
+                font-size: 1rem;
+            }
+            #known {
+                padding: 0.4rem 1.8rem;
+                font-size: 0.95rem;
+            }
+        }
     </style>
 </head>
 <body>
 <h1>翱三通史主页</h1>
 <a href="/issues" class="issue">问题反馈</a>
 <a href="/help" class="issue">查看帮助文档</a>
+<dialog id="msg-dialog">
+    <div id="msg-content"></div>
+    <button id="known">知道了</button>
+</dialog>
 <div id="psg">
     <a href="./intro" class="intro">简介</a>
     <a href="./stu">学生传记</a>
@@ -51,6 +151,29 @@
 <script>
     const user = sessionStorage.getItem('user');
     if (!user) window.location.href = '/login';
+    const targets = {
+        49: "黄鼎泰",
+        50: "陈莲芳",
+        51: "何亚琴",
+        52: "黄伏云",
+        53: "姜慧敏",
+        54: "钱忠明",
+        55: "高波",
+        56: "宁志梅",
+        57: "聂林",
+        58: "黄海山",
+        59: "张迟",
+        60: "秦仁喜",
+        61: "管理员0号",
+        62: "管理员1号",
+        63: "管理员2号",
+        64: "管理员3号",
+        65: "管理员4号",
+        66: "管理员5号",
+        67: "管理员6号",
+        68: "68号",
+        69: "测试用户"
+    }
 
     function logout() {
         sessionStorage.clear();
@@ -58,73 +181,170 @@
         location.reload();
     }
 
-    function getArticle(author) {
-        const data = {author: author, type: "article"};
-        fetch("/api/get-articles", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"   // 修正大小写
-            },
-            body: JSON.stringify(data)
-        })
-            .then((res) => res.json())
-            .then((data) => {
-                console.log(data);
-                // 判断无文章或空数据
-                if (!data || !data.data || data.data.length === 0) {
-                    const li = document.querySelector("#psg");
-                    li.innerHTML = "<p>📜 没有文章</p>";
-                    return;
-                }
-                showArticle(data.data);
-            })
-            .catch((err) => {
-                console.log(err);
-                document.querySelector("#psg").innerHTML = "<p>❌ 载入失败，请稍后重试</p>";
-            });
-    }
+    // 优化后的 getArticle 函数
+    async function getArticle(author) {
+        const psgContainer = document.querySelector("#psg");
+        psgContainer.innerHTML = "<p>⏳ 加载文章中...</p>";
 
-    function showArticle(d) {
-        const li = document.querySelector("#psg");
-        // 确保 d 是数组且有内容
-        if (!Array.isArray(d) || d.length === 0) {
-            return;
+        try {
+            const response = await fetch("/api/get-articles", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({author: author, type: "article"})
+            });
+
+            const data = await response.json();
+
+            // 数据验证
+            if (!data?.data?.length) {
+                psgContainer.innerHTML = "<p>📜 没有文章</p>";
+                return;
+            }
+
+            // 生成所有链接的 HTML
+            let html = '<a href="./intro" class="intro">简介</a><a href="./stu">学生传记</a>';
+            const items = data.data;
+            for (let i = 0; i < items.length; i++) {
+                const title = escapeHtml(items[i][0]) || '无题';
+                const slug = encodeURIComponent(items[i][1]);
+                html += `<a href="/psg/${slug}" data-slug="${slug}">${title}</a>`;
+            }
+
+            // 一次性插入所有链接
+            psgContainer.innerHTML = html;
+
+            // 使用事件委托代替逐个绑定（性能提升最大）
+            // 只需绑定一次，不需要循环绑定
+            if (!psgContainer._hasEventDelegate) {
+                psgContainer.addEventListener('click', function(e) {
+                    const link = e.target.closest('a');
+                    if (link && link.href &&
+                        (link.href.includes('/psg/') || link.href.includes("/intro") || link.href.includes("/stu"))) {
+                        e.preventDefault();
+                        const popup = window.open(link.href);
+                        if (popup) {
+                            popup.postMessage({
+                                type: "AUTH_STATE",
+                                isLoggedIn: true,
+                                user: sessionStorage.getItem("user"),
+                                isTeacher: sessionStorage.getItem("isTeacher") === "true",
+                                userId: sessionStorage.getItem("userID"),
+                            }, "https://www.cjchcoderchat.site:3");
+                        }
+                    }
+                });
+                psgContainer._hasEventDelegate = true;
+            }
+
+        } catch (err) {
+            console.error('加载文章失败:', err);
+            psgContainer.innerHTML = "<p>❌ 载入失败，请稍后重试</p>";
         }
-        let html = '';
-        d.forEach((item) => {
-            // 假设 item[0] 是标题或标识，item[1] 是 slug
-            html += `<a href="/psg/${encodeURIComponent(item[1])}">${escapeHtml(item[0]) || '无题'}</a>`;
-        });
-        li.innerHTML += html;
-        const aLinks = document.querySelectorAll("#psg a");
-        aLinks.forEach(aLink => {
-            aLink.addEventListener("click", (e) => {
-                e.preventDefault();
-                const popup = window.open(aLink.href);
-                popup.postMessage({
-                    type: "AUTH_STATE",
-                    isLoggedIn: true,
-                    user: sessionStorage.getItem("user"),
-                    isTeacher: sessionStorage.getItem("isTeacher") === "true",
-                    userId: sessionStorage.getItem("userID"),
-                }, "https://www.cjchcoderchat.site:3");
-            });
-        });
     }
 
-    // 简单的防XSS转义
+    // 优化 escapeHtml 函数（使用 Map 提升性能）
     function escapeHtml(unsafe) {
         if (!unsafe) return unsafe;
-        return unsafe
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
+
+        const escapeMap = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+
+        return unsafe.replace(/[&<>"']/g, function(match) {
+            return escapeMap[match];
+        });
+    }
+
+    // 优化后的 initCheck 函数
+    async function initCheck() {
+        const msgDialog = document.querySelector("#msg-dialog");
+        msgDialog.style.display = "none";
+
+        const userId = sessionStorage.getItem("userID");
+        if (!userId) {
+            console.warn('用户未登录，跳过初始化检查');
+            return;
+        }
+
+        try {
+            // 并行请求优化（同时发起两个请求，减少等待时间）
+            const [settingsRes, msgRes] = await Promise.all([
+                fetch("/api/settings", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ userID: userId })
+                }),
+                fetch("/api/check", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ user_id: userId })
+                })
+            ]);
+
+            // 处理设置数据
+            if (settingsRes.ok) {
+                const settingsData = await settingsRes.json();
+                if (settingsData?.settings) {
+                    sessionStorage.setItem("settings", JSON.stringify(settingsData.settings));
+                }
+            }
+
+            // 处理消息数据
+            if (msgRes.ok) {
+                const msgData = await msgRes.json();
+                const users = msgData?.users;
+
+                if (users && users.length > 0) {
+                    // 优化用户列表显示
+                    let userDisplay = "";
+                    for (let user of users) {
+                        if (user < 49) {
+                            userDisplay += `翱三通史${user}号`;
+                        } else {
+                            userDisplay += `翱三通史${targets[user]}`;
+                        }
+                    }
+
+                    const text = `以下用户（翱三班x号）正在关注你，请尽快完善你的文章：<br>${userDisplay}`;
+                    showDialog(text);
+                }
+            }
+
+        } catch (error) {
+            console.error('初始化检查失败:', error);
+            // 静默失败，不影响用户体验
+        }
+    }
+
+    // 优化 showDialog 函数（避免重复绑定事件）
+    function showDialog(msg) {
+        const msgDialog = document.querySelector("#msg-dialog");
+        const msgContent = document.querySelector("#msg-content");
+        const knownBtn = document.querySelector("#known");
+
+        // 更新内容
+        msgContent.innerHTML = msg;
+        msgDialog.style.display = "flex";
+
+        // 移除旧的事件监听器，避免内存泄漏
+        const newKnownBtn = knownBtn.cloneNode(true);
+        knownBtn.parentNode.replaceChild(newKnownBtn, knownBtn);
+
+        // 绑定新事件
+        newKnownBtn.addEventListener("click", function closeDialog() {
+            msgDialog.style.display = "none";
+        }, { once: true }); // 使用 once 选项自动清理
     }
 
     document.addEventListener("DOMContentLoaded", () => {
         getArticle(".*");
+        initCheck();
     });
 </script>
 </body>
