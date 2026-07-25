@@ -10,3 +10,5 @@ static/doc
 *.log
 *.db
 users.backup.sql
+description.txt
+introduce.json

@@ -319,7 +319,7 @@ header h1 {
     transform: translateY(0);
 }
 
-.issue {
+.a-link {
     display: inline-block;
     font-size: 0.8rem;
     color: #2b241e;
@@ -329,7 +329,7 @@ header h1 {
     margin-top: 0.8rem;
     transition: color 0.2s;
 }
-.issue:hover {
+.a-link:hover {
     color: #1f1b17;
     text-decoration-color: #2b241e;
 }

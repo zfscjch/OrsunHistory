@@ -248,6 +248,12 @@ def get_download(slug):
     # 7. 使用 url_for 生成安全的 URL
     return redirect(url_for('static', filename=f"doc/{doc_name}"))
 
+@app.route('/version')
+def get_version():
+    with open('3.0.0stable.md', 'r', encoding='utf-8') as wf:
+        data = wf.read()
+    return render_template("version.html", data=data)
+
 app.register_blueprint(api_bp, url_prefix="/api")
 app.register_blueprint(face_bp, url_prefix="/face")
 app.register_blueprint(admin_bp, url_prefix="/admin")

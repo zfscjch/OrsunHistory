@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>版本 - 翱三通史</title>
+    <style>
+        .changelog {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 30px 40px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+            line-height: 1.7;
+            color: #2c3e50;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        /* 标题样式 */
+        .changelog h1 {
+            color: #1a2332;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 12px;
+            margin-bottom: 28px;
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .changelog h2 {
+            color: #2c3e50;
+            margin-top: 36px;
+            margin-bottom: 16px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            border-left: 4px solid #3498db;
+            padding-left: 14px;
+        }
+
+        .changelog h3 {
+            color: #34495e;
+            margin-top: 24px;
+            margin-bottom: 12px;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .changelog h4 {
+            color: #455a64;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.05rem;
+            font-weight: 600;
+        }
+
+        /* 段落 */
+        .changelog p {
+            margin: 12px 0;
+            line-height: 1.8;
+        }
+
+        /* 列表 */
+        .changelog ul,
+        .changelog ol {
+            padding-left: 28px;
+            margin: 10px 0 16px 0;
+        }
+
+        .changelog li {
+            margin: 6px 0;
+            line-height: 1.7;
+        }
+
+        .changelog li::marker {
+            color: #3498db;
+        }
+
+        .changelog ul ul,
+        .changelog ol ol,
+        .changelog ul ol,
+        .changelog ol ul {
+            margin-top: 4px;
+            margin-bottom: 4px;
+        }
+
+        /* 代码样式 - 行内代码 */
+        .changelog code:not(pre code) {
+            background: #f4f6f8;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.88em;
+            font-family: "SF Mono", "JetBrains Mono", "Consolas", "Menlo", monospace;
+            border: 1px solid #e8ecf0;
+            white-space: nowrap;
+        }
+
+        /* 代码块 */
+        .changelog pre {
+            background: #1e2633;
+            color: #e0e4e8;
+            padding: 16px 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 16px 0;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            font-family: "SF Mono", "JetBrains Mono", "Consolas", "Menlo", monospace;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .changelog pre code {
+            background: transparent;
+            color: inherit;
+            padding: 0;
+            border: none;
+            font-size: inherit;
+            font-family: inherit;
+            white-space: pre;
+            word-break: break-all;
+        }
+
+        /* 代码块 - 滚动条美化 */
+        .changelog pre::-webkit-scrollbar {
+            height: 6px;
+            width: 6px;
+        }
+
+        .changelog pre::-webkit-scrollbar-track {
+            background: #2d3543;
+            border-radius: 4px;
+        }
+
+        .changelog pre::-webkit-scrollbar-thumb {
+            background: #5a6a7e;
+            border-radius: 4px;
+        }
+
+        .changelog pre::-webkit-scrollbar-thumb:hover {
+            background: #6f7f93;
+        }
+
+        /* 引用块 */
+        .changelog blockquote {
+            margin: 16px 0;
+            padding: 12px 20px;
+            background: #f8f9fa;
+            border-left: 4px solid #3498db;
+            color: #4a5568;
+            border-radius: 0 4px 4px 0;
+            font-style: italic;
+        }
+
+        .changelog blockquote p {
+            margin: 4px 0;
+        }
+
+        /* 表格 */
+        .changelog table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 0.95rem;
+        }
+
+        .changelog table th,
+        .changelog table td {
+            border: 1px solid #dce3ea;
+            padding: 10px 14px;
+            text-align: left;
+        }
+
+        .changelog table th {
+            background: #f0f4f8;
+            font-weight: 600;
+            color: #1a2332;
+        }
+
+        .changelog table tr:nth-child(even) {
+            background: #f8fafc;
+        }
+
+        .changelog table tr:hover {
+            background: #edf2f7;
+        }
+
+        /* 分割线 */
+        .changelog hr {
+            border: none;
+            border-top: 2px solid #e8ecf0;
+            margin: 24px 0;
+        }
+
+        /* 链接 */
+        .changelog a {
+            color: #2980b9;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s ease;
+        }
+
+        .changelog a:hover {
+            border-bottom-color: #2980b9;
+            color: #1a5276;
+        }
+
+        /* 加粗、斜体 */
+        .changelog strong {
+            font-weight: 600;
+            color: #1a2332;
+        }
+
+        .changelog em {
+            font-style: italic;
+            color: #34495e;
+        }
+
+        /* 删除线 */
+        .changelog del {
+            color: #95a5a6;
+            text-decoration: line-through;
+        }
+
+        /* 图片 */
+        .changelog img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 12px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        /* 版本和日期标签（你原来的自定义类） */
+        .changelog .version {
+            background: #3498db;
+            color: white;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .changelog .date {
+            color: #7f8c8d;
+            font-size: 0.85rem;
+            margin-left: 10px;
+        }
+
+        /* ===== Footer 样式（新增） ===== */
+        .site-footer {
+            max-width: 820px;
+            margin: 24px auto 0 auto;
+            padding: 16px 40px 10px 40px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #95a5a6;
+            border-top: 1px solid #ecf0f1;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+            letter-spacing: 0.3px;
+        }
+
+        .site-footer a {
+            color: #7f8c8d;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: color 0.2s, border-color 0.2s;
+        }
+
+        .site-footer a:hover {
+            color: #3498db;
+            border-bottom-color: #3498db;
+        }
+
+        /* 响应式适配 */
+        @media (max-width: 640px) {
+            .changelog {
+                padding: 16px 18px;
+                margin: 10px;
+            }
+
+            .changelog h1 {
+                font-size: 1.5rem;
+            }
+
+            .changelog h2 {
+                font-size: 1.2rem;
+            }
+
+            .changelog pre {
+                padding: 12px 14px;
+                font-size: 0.8rem;
+            }
+
+            .changelog table th,
+            .changelog table td {
+                padding: 6px 10px;
+                font-size: 0.85rem;
+            }
+
+            .changelog ul,
+            .changelog ol {
+                padding-left: 20px;
+            }
+
+            .site-footer {
+                padding: 14px 18px 8px 18px;
+                margin: 16px 10px 0 10px;
+                font-size: 0.75rem;
+            }
+        }
+
+        /* 打印样式 */
+        @media print {
+            .changelog {
+                box-shadow: none;
+                padding: 20px;
+            }
+
+            .changelog pre {
+                background: #f4f6f8;
+                color: #2c3e50;
+                border: 1px solid #dce3ea;
+            }
+
+            .changelog pre code {
+                background: transparent;
+            }
+
+            .site-footer {
+                border-top-color: #dce3ea;
+                color: #7f8c8d;
+            }
+        }
+    </style>
+    <script src="./../static/js/marked.umd.js"></script>
+</head>
+<body>
+<div id="container" class="changelog" data-content="{{ data }}"></div>
+<footer class="site-footer">
+    &copy; 2025-2026 Orsun History. All rights Reserved.
+</footer>
+<script>
+    const container = document.querySelector("#container");
+    const mdPara = container.dataset.content;
+    const htmlPara = marked.parse(mdPara);
+    container.innerHTML = htmlPara;
+</script>
+</body>
+</html>
