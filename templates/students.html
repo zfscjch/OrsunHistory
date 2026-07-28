@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>翱三通史</title>
+    <title>翱三通史·学生传记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./../static/css/common.css">
     <style>
         .hint {
@@ -51,16 +52,20 @@
 
 <!-- 添加新的仿古签条链接 ✻ 甲辰校勘 ✻  -->
 <a href="/author" class="signature-container signature-link">✻ 甲辰校勘 ✻</a>
-<button class="signature-container signature-btn" onclick="logout()">✻ 退出登录 ✻</button>
+<a class="signature-container signature-btn" id="logout" href="/login">✻ 退出登录 ✻</a>
 
 <script>
     const user = sessionStorage.getItem('user');
     if (!user) window.location.href = '/login';
     const isTeacher = sessionStorage.getItem("isTeacher");
 
-    function logout() {
-        sessionStorage.clear();
-        location.reload();
+    function addLogoutListener() {
+        document.querySelector('#logout').addEventListener('click', (e) => {
+            e.preventDefault();
+            sessionStorage.clear();
+            sessionStorage.setItem('fromIndex', '1');
+            window.location.href = '/login';
+        });
     }
 
     function getArticle(author) {
@@ -129,6 +134,7 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
+        addLogoutListener();
         getArticle(".*");
     });
 </script>

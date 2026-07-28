@@ -1,4 +1,4 @@
-export async function isAdmin(userId) {
+async function isAdmin(userId) {
     try {
         const response = await fetch("/admin/check", {
             method: "POST",

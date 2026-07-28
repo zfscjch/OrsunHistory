@@ -250,7 +250,7 @@ def get_download(slug):
 
 @app.route('/version')
 def get_version():
-    with open('3.0.0stable.md', 'r', encoding='utf-8') as wf:
+    with open('version/3.0.1alpha.md', 'r', encoding='utf-8') as wf:
         data = wf.read()
     return render_template("version.html", data=data)
 

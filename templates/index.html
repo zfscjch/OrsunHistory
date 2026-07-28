@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>翱三通史 - 主页</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./../static/css/common.css">
     <style>
         .a-link {
@@ -147,7 +148,7 @@
 
 <!-- 添加新的仿古签条链接 ✻ 甲辰校勘 ✻  -->
 <a href="/author" class="signature-container signature-link">✻ 甲辰校勘 ✻</a>
-<a class="signature-container signature-btn" onclick="logout()">✻ 退出登录 ✻</a>
+<a class="signature-container signature-btn" href="/login" id="logout">✻ 退出登录 ✻</a>
 
 <script>
     const user = sessionStorage.getItem('user');
@@ -176,10 +177,13 @@
         69: "测试用户"
     }
 
-    function logout() {
-        sessionStorage.clear();
-        sessionStorage.setItem('fromIndex', '1');
-        location.reload();
+    function addLogoutListener() {
+        document.querySelector('#logout').addEventListener('click', (e) => {
+            e.preventDefault();
+            sessionStorage.clear();
+            sessionStorage.setItem('fromIndex', '1');
+            window.location.href = '/login';
+        });
     }
 
     // 优化后的 getArticle 函数
@@ -344,6 +348,7 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
+        addLogoutListener();
         getArticle(".*");
         initCheck();
     });

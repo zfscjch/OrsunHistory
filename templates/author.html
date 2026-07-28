@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>翱三通史 · 作者编辑</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./../static/css/common.css">
     <style>
         /* ===== author.html 特有样式 ===== */
@@ -244,10 +245,13 @@
             }
         });
 
-        function logout() {
-            sessionStorage.setItem("fromIndex", "1");
-            sessionStorage.removeItem("user");
-            window.location.href = "/login";
+        function addLogoutListener() {
+            document.querySelector('#logout').addEventListener('click', (e) => {
+                e.preventDefault();
+                sessionStorage.clear();
+                sessionStorage.setItem('fromIndex', '1');
+                window.location.href = '/login';
+            });
         }
 
         function getArticle(author) {
@@ -356,20 +360,20 @@
     </div>
     <!-- 仿古签条（左侧固定） -->
     <a href="/edit" class="signature-container signature-link">✻ 新建文章 ✻</a>
-    <a class="signature-container signature-btn" onclick="logout()">✻ 退出登录 ✻</a>
+    <a class="signature-container signature-btn" id="logout" href="/login">✻ 退出登录 ✻</a>
 </div>
-<script type="module">
-    import { isAdmin } from "../static/js/checkAdmin.js";
+<script>
     const user = sessionStorage.getItem("user");
     const userId = sessionStorage.getItem("userID");
     const isTeacher = sessionStorage.getItem("isTeacher");
     if (!user) window.location.href = "/login";
+    addLogoutListener();
     isAdmin(userId)
         .then(res => {
             console.log(res);
             if (res) {
                 getArticle(".*");
-                getDraftArticle()
+                getDraftArticle();
             } else {
                 document.querySelector("#review-li").style.display = "none";
                 getArticle(user);
