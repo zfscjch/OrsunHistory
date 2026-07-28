@@ -64,12 +64,6 @@
             white-space: nowrap;
         }
 
-        /* 辅助类 */
-        .type {
-            font-family: "微软雅黑", "Segoe UI", sans-serif;
-            font-size: 1.4rem;
-        }
-
         /* 文章列表容器 (与 common 的 #psg 区分) */
         .psg {
             font-family: 'Georgia', 'Times New Roman', '宋体', serif;
@@ -176,6 +170,69 @@
         .psg li a:active {
             transform: translateY(6px);
             box-shadow: 0 0 0 #7a623e, 0 8px 12px -6px #0f0b06;
+        }
+
+        /* 润色后的 .type 标题样式 —— 更具古籍批注感 */
+        .type {
+            font-family: "华文楷体", "KaiTi", "微软雅黑", serif;
+            font-size: 1.5rem;
+            letter-spacing: 6px;
+            color: #5a4733;
+            margin: 2rem 0 0.8rem 0;
+            padding: 0.4rem 1.8rem;
+            background: linear-gradient(90deg, transparent, #e8dbca, transparent);
+            border-left: 6px solid #b5956b;
+            border-right: 6px solid #b5956b;
+            border-radius: 0 40px 40px 0;
+            text-shadow: 0 1px 2px #f5ede0;
+            position: relative;
+            display: inline-block;
+            width: auto;
+            box-shadow: inset 0 1px 0 #fffcf5, 0 2px 4px rgba(80, 60, 40, 0.15);
+        }
+
+        /* 为两个标题增加不同的点缀色，以示区分 */
+        .type:first-of-type {
+            border-left-color: #8a7a5f;
+            border-right-color: #8a7a5f;
+            background: linear-gradient(90deg, transparent, #e3d5c0, transparent);
+        }
+
+        .type:first-of-type::after {
+            content: ' ✦ 可修改 ✦';
+            font-size: 0.85rem;
+            color: #7d6b50;
+            margin-left: 12px;
+            font-weight: 300;
+            letter-spacing: 2px;
+            opacity: 0.7;
+        }
+
+        .type:last-of-type {
+            border-left-color: #b87c4b;
+            border-right-color: #b87c4b;
+            background: linear-gradient(90deg, transparent, #ede0ce, transparent);
+        }
+
+        .type:last-of-type::after {
+            content: ' ✦ 待批阅 ✦';
+            font-size: 0.85rem;
+            color: #7d6b50;
+            margin-left: 12px;
+            font-weight: 300;
+            letter-spacing: 2px;
+            opacity: 0.7;
+        }
+
+        /* 额外点缀：在标题下方增加一条细腻的装饰线 */
+        .type::before {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 20%;
+            width: 60%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #c9b08a, transparent);
         }
 
         /* 右下题跋 (保留，common 未定义 body::before) */
@@ -345,16 +402,16 @@
                 .replace(/'/g, "&#039;");
         }
     </script>
-    <script src="./../static/js/checkAdmin.js" type="module"></script>
+    <script src="./../static/js/checkAdmin.js"></script>
 </head>
 <body>
 <div id="container">
     <h3>作者编辑</h3>
-    <div class="type"><strong> · 可编辑 · </strong></div>
+    <div class="type"><strong>可编辑</strong></div>
     <div id="psg-li" class="psg">
         <p>📖 加载中……</p>
     </div>
-    <div class="type"><strong> · 待审核 · </strong></div>
+    <div class="type"><strong>待审核</strong></div>
     <div id="review-li" class="psg">
         <p>📖 加载中……</p>
     </div>
