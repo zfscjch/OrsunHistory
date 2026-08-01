@@ -250,9 +250,44 @@ def get_download(slug):
 
 @app.route('/version')
 def get_version():
-    with open('version/3.0.1alpha.md', 'r', encoding='utf-8') as wf:
+    with open('version/3.1.0beta.md', 'r', encoding='utf-8') as wf:
         data = wf.read()
     return render_template("version.html", data=data)
+
+@app.route('/chat')
+def get_chat():
+    """翱三通史·聊天室 - 自动适配移动端"""
+    user_agent = request.headers.get("User-Agent", "").lower()
+
+    # 如果没有 User-Agent，默认返回桌面版（或根据实际情况处理）
+    if not user_agent:
+        return render_template("chat.html")
+
+    # 移动设备检测正则（更完整）
+    mobile_pattern = r"mobile|android|iphone|ipod|ipad|windows phone|ios|webos|blackberry|iemobile|opera mini"
+
+    # 特殊检测：某些 iPad 的 UA 不包含 'ipad'，但包含 'mac os' 和 'safari'
+    # 通过屏幕尺寸判断（但服务端无法获取，只能通过 UA 启发式）
+    is_mobile = re.search(mobile_pattern, user_agent) is not None
+
+    # 额外检测：Chrome 在移动设备上的 UA 包含 'mobile' 或 'android'
+    if not is_mobile and "chrome" in user_agent:
+        is_mobile = "mobile" in user_agent or "android" in user_agent
+
+    # 检测微信内置浏览器
+    if "micromessenger" in user_agent:
+        is_mobile = True
+
+    # 检测是否为平板（可选：某些 iPad 返回桌面版更好）
+    if "ipad" in user_agent:
+        # iPad 可以返回移动版或桌面版，根据需求决定
+        # 这里默认返回移动版
+        is_mobile = True
+
+    if is_mobile:
+        return render_template("mobileChat.html")
+
+    return render_template("chat.html")
 
 app.register_blueprint(api_bp, url_prefix="/api")
 app.register_blueprint(face_bp, url_prefix="/face")

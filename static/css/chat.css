@@ -1,0 +1,346 @@
+﻿/* 对话框背景遮罩 */
+#ensure-sth {
+    border: none;
+    border-radius: 12px;
+    padding: 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    width: 400px;
+    max-width: 90vw;
+    background: white;
+    animation: dialog-appear 0.3s ease-out;
+}
+
+/* 对话框出现动画 */
+@keyframes dialog-appear {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* 背景遮罩 */
+#ensure-sth::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+/* 对话框内容区域 */
+#ensure-sth > * {
+    margin: 0;
+    padding: 20px;
+}
+
+/* 描述文字 */
+#description {
+    display: block;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+/* 输入框样式 */
+#question {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+}
+
+#question:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+#question::placeholder {
+    color: #999;
+}
+
+/* 按钮容器 */
+#ensure-sth > div {
+    gap: 12px;
+    justify-content: flex-end;
+    padding-top: 0;
+}
+
+/* 按钮基础样式 */
+.close-btn {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 80px;
+}
+
+/* 确定按钮 */
+#sure {
+    background: #007bff;
+    color: white;
+}
+
+#sure:hover {
+    background: #0056b3;
+    transform: translateY(-1px);
+}
+
+#sure:active {
+    transform: translateY(0);
+}
+
+/* 取消按钮 */
+#cancel {
+    background: #6c757d;
+    color: white;
+}
+
+#cancel:hover {
+    background: #545b62;
+    transform: translateY(-1px);
+}
+
+#cancel:active {
+    transform: translateY(0);
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+    #ensure-sth {
+        width: 95vw;
+        margin: 20px;
+    }
+
+    .close-btn {
+        padding: 12px 20px;
+        flex: 1;
+    }
+
+    #ensure-sth > div {
+        flex-direction: column-reverse;
+    }
+}
+
+/* 禁用状态的样式 */
+#question:invalid {
+    border-color: #dc3545;
+}
+
+#question:invalid:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+body {
+    font-family: Arial, serif;
+    background: #f0f2f5;
+    height: 100vh;
+    margin: 0;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+
+.login-container {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 300px;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+#loginForm button {
+    width: 100%;
+    padding: 0.8rem;
+    background: #1877f2;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.error-message {
+    color: #ff4242;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+body {
+    font-family: sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+#login-section, #chat-section {
+    margin-bottom: 20px;
+}
+
+#chat-section {
+    display: none;
+}
+
+.group-name {
+    font-weight: bold;
+    border: 1px solid #eeeeee;
+    border-radius: 5px 5px 0 0;
+    margin-bottom: 0;
+    background-color: #eeeeee;
+    text-align: center;
+}
+
+.message {
+    margin-bottom: 10px;
+}
+
+.chat-input {
+    display: flex;
+    padding: 15px;
+    background-color: white;
+    border-top: 1px solid #e9ecef;
+}
+
+#message-input {
+    flex: 1;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 24px;
+    outline: none;
+    font-size: 1rem;
+}
+
+#file-input {
+    display: none;
+}
+
+button[onclick="sendMessage()"] {
+    background-color: #4a6ee0;
+    color: white;
+    border: none;
+    border-radius: 24px;
+    padding: 12px 25px;
+    margin-left: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+button[onclick="sendFile()"] {
+    background-color: #4a6ee0;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 12px 15px;
+    margin-left: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.chat-input button:hover {
+    background-color: #3a5ecf;
+}
+
+.system-msg {
+    color: #666;
+    font-style: italic;
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 20px;
+    min-height: 300px;
+    max-height: 380px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background-color: #f8f9fa;
+}
+
+.message {
+    padding: 2px 8px;
+    border-radius: 18px;
+    position: relative;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+.received {
+    align-self: flex-start;
+    background-color: #e9ecef;
+    color: #333;
+    border-bottom-left-radius: 4px;
+}
+
+.sent {
+    align-self: flex-end;
+    background-color: #4a6ee0;
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+
+.message-sender {
+    font-size: 0.8rem;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.message-time {
+    font-size: 0.7rem;
+    text-align: center;
+    opacity: 0.7;
+}
+
+.copyright {
+    text-align: center;
+    font-size: 12px;
+    color: #999;
+    margin: 15px 0 10px;
+    padding: 8px 0;
+    border-top: 1px solid #e8e8e8;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.copyright:hover {
+    color: #666;
+}
+
+/* 可选：添加年份自动更新 */
+.copyright::before {
+    content: "© ";
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+    .copyright {
+        font-size: 10px;
+        margin: 12px 0 8px;
+        padding: 6px 0;
+    }
+}

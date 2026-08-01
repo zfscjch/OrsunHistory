@@ -14,6 +14,7 @@
   "license": "ISC",
   "description": "记录奥山实验初级中学2023届3班初中生活的网站。",
   "dependencies": {
-    "marked": "^18.0.6"
+    "marked": "^18.0.6",
+    "socket.io": "^4.8.3"
   }
 }
