@@ -46,6 +46,95 @@ h1::after {
     background: linear-gradient(90deg, transparent, #b99e7c, #dac292, #b99e7c, transparent);
 }
 
+/* ===== 右上角导航栏 ===== */
+.nav-top-right {
+    position: fixed;
+    top: 20px;
+    right: 24px;
+    display: flex;
+    gap: 0.8rem;
+    align-items: center;
+    background: rgba(246, 239, 226, 0.85);
+    padding: 0.5rem 1.2rem;
+    border-radius: 40px;
+    border: 1px solid #d6c6ae;
+    box-shadow: 0 4px 16px rgba(30, 24, 16, 0.10);
+    backdrop-filter: blur(6px);
+    z-index: 100;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.nav-top-right .a-link {
+    color: #5a4a33;
+    text-decoration: none;
+    font-size: 1.4rem;
+    line-height: 1;
+    transition: all 0.2s ease;
+    padding: 0.2rem 0.3rem;
+    border-radius: 8px;
+    position: relative;
+    /* 让 tooltip 基于此定位 */;
+}
+
+.nav-top-right .a-link:hover {
+    color: #7a623e;
+    background: rgba(200, 180, 155, 0.25);
+    transform: scale(1.1);
+}
+
+/* ===== Tooltip 提示样式 ===== */
+.nav-top-right .a-link::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%) scale(0.9);
+    background: rgba(50, 42, 30, 0.92);
+    color: #f0ebe0;
+    padding: 0.4rem 0.9rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-family: 'Courier New', '宋体', monospace;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 235, 200, 0.15);
+    font-weight: normal;
+    z-index: 200;
+}
+
+/* 小三角箭头 - 朝上 */
+.nav-top-right .a-link::before {
+    content: '';
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 50%;
+    transform: translateX(-50%) scale(0.9);
+    border: 6px solid transparent;
+    border-bottom-color: rgba(50, 42, 30, 0.92);
+    opacity: 0;
+    transition: all 0.2s ease;
+    pointer-events: none;
+    z-index: 200;
+}
+
+.nav-top-right .a-link:hover::after,
+.nav-top-right .a-link:hover::before {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+}
+
+/* 分割装饰点 */
+.nav-top-right .dot {
+    color: #cbb291;
+    font-size: 0.6rem;
+    user-select: none;
+}
+
 /* ===== 列传容器 ===== */
 #psg {
     background: #f7efe0 linear-gradient(145deg, #f3ead9 0%, #faf3e2 70%);

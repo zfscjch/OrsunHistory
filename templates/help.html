@@ -340,14 +340,14 @@
         <div class="protocol-header">
             <h1>翱三通史官网<br>帮助文档 · 传记模版</h1>
             <div class="version-badge">
-                <span>📚 版本：2026.07 通史版本: <a href="/version" target="_blank">3.1.0 公测版</a></span>
+                <span>📚 版本：2026.07 通史版本: <a href="/version" target="_blank" id="current-v">[非稳定版本]</a></span>
                 <span>⚡ 适用于所有用户</span>
             </div>
         </div>
 
         <!-- 帮助正文 -->
         <p class="md-para">
-            欢迎访问翱三通史官网！下面是对部分官网功能的讲解，以及为您准备的传记模版（含一键复制）。
+            欢迎访问翱三通史官网！下面是对部分官网功能的讲解。
         </p>
 
         <!-- 阅读传记 -->
@@ -415,51 +415,27 @@
 
         <h2 id="upload-issues">💡 反映问题</h2>
         <p class="md-para">
-            翱三通史安全应急响应中心: <a href="/issues">https://www.cjchcoderchat.site:3/issues</a>
+            翱三通史安全应急响应中心: <a href="/issues" target="_blank">https://www.cjchcoderchat.site:3/issues</a>
+        </p>
+
+        <h2 id="chat">💬 通史聊天</h2>
+        <p class="md-para">
+            翱三通史在3.1.0版本后开始支持“翱三通史·聊天室”，可以像微信、QQ一样使用。
+        </p>
+        <p class="md-para">
+            跳转链接：<a href="/chat" target="_blank">https://www.cjchcoderchat.site:3/chat</a>
         </p>
 
         <h2 id="open-source">🔓 源码开源</h2>
 
-        <!-- 名言引用（放在前面） -->
-        <blockquote style="
-            background: #f0f6fa;
-            border-left: 4px solid #2c7a6e;
-            padding: 0.8rem 1.2rem;
-            margin: 1rem 0;
-            border-radius: 12px;
-            font-size: 0.95rem;
-            color: #1e3b44;
-            font-style: italic;
-        ">
-            <p style="margin: 0;">
-                “When it comes to hiring, I'll take a GitHub commit log over a resume any day.”
-            </p>
-            <footer style="
-                margin-top: 0.3rem;
-                font-style: normal;
-                font-size: 0.85rem;
-                color: #4b6f86;
-            ">
-                — John Resig (jQuery 创始人)
-            </footer>
-        </blockquote>
-
-        <!-- 阐明因果关系：因为名言 → 所以开源 -->
-        <p class="md-para" style="
-            background: #fef8e7;
-            border-left: 4px solid #e6b12e;
-            padding: 0.8rem 1.2rem;
-            border-radius: 16px;
-            margin: 1rem 0;
-        ">
-            <strong>正是受这句名言的启发，</strong>我们决定将“翱三通史”的源代码完全开源。
-            我们相信，<strong>真实的代码提交记录比一纸简历更能说明问题</strong>——它不仅能直观展现一个开发者的技术功底、编码习惯和解决问题的能力，更代表着他/她对项目的热爱与持续投入。
-            因此，我们选择用开源的方式，让每一行代码都成为开发者最好的名片。
+        <p class="md-para">
+            翱三通史官网在2026年6月22日正式开源。
         </p>
 
         <!-- GitHub 链接 -->
         <p class="md-para">
-            📦 项目地址：<a href="https://github.com/zfscjch/OrsunHistory" target="_blank" rel="noopener noreferrer">https://github.com/zfscjch/OrsunHistory</a>
+            📦 项目地址：
+            <a href="https://github.com/zfscjch/OrsunHistory" target="_blank" rel="noopener noreferrer">https://github.com/zfscjch/OrsunHistory</a>
         </p>
 
         <!-- 底部 (与协议页呼应) -->
@@ -473,6 +449,22 @@
 <!-- 复制功能脚本 -->
 <script>
     (function() {
+        // 获取版本
+        fetch('/version', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                document.querySelector("#current-v").innerText = data.msg;
+            })
+            .catch(err => {
+                console.error(err);
+                document.querySelector("#current-v").innerText = "[获取版本号失败]";
+            });
+
         // 获取所有复制按钮
         const copyBtns = document.querySelectorAll('.copy-btn');
 

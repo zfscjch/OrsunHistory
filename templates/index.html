@@ -134,10 +134,15 @@
 </head>
 <body>
 <h1>翱三通史主页</h1>
-<a href="/issues" class="a-link">问题反馈</a>
-<a href="/help" class="a-link">查看帮助文档</a>
-<a href="/version" class="a-link">查看版本</a>
-<a href="/chat" class="a-link">聊天室</a>
+<nav class="nav-top-right">
+    <a href="/issues" class="a-link" data-tooltip="问题反馈">📮</a>
+    <span class="dot">✦</span>
+    <a href="/help" class="a-link" data-tooltip="查看帮助">📖</a>
+    <span class="dot">✦</span>
+    <a href="/version" class="a-link" data-tooltip="查看版本">📌</a>
+    <span class="dot">✦</span>
+    <a href="/chat" class="a-link" data-tooltip="通史聊天">💬</a>
+</nav>
 <dialog id="msg-dialog">
     <div id="msg-content"></div>
     <button id="known">知道了</button>

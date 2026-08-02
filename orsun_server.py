@@ -1,5 +1,6 @@
 import os
 import re
+import json
 import traceback
 from flask import (
     Flask, request, jsonify, abort, render_template, redirect, g, url_for
@@ -258,11 +259,23 @@ def get_download(slug):
     # 7. 使用 url_for 生成安全的 URL
     return redirect(url_for('static', filename=f"doc/{doc_name}"))
 
-@app.route('/version')
+@app.route('/version', methods=["GET", "POST"])
 def get_version():
-    with open('version/3.1.0beta.md', 'r', encoding='utf-8') as wf:
-        data = wf.read()
-    return render_template("version.html", data=data)
+    with open("version/lastest.json", "r", encoding="utf-8") as rf:
+        lastest = json.load(rf)
+    version = lastest["version"]
+    pre_release = lastest["pre-release"]
+    v_file = lastest["file"]
+    if not pre_release:
+        pre_release = "stable"
+    if not v_file:
+        v_file = f"version/{version}{pre_release}.md"
+    if request.method == "GET":
+        with open(v_file, 'r', encoding='utf-8') as wf:
+            data = wf.read()
+        return render_template("version.html", data=data)
+    else:
+        return api_response("success", f"{version}-{pre_release}")
 
 @app.route('/chat')
 def get_chat():
