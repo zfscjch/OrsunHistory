@@ -4,6 +4,7 @@ class Config:
     STANDARD_PASSWORD = ""
     MASTER_PASSWORD = ""
     writer = []
+    through_ipc = False # （可选）在首次ICP备案期间开启
     MySQLConfig = {
         "user": "YourMySQLUserName",
         "password": "YourMySQLPassword",

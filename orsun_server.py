@@ -23,10 +23,17 @@ log_mgr = LogMgr("../logs/OrsunHistory/website.log")
 def handle_503(error):
     return render_template("503.html"), 503
 
+@app.errorhandler(451)
+def handle_451(error):
+    return render_template("runtime_error.html"), 451
 
 @app.before_request
 def check():
     """检查访问浏览器和服务器是否符合要求"""
+    if Config.through_ipc:
+        # 检查是否在首次ICP备案期间
+        abort(451)
+
     g.user_mgr = user_mgr
     g.log_mgr = log_mgr
     g.psg_mgr = psg_mgr
