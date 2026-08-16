@@ -1266,6 +1266,7 @@
     let groups = [];
     let onlineUsers = new Set();
     let isLoggedIn = false;
+    let showFriendDialog = false;     // 如果需要私信用户（需要在SearchParams中设定），需要弹开用户对话框
     let friendRequests = [];          // 所有请求列表
     let pendingRequestCount = 0;      // 待处理（收到）的数量
     let unreadMap = {}; // { friend_id: count }
@@ -1925,6 +1926,12 @@
 
             case 'search_user_by_name':
                 if (data.users && data.users.length > 0) {
+                    const firstUser = data.users[0];
+                    if (firstUser && showFriendDialog && String(firstUser.user_id) !== String(currentUserId)) {
+                        startDirectChat(firstUser.user_id.toString(), firstUser.username);
+                        return;
+                    }
+
                     let html = '';
                     data.users.forEach((user) => {
                         const userId = user.user_id;
@@ -2094,6 +2101,14 @@
         socket.emit('message', {type: 'get_friends'});
         socket.emit('message', {type: 'get_groups'});
         socket.emit('message', {type: 'get_history', data: {chat_type: 'private', target_id: 0, limit: 20}});
+
+        // 处理URLSearchParams
+        const urlParams = new URLSearchParams(window.location.search);
+        const targetUser = urlParams.get('@');
+        if (targetUser) {
+            showFriendDialog = true;
+            socket.emit('message', {type: 'search_user_by_name', data: {username: targetUser}});
+        }
     }
 
     function login() {

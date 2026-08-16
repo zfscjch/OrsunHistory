@@ -30,9 +30,20 @@ def handle_451(error):
 @app.before_request
 def check():
     """检查访问浏览器和服务器是否符合要求"""
+    # 定义白名单路径
+    whitelist_paths = [
+        '/chat',
+        '/static',
+        '/version',
+        # 可以继续添加其他允许的路径
+        # '/api/health',
+        # '/static',
+    ]
+
     if Config.through_ipc:
-        # 检查是否在首次ICP备案期间
-        abort(451)
+        # 检查当前请求路径是否在白名单中
+        if not any(request.path.startswith(path) for path in whitelist_paths):
+            abort(451)
 
     g.user_mgr = user_mgr
     g.log_mgr = log_mgr
@@ -50,7 +61,7 @@ def check():
     if parsed_ua.is_bot:
         abort(403, description="禁止爬虫访问")
 
-    if "msie" in user_agent or "trident" in user_agent:
+    if ("msie" in user_agent or "trident" in user_agent) and "/not_allow" not in request.path:
         return redirect("/not_allow?code=403&isIe=true")
 
     # 再检测服务器是否正在维护
@@ -289,7 +300,33 @@ def get_chat():
     """翱三通史·聊天室 - 自动适配移动端"""
     user_agent = request.headers.get("User-Agent", "").lower()
 
-    if parse(user_agent).is_mobile:
+    # 移动端关键词（包含微信和QQ浏览器）
+    mobile_keywords = [
+        # 主流移动设备
+        'mobile', 'android', 'iphone', 'ipad', 'ipod',
+        'windows phone', 'blackberry', 'webos', 'opera mini',
+        'iemobile', 'nokia', 'samsung', 'huawei', 'xiaomi',
+        'oppo', 'vivo', 'oneplus', 'lg', 'sony', 'htc',
+
+        # 微信和QQ浏览器专用
+        'micromessenger',  # 微信内置浏览器
+        'mqqbrowser',      # QQ浏览器
+        'qq/',             # QQ内置浏览器
+        'mqq',             # 手机QQ
+        'qzone',           # QQ空间
+
+        # 其他移动端浏览器
+        'ucbrowser',       # UC浏览器
+        'baiduboxapp',     # 百度手机助手
+        'baidubrowser',    # 百度浏览器
+        'sogoumobile',     # 搜狗浏览器
+        'liebao',          # 猎豹浏览器
+        'quark'            # 夸克浏览器
+    ]
+
+    is_mobile = any(keyword in user_agent for keyword in mobile_keywords)
+
+    if is_mobile:
         return render_template("mobileChat.html")
 
     return render_template("chat.html")
