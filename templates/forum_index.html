@@ -228,6 +228,7 @@
 <script>
     // 从 sessionStorage 读取用户信息
     const userId = sessionStorage.getItem('userID');
+    if (!userId) window.location.href = '/login';
 
     // 控制发帖按钮显示
     const newThreadBtn = document.getElementById('newThreadBtn');
