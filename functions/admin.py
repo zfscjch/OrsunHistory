@@ -84,6 +84,8 @@ def post_check_admin():
             return request_miss_arg_res()
 
         user_id = data["userID"]
+        if not user_id or user_id == "None":
+            return api_response("error", "缺少 user_id 字段", http_code=400)
         res = check_admins(user_id)
         return api_response("success", "", {"isAdmin": res})
     except Exception as e:
@@ -106,18 +108,6 @@ def update_maintenance():
         data = request.get_json()
         if not "m" in data:
             return request_miss_arg_res()
-
-        auth = request.authorization
-        if not auth:
-            return Response('需要认证', 401,
-                            {'WWW-Authenticate': 'Basic realm="Admin Panel"'})
-        username = auth.username
-        password = auth.password
-        if not username or not password:
-            return Response('需要认证', 401,
-                            {'WWW-Authenticate': 'Basic realm="Admin Panel"'})
-        elif username != "admin" or password != Config.MASTER_PASSWORD:
-            return api_response("error", "用户名或密码错误", http_code=403)
 
         maintenance_mode = bool(data["m"])
         Config.set_maintenance(maintenance_mode)

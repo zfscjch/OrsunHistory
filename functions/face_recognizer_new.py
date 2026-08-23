@@ -3,10 +3,13 @@ import numpy as np
 import os
 import base64
 from typing import Dict, Optional, Tuple
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, redirect
 from PIL import Image, ImageEnhance
-from deepface import DeepFace
-
+use_remote_face_server = False
+try:
+    from deepface import DeepFace
+except ImportError:
+    use_remote_face_server = True
 from .get_user import get_user
 from .api_response import api_response
 
@@ -600,7 +603,11 @@ class FaceRecognizer:
 
 # ==================== Flask 路由 ====================
 
-recognizer = FaceRecognizer()
+recognizer = None
+if not use_remote_face_server:
+    recognizer = FaceRecognizer()
+else:
+    print("将使用remote server进行人脸识别！")
 face_bp = Blueprint('face', __name__)
 
 @face_bp.route('/')
@@ -613,6 +620,8 @@ def get_upload():
 
 @face_bp.route('/recognize', methods=['POST'])
 def recognize():
+    if use_remote_face_server:
+        return redirect("https://www.cjchcoderchat.site:3/", 307)
     try:
         data = request.get_json()
         if not data or 'image' not in data:
@@ -637,6 +646,8 @@ def recognize():
 
 @face_bp.route("/register", methods=["POST"])
 def register_user():
+    if use_remote_face_server:
+        return redirect("https://www.cjchcoderchat.site:3/", 307)
     try:
         data = request.json
         if not data or 'name' not in data or 'image' not in data:

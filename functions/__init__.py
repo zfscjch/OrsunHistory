@@ -8,3 +8,4 @@ from .log import LogMgr
 from .error_handlers import upload_error
 from .admin import admin_bp
 from .api import api_bp
+from .forum import forum_bp

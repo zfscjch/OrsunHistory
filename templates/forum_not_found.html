@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 · 翱三通史</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+    <script src="{{ url_for('static', filename='js/checkAdmin.js') }}"></script>
+    <style>
+        #psg-404 {
+            background: #f7efe0 linear-gradient(145deg, #f3ead9 0%, #faf3e2 70%);
+            border: 1px solid #bbaa8a;
+            border-radius: 32px 32px 24px 24px;
+            box-shadow: 0 20px 30px -10px rgba(0,0,0,0.7), inset 0 0 0 1px #fff6e5, inset 2px 2px 8px rgba(255, 245, 215, 0.8);
+            padding: 3rem 4rem;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+        }
+
+        #psg-404::before {
+            content: '';
+            position: absolute;
+            top: -4px; left: -4px; right: -4px; bottom: -4px;
+            border: 1px solid rgba(140, 110, 70, 0.2);
+            border-radius: 36px 36px 28px 28px;
+            pointer-events: none;
+            box-shadow: inset 0 0 20px #bba27a40;
+        }
+
+        #psg-404 .icon {
+            font-size: 4rem;
+            display: block;
+            margin-bottom: 16px;
+        }
+
+        #psg-404 h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            border-bottom: none;
+            padding-bottom: 0;
+            text-shadow: 2px 2px 0 #3a2e1e, 3px 3px 0 #1f1a10;
+        }
+
+        #psg-404 p {
+            color: #6b5a45;
+            font-size: 1.05rem;
+        }
+
+        #psg-404 a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 8px 30px;
+            background: linear-gradient(145deg, #dac9ae, #efdfc7);
+            border: 1px solid #b5956b;
+            border-radius: 60px;
+            color: #3c2e1f;
+            text-decoration: none;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-size: 1rem;
+            box-shadow: 0 5px 0 #7a623e, inset 0 -2px 4px #fff4dd;
+            transition: all 0.15s;
+            text-shadow: 1px 1px 0 #fff3e0;
+        }
+
+        #psg-404 a:hover {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #7a623e;
+        }
+
+        #psg-404::after {
+            content: '⸻  ⸻  以文会友  论道古今  ⸻  ⸻';
+            display: block;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #8f7b5f;
+            letter-spacing: 3px;
+            margin-top: 1.5rem;
+            font-style: italic;
+            font-family: 'Times New Roman', '楷体', serif;
+            border-top: 1px dashed #cbb291;
+            padding-top: 1rem;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 700px) {
+            #psg-404 {
+                padding: 2rem 1.5rem;
+            }
+            #psg-404 h1 {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h1>翱三通史 · 论道</h1>
+
+<nav class="nav-top-right">
+    <a href="/issues" class="a-link" data-tooltip="问题反馈">📮</a>
+    <span class="dot">✦</span>
+    <a href="/help" class="a-link" data-tooltip="查看帮助">📖</a>
+    <span class="dot">✦</span>
+    <a href="/version" class="a-link" data-tooltip="查看版本">📌</a>
+    <span class="dot">✦</span>
+    <a href="/" class="a-link" data-tooltip="返回主页">🏠</a>
+</nav>
+
+<div id="psg-404">
+    <span class="icon">📭</span>
+    <h1>此处空无一物</h1>
+    <p>您所寻的论道已随风而去，或从未存在</p>
+    <a href="{{ url_for('forum.index') }}">返回论道堂</a>
+</div>
+
+<a href="/author" class="signature-container signature-link">✻ 甲辰校勘 ✻</a>
+<a class="signature-container signature-btn" onclick="sessionStorage.clear();window.location.href='/login';" href="javascript:void(0);">✻ 退出登录 ✻</a>
+
+</body>
+</html>

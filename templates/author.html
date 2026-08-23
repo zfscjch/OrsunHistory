@@ -436,7 +436,6 @@
     addLogoutListener();
     isAdmin(userId)
         .then(res => {
-            console.log(res);
             if (res) {
                 getArticle(".*");
                 getDraftArticle();

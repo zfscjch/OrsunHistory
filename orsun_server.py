@@ -334,6 +334,7 @@ def get_chat():
 app.register_blueprint(api_bp, url_prefix="/api")
 app.register_blueprint(face_bp, url_prefix="/face")
 app.register_blueprint(admin_bp, url_prefix="/admin")
+app.register_blueprint(forum_bp, url_prefix="/forum")
 
 
 if __name__ == '__main__':

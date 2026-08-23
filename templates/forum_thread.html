@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ thread.title }} · 翱三通史</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+    <script src="{{ url_for('static', filename='js/checkAdmin.js') }}"></script>
+    <style>
+        .forum-container {
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        #psg-thread {
+            background: #f7efe0 linear-gradient(145deg, #f3ead9 0%, #faf3e2 70%);
+            border: 1px solid #bbaa8a;
+            border-radius: 32px 32px 24px 24px;
+            box-shadow: 0 20px 30px -10px rgba(0,0,0,0.7), inset 0 0 0 1px #fff6e5, inset 2px 2px 8px rgba(255, 245, 215, 0.8);
+            padding: 2rem 2.5rem;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        #psg-thread::before {
+            content: '';
+            position: absolute;
+            top: -4px; left: -4px; right: -4px; bottom: -4px;
+            border: 1px solid rgba(140, 110, 70, 0.2);
+            border-radius: 36px 36px 28px 28px;
+            pointer-events: none;
+            box-shadow: inset 0 0 20px #bba27a40;
+        }
+
+        .thread-title {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #2e3b2c;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .thread-meta {
+            font-size: 0.85rem;
+            color: #6b5a45;
+            margin-bottom: 14px;
+        }
+
+        .thread-meta span {
+            margin-right: 16px;
+        }
+
+        .thread-content {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: #3c2e1f;
+            padding: 12px 4px;
+            border-top: 1px solid #d4c9b8;
+            border-bottom: 1px solid #d4c9b8;
+        }
+
+        .thread-actions {
+            margin-top: 16px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .thread-actions button {
+            padding: 6px 20px;
+            border: 1px solid #b5956b;
+            border-radius: 30px;
+            background: linear-gradient(145deg, #dac9ae, #efdfc7);
+            color: #3c2e1f;
+            cursor: pointer;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-size: 0.85rem;
+            transition: all 0.15s;
+            box-shadow: 0 4px 0 #7a623e, inset 0 -2px 4px #fff4dd;
+        }
+
+        .thread-actions button:hover {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #7a623e;
+        }
+
+        .thread-actions .btn-delete {
+            background: #d4a090;
+            border-color: #b08070;
+        }
+
+        #psg-replies {
+            background: #f7efe0 linear-gradient(145deg, #f3ead9 0%, #faf3e2 70%);
+            border: 1px solid #bbaa8a;
+            border-radius: 32px 32px 24px 24px;
+            box-shadow: 0 20px 30px -10px rgba(0,0,0,0.7), inset 0 0 0 1px #fff6e5, inset 2px 2px 8px rgba(255, 245, 215, 0.8);
+            padding: 1.8rem 2.5rem;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        #psg-replies::before {
+            content: '';
+            position: absolute;
+            top: -4px; left: -4px; right: -4px; bottom: -4px;
+            border: 1px solid rgba(140, 110, 70, 0.2);
+            border-radius: 36px 36px 28px 28px;
+            pointer-events: none;
+            box-shadow: inset 0 0 20px #bba27a40;
+        }
+
+        #psg-replies h3 {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            color: #2e3b2c;
+            margin-bottom: 16px;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+        }
+
+        .reply-item {
+            padding: 14px 0;
+            border-bottom: 1px solid #d4c9b8;
+        }
+
+        .reply-item:last-child {
+            border-bottom: none;
+        }
+
+        .reply-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .reply-author {
+            font-weight: 500;
+            color: #2e3b2c;
+            font-family: 'Georgia', 'Times New Roman', serif;
+        }
+
+        .reply-time {
+            font-size: 0.8rem;
+            color: #8f7b5f;
+        }
+
+        .reply-content {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #3c2e1f;
+            padding-left: 4px;
+        }
+
+        #psg-reply-form {
+            background: #f7efe0 linear-gradient(145deg, #f3ead9 0%, #faf3e2 70%);
+            border: 1px solid #bbaa8a;
+            border-radius: 32px 32px 24px 24px;
+            box-shadow: 0 20px 30px -10px rgba(0,0,0,0.7), inset 0 0 0 1px #fff6e5, inset 2px 2px 8px rgba(255, 245, 215, 0.8);
+            padding: 1.8rem 2.5rem;
+            position: relative;
+        }
+
+        #psg-reply-form::before {
+            content: '';
+            position: absolute;
+            top: -4px; left: -4px; right: -4px; bottom: -4px;
+            border: 1px solid rgba(140, 110, 70, 0.2);
+            border-radius: 36px 36px 28px 28px;
+            pointer-events: none;
+            box-shadow: inset 0 0 20px #bba27a40;
+        }
+
+        #psg-reply-form h3 {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            color: #2e3b2c;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+
+        #psg-reply-form textarea {
+            width: 100%;
+            min-height: 90px;
+            padding: 12px 16px;
+            border: 1px solid #d4c9b8;
+            border-radius: 16px;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-size: 0.95rem;
+            background: #fefcf8;
+            resize: vertical;
+            transition: border 0.2s;
+        }
+
+        #psg-reply-form textarea:focus {
+            outline: none;
+            border-color: #b5956b;
+            box-shadow: 0 0 0 4px rgba(181, 149, 107, 0.15);
+        }
+
+        #psg-reply-form button {
+            margin-top: 10px;
+            padding: 8px 30px;
+            background: linear-gradient(145deg, #dac9ae, #efdfc7);
+            border: 1px solid #b5956b;
+            border-radius: 60px;
+            color: #3c2e1f;
+            cursor: pointer;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-size: 0.95rem;
+            box-shadow: 0 5px 0 #7a623e, inset 0 -2px 4px #fff4dd;
+            transition: all 0.15s;
+            text-shadow: 1px 1px 0 #fff3e0;
+        }
+
+        #psg-reply-form button:hover {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #7a623e;
+        }
+
+        .locked-message {
+            background: #f0e6d4;
+            border: 1px solid #cbb291;
+            border-radius: 16px;
+            padding: 14px 20px;
+            text-align: center;
+            color: #6b5a45;
+            font-style: italic;
+        }
+
+        .login-prompt {
+            text-align: center;
+            padding: 30px;
+            background: #f7efe0;
+            border-radius: 24px;
+            border: 1px solid #bbaa8a;
+        }
+
+        .login-prompt a {
+            color: #7a623e;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .pagination a, .pagination span {
+            padding: 6px 16px;
+            border: 1px solid #b5956b;
+            border-radius: 30px;
+            text-decoration: none;
+            color: #3c2e1f;
+            font-size: 0.85rem;
+            transition: all 0.15s;
+            background: rgba(247, 239, 224, 0.5);
+        }
+
+        .pagination .current {
+            background: #b5956b;
+            color: #fff;
+            border-color: #b5956b;
+        }
+
+        .pagination a:hover {
+            background: #dac9ae;
+        }
+
+        /* ===== 匿名标识 ===== */
+        .anonymous-badge {
+            background: #7a623e;
+            color: #f7efe0;
+            padding: 1px 12px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            margin-right: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .anonymous-author {
+            color: #7a623e;
+        }
+
+        /* ===== 匿名回复按钮 ===== */
+        .reply-anonymous-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            background: rgba(180, 160, 130, 0.08);
+            border: 2px solid #8f7b5f;
+            border-radius: 12px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .reply-anonymous-toggle:hover {
+            background: rgba(180, 160, 130, 0.18);
+        }
+
+        .reply-anonymous-toggle input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #7a623e;
+            cursor: pointer;
+            flex-shrink: 0;
+            margin: 0;
+        }
+
+        .reply-anonymous-toggle label {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            color: #2e3b2c;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .reply-anonymous-toggle label strong {
+            color: #7a623e;
+        }
+
+        .reply-anonymous-toggle .hint {
+            font-size: 0.75rem;
+            color: #8f7b5f;
+            font-style: italic;
+        }
+
+        /* ===== 匿名帖提示 ===== */
+        .reply-thread-anonymous-tip {
+            background: rgba(180, 160, 130, 0.08);
+            border: 1px solid #8f7b5f;
+            border-radius: 12px;
+            padding: 10px 16px;
+            margin: 10px 0;
+            text-align: center;
+            color: #6b5a45;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-size: 0.9rem;
+        }
+
+        .reply-thread-anonymous-tip strong {
+            color: #7a623e;
+        }
+
+        #psg-replies::after,
+        #psg-reply-form::after {
+            content: '⸻  ⸻  以文会友  论道古今  ⸻  ⸻';
+            display: block;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #8f7b5f;
+            letter-spacing: 3px;
+            margin-top: 1.2rem;
+            font-style: italic;
+            font-family: 'Times New Roman', '楷体', serif;
+            border-top: 1px dashed #cbb291;
+            padding-top: 1rem;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 700px) {
+            #psg-thread, #psg-replies, #psg-reply-form {
+                padding: 1.2rem 1.2rem;
+            }
+            .thread-title {
+                font-size: 1.2rem;
+            }
+            .thread-meta span {
+                display: inline-block;
+                margin-right: 10px;
+                font-size: 0.75rem;
+            }
+            .thread-content {
+                font-size: 0.95rem;
+            }
+            .reply-anonymous-toggle {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h1>翱三通史 · 论道</h1>
+
+<nav class="nav-top-right">
+    <a href="/issues" class="a-link" data-tooltip="问题反馈">📮</a>
+    <span class="dot">✦</span>
+    <a href="/help" class="a-link" data-tooltip="查看帮助">📖</a>
+    <span class="dot">✦</span>
+    <a href="/version" class="a-link" data-tooltip="查看版本">📌</a>
+    <span class="dot">✦</span>
+    <a href="/forum" class="a-link" data-tooltip="返回论坛">📜</a>
+    <span class="dot">✦</span>
+    <a href="/" class="a-link" data-tooltip="返回主站">🏠</a>
+</nav>
+
+<div class="forum-container">
+    <div id="psg-thread">
+        <div class="thread-title">
+            {% if thread.is_pinned %}📌 {% endif %}
+            {% if thread.is_locked %}🔒 {% endif %}
+            {% if thread.is_anonymous %}👤 {% endif %}
+            {{ thread.title }}
+        </div>
+        <div class="thread-meta">
+            <span>👤 {% if thread.is_anonymous %}<span class="anonymous-author">👤 匿名用户</span>{% else %}{{ thread.author_name or '匿名' }}{% endif %}</span>
+            <span>📅 {{ thread.created_at.strftime('%Y-%m-%d %H:%M') if thread.created_at else '' }}</span>
+            <span>👁️ {{ thread.view_count or 0 }}</span>
+            <span>💬 {{ thread.reply_count or 0 }}</span>
+        </div>
+        <div class="thread-content">
+            {{ thread.content|safe }}
+        </div>
+
+        <div class="thread-actions" id="adminActions" style="display:none;">
+            <button onclick="togglePin()" id="pinBtn">{{ '取消置顶' if thread.is_pinned else '置顶' }}</button>
+            <button onclick="toggleLock()" id="lockBtn">{{ '解锁' if thread.is_locked else '锁定' }}</button>
+            <button class="btn-delete" onclick="deleteThread()">删除</button>
+        </div>
+    </div>
+
+    <div id="psg-replies">
+        <h3>💬 全部回复 ({{ pagination.total or 0 }})</h3>
+
+        {% if replies %}
+        {% for reply in replies %}
+        <div class="reply-item">
+            <div class="reply-header">
+                <span class="reply-author">{% if reply.is_anonymous %}<span class="anonymous-author">👤 匿名用户</span>{% else %}{{ reply.author_name or '匿名' }}{% endif %}</span>
+                <span class="reply-time">{{ reply.created_at.strftime('%Y-%m-%d %H:%M') if reply.created_at else '' }}</span>
+            </div>
+            <div class="reply-content">{{ reply.content|safe }}</div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <p style="color: #8f7b5f; text-align: center; padding: 16px 0;">暂无回复，来做第一个论道者吧</p>
+        {% endif %}
+
+        {% if pagination.total_pages > 1 %}
+        <div class="pagination">
+            {% if pagination.page > 1 %}
+            <a href="{{ url_for('forum.thread', thread_id=thread.id, page=pagination.page-1) }}">« 上一页</a>
+            {% endif %}
+
+            {% for p in range(1, pagination.total_pages + 1) %}
+            {% if p == pagination.page %}
+            <span class="current">{{ p }}</span>
+            {% else %}
+            <a href="{{ url_for('forum.thread', thread_id=thread.id, page=p) }}">{{ p }}</a>
+            {% endif %}
+            {% endfor %}
+
+            {% if pagination.page < pagination.total_pages %}
+            <a href="{{ url_for('forum.thread', thread_id=thread.id, page=pagination.page+1) }}">下一页 »</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    {% if thread.is_locked %}
+    <div class="locked-message" id="lockedMessage">🔒 此论已锁定，不可再议</div>
+    {% endif %}
+
+    <div id="psg-reply-form" style="display:none;">
+        <h3>✍️ 发表高论</h3>
+
+        <!-- 如果帖子是匿名的，显示提示 -->
+        {% if thread.is_anonymous %}
+        <div class="reply-thread-anonymous-tip">
+            👤 此帖为 <strong>匿名帖</strong>，您可以选择匿名回复或实名回复
+        </div>
+        {% endif %}
+
+        <!-- 匿名回复选项 -->
+        <div class="reply-anonymous-toggle">
+            <input type="checkbox" id="replyAnonymous">
+            <label for="replyAnonymous">
+                <strong>👤 匿名回复</strong> — 其他用户将看不到您的身份
+                <span class="hint">（仅本条回复匿名，可随时取消）</span>
+            </label>
+        </div>
+
+        <form id="replyForm">
+            <textarea name="content" placeholder="请在此书写您的见解……" required></textarea>
+            <button type="submit">提交</button>
+        </form>
+    </div>
+
+    <div class="login-prompt" id="loginPrompt" style="display:none;">
+        <p>🔑 请 <a href="{{ url_for('handle_login') }}">登录</a> 后参与论道</p>
+    </div>
+</div>
+
+<a href="/author" class="signature-container signature-link">✻ 甲辰校勘 ✻</a>
+<a class="signature-container signature-btn" onclick="sessionStorage.clear();window.location.href='/login';" href="javascript:void(0);">✻ 退出登录 ✻</a>
+
+<script>
+    // 从 sessionStorage 读取用户信息
+    const userId = sessionStorage.getItem('userID');
+
+    // DOM 元素
+    const replyForm = document.getElementById('psg-reply-form');
+    const loginPrompt = document.getElementById('loginPrompt');
+    const lockedMessage = document.getElementById('lockedMessage');
+    const adminActions = document.getElementById('adminActions');
+
+    // 根据登录状态控制 UI
+    if (userId) {
+        if (replyForm) replyForm.style.display = 'block';
+        if (loginPrompt) loginPrompt.style.display = 'none';
+    } else {
+        if (replyForm) replyForm.style.display = 'none';
+        if (loginPrompt) loginPrompt.style.display = 'block';
+        if (lockedMessage) lockedMessage.style.display = 'none';
+    }
+
+    // 检查是否为管理员
+    async function checkAdminAndShowActions() {
+        if (!userId) return;
+
+        try {
+            const isAdm = await isAdmin(parseInt(userId));
+            if (isAdm && adminActions) {
+                adminActions.style.display = 'flex';
+            }
+        } catch (error) {
+            console.error('检查管理员权限失败:', error);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        checkAdminAndShowActions();
+    });
+
+    // 回复提交
+    document.getElementById('replyForm')?.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const content = this.querySelector('textarea[name="content"]').value.trim();
+
+        if (!content) {
+            alert('请填写回复内容');
+            return;
+        }
+
+        // 检查是否匿名回复（由用户选择）
+        const replyAnonymous = document.getElementById('replyAnonymous');
+        const isAnonymous = replyAnonymous ? replyAnonymous.checked : false;
+
+        // 非匿名回复需要登录
+        if (!isAnonymous && !userId) {
+            alert('实名回复需要先登录，或勾选"匿名回复"');
+            window.location.href = '/login';
+            return;
+        }
+
+        try {
+            const response = await fetch('{{ url_for("forum.create_reply", thread_id=thread.id) }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user_id: userId ? parseInt(userId) : null,
+                    content: content,
+                    is_anonymous: isAnonymous
+                })
+            });
+
+            const result = await response.json();
+            if (result.code === 200) {
+                const msg = isAnonymous ? '👤 匿名回复成功！' : '✅ 回复成功！';
+                alert(msg);
+                location.reload();
+            } else {
+                alert(result.message || '回复失败');
+            }
+        } catch (error) {
+            alert('网络错误，请重试');
+        }
+    });
+
+    // 管理员功能 - 置顶
+    async function togglePin() {
+        if (!userId) {
+            alert('请先登录');
+            return;
+        }
+
+        const isAdm = await isAdmin(parseInt(userId));
+        if (!isAdm) {
+            alert('需要管理员权限');
+            return;
+        }
+
+        if (!confirm('确定要{{ "取消置顶" if thread.is_pinned else "置顶" }}此论吗？')) return;
+
+        fetch('{{ url_for("forum.pin_thread", thread_id=thread.id) }}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: parseInt(userId),
+                is_admin: isAdm,
+                is_pinned: {{ "false" if thread.is_pinned else "true" }}
+    })
+    })
+    .then(response => response.json())
+            .then(data => {
+                if (data.code === 200) location.reload();
+                else alert(data.message || '操作失败');
+            })
+            .catch(() => alert('网络错误'));
+    }
+
+    // 管理员功能 - 锁定
+    async function toggleLock() {
+        if (!userId) {
+            alert('请先登录');
+            return;
+        }
+
+        const isAdm = await isAdmin(parseInt(userId));
+        if (!isAdm) {
+            alert('需要管理员权限');
+            return;
+        }
+
+        if (!confirm('确定要{{ "解锁" if thread.is_locked else "锁定" }}此论吗？')) return;
+
+        fetch('{{ url_for("forum.lock_thread", thread_id=thread.id) }}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: parseInt(userId),
+                is_admin: isAdm,
+                is_locked: {{ "false" if thread.is_locked else "true" }}
+            })
+        })
+            .then(response => response.json())
+                    .then(data => {
+                        if (data.code === 200) location.reload();
+                        else alert(data.message || '操作失败');
+                    })
+                    .catch(() => alert('网络错误'));
+            }
+
+    // 删除帖子
+    async function deleteThread() {
+        if (!userId) {
+            alert('请先登录');
+            return;
+        }
+
+        const isAdm = await isAdmin(parseInt(userId));
+        if (!isAdm) {
+            alert('需要管理员权限');
+            return;
+        }
+
+        if (!confirm('确定要删除此论吗？此操作不可恢复！')) return;
+
+        fetch('{{ url_for("forum.delete_thread", thread_id=thread.id) }}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: parseInt(userId),
+                is_admin: isAdm
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.code === 200) {
+                    alert('删除成功');
+                    window.location.href = '{{ url_for("forum.index") }}';
+                } else {
+                    alert(data.message || '删除失败');
+                }
+            })
+            .catch(() => alert('网络错误'));
+    }
+</script>
+
+</body>
+</html>

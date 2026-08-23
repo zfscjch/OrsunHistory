@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>发起新论 · 翱三通史</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+    <script src="{{ url_for('static', filename='js/checkAdmin.js') }}"></script>
+    <style>
+        .forum-container {
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        #psg-new {
+            background: #f7efe0 linear-gradient(145deg, #f3ead9 0%, #faf3e2 70%);
+            border: 1px solid #bbaa8a;
+            border-radius: 32px 32px 24px 24px;
+            box-shadow: 0 20px 30px -10px rgba(0,0,0,0.7), inset 0 0 0 1px #fff6e5, inset 2px 2px 8px rgba(255, 245, 215, 0.8);
+            padding: 2.5rem 3rem;
+            position: relative;
+        }
+
+        #psg-new::before {
+            content: '';
+            position: absolute;
+            top: -4px; left: -4px; right: -4px; bottom: -4px;
+            border: 1px solid rgba(140, 110, 70, 0.2);
+            border-radius: 36px 36px 28px 28px;
+            pointer-events: none;
+            box-shadow: inset 0 0 20px #bba27a40;
+        }
+
+        .form-title {
+            font-size: 1.6rem;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            color: #2e3b2c;
+            margin-bottom: 24px;
+            letter-spacing: 2px;
+            border-bottom: 2px solid #b99e7c;
+            padding-bottom: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            color: #3c2e1f;
+            margin-bottom: 4px;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group select,
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 16px;
+            border: 1px solid #d4c9b8;
+            border-radius: 16px;
+            font-size: 0.95rem;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: #fefcf8;
+            transition: border 0.2s, box-shadow 0.2s;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #b5956b;
+            box-shadow: 0 0 0 4px rgba(181, 149, 107, 0.12);
+        }
+
+        .form-group textarea {
+            min-height: 140px;
+            resize: vertical;
+        }
+
+        .form-group .help-text {
+            font-size: 0.8rem;
+            color: #8f7b5f;
+            margin-top: 4px;
+            font-style: italic;
+        }
+
+        .anonymous-toggle {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 18px;
+            background: rgba(180, 160, 130, 0.08);
+            border: 2px solid #8f7b5f;
+            border-radius: 16px;
+            margin-bottom: 4px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .anonymous-toggle:hover {
+            background: rgba(180, 160, 130, 0.18);
+        }
+
+        .anonymous-toggle input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #7a623e;
+            cursor: pointer;
+            flex-shrink: 0;
+            margin: 0;
+        }
+
+        .anonymous-toggle .toggle-label {
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .anonymous-toggle .toggle-label .main-text {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-size: 1rem;
+            color: #2e3b2c;
+        }
+
+        .anonymous-toggle .toggle-label .main-text strong {
+            color: #7a623e;
+        }
+
+        .anonymous-toggle .toggle-label .sub-text {
+            font-size: 0.8rem;
+            color: #8f7b5f;
+            font-style: italic;
+        }
+
+        .anonymous-toggle .hint-badge {
+            background: #7a623e;
+            color: #f7efe0;
+            padding: 2px 14px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+        }
+
+        /* ===== 板块提示 ===== */
+        .board-tip {
+            padding: 12px 18px;
+            border-radius: 12px;
+            margin-bottom: 4px;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .board-tip .tip-icon {
+            font-size: 1.4rem;
+        }
+
+        .board-tip .tip-text {
+            flex: 1;
+            color: #2e3b2c;
+        }
+
+        .board-tip .tip-text strong {
+            color: #7a623e;
+        }
+
+        .board-tip.normal-tip {
+            background: rgba(200, 180, 155, 0.15);
+            border: 1px solid #cbb291;
+        }
+
+        .board-tip.wall-tip {
+            background: rgba(180, 160, 130, 0.10);
+            border: 2px solid #8f7b5f;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 14px;
+            margin-top: 24px;
+        }
+
+        .btn-submit {
+            flex: 1;
+            padding: 10px 0;
+            background: linear-gradient(145deg, #dac9ae, #efdfc7);
+            border: 1px solid #b5956b;
+            border-radius: 60px;
+            color: #3c2e1f;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #7a623e, inset 0 -2px 4px #fff4dd, inset 0 2px 4px #fffff0;
+            transition: all 0.15s;
+            text-shadow: 1px 1px 0 #fff3e0;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(3px);
+            box-shadow: 0 3px 0 #7a623e;
+            background: linear-gradient(145deg, #d2bea0, #ebdac2);
+        }
+
+        .btn-cancel {
+            padding: 10px 30px;
+            background: #f0e6d4;
+            border: 1px solid #cbb291;
+            border-radius: 60px;
+            color: #3c2e1f;
+            text-decoration: none;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            text-align: center;
+            transition: all 0.15s;
+        }
+
+        .btn-cancel:hover {
+            background: #e6d8c2;
+        }
+
+        #psg-new::after {
+            content: '⸻  ⸻  以文会友  论道古今  ⸻  ⸻';
+            display: block;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #8f7b5f;
+            letter-spacing: 3px;
+            margin-top: 1.5rem;
+            font-style: italic;
+            font-family: 'Times New Roman', '楷体', serif;
+            border-top: 1px dashed #cbb291;
+            padding-top: 1rem;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 700px) {
+            #psg-new {
+                padding: 1.5rem 1.2rem;
+            }
+            .form-title {
+                font-size: 1.3rem;
+            }
+            .form-actions {
+                flex-direction: column;
+            }
+            .btn-cancel {
+                text-align: center;
+            }
+            .anonymous-toggle {
+                flex-wrap: wrap;
+            }
+            .board-tip {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h1>翱三通史 · 论道</h1>
+
+<nav class="nav-top-right">
+    <a href="/issues" class="a-link" data-tooltip="问题反馈">📮</a>
+    <span class="dot">✦</span>
+    <a href="/help" class="a-link" data-tooltip="查看帮助">📖</a>
+    <span class="dot">✦</span>
+    <a href="/version" class="a-link" data-tooltip="查看版本">📌</a>
+    <span class="dot">✦</span>
+    <a href="/forum" class="a-link" data-tooltip="返回论坛">📜</a>
+    <span class="dot">✦</span>
+    <a href="/" class="a-link" data-tooltip="返回主站">🏠</a>
+</nav>
+
+<div class="forum-container">
+    <div id="psg-new">
+        <div class="form-title">✍️ 发起新论</div>
+
+        <form id="newThreadForm">
+            <div class="form-group">
+                <label for="board">📂 所属板块</label>
+                <select id="board" name="board_id" required>
+                    <option value="">请选择</option>
+                    {% for board in boards %}
+                    <option value="{{ board.id }}" data-name="{{ board.name }}">
+                        {{ board.icon }} {{ board.name }}
+                        {% if '表白墙' in board.name %}👤{% endif %}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- 板块提示 -->
+            <div id="boardTip" class="board-tip normal-tip" style="display:none;">
+                <span class="tip-icon">📌</span>
+                <span class="tip-text" id="tipText">请选择板块</span>
+            </div>
+
+            <!-- 匿名切换按钮 -->
+            <div class="anonymous-toggle" id="anonymousToggle">
+                <input type="checkbox" id="isAnonymous" name="is_anonymous">
+                <label class="toggle-label" for="isAnonymous">
+                    <span class="main-text"><strong>👤 匿名发布</strong> — 不公开您的身份</span>
+                    <span class="sub-text">勾选后，其他用户将看不到您的用户名</span>
+                </label>
+                <span class="hint-badge">隐私保护</span>
+            </div>
+
+            <div class="form-group">
+                <label for="title">📌 标题</label>
+                <input type="text" id="title" name="title" placeholder="请写一个醒目的标题" required minlength="5">
+                <div class="help-text">至少 5 个字符</div>
+            </div>
+
+            <div class="form-group">
+                <label for="content">📜 内容</label>
+                <textarea id="content" name="content" placeholder="请在此书写您的见解……" required minlength="10"></textarea>
+                <div class="help-text">至少 10 个字符</div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">✻ 发 布 ✻</button>
+                <a href="{{ url_for('forum.index') }}" class="btn-cancel">取消</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<a href="/author" class="signature-container signature-link">✻ 甲辰校勘 ✻</a>
+<a class="signature-container signature-btn" onclick="sessionStorage.clear();window.location.href='/login';" href="javascript:void(0);">✻ 退出登录 ✻</a>
+
+<script>
+    const userId = sessionStorage.getItem('userID');
+
+    // 检测板块变化，更新提示
+    document.getElementById('board').addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        const boardName = selectedOption ? selectedOption.dataset.name : '';
+        const isAnonymousBoard = boardName && boardName.includes('表白墙');
+
+        const boardTip = document.getElementById('boardTip');
+        const tipText = document.getElementById('tipText');
+
+        // 显示提示
+        boardTip.style.display = 'flex';
+
+        if (isAnonymousBoard) {
+            boardTip.className = 'board-tip wall-tip';
+            tipText.innerHTML = '👤 <strong>表白墙</strong> — 在这里，您可以选择<strong>匿名</strong>或<strong>实名</strong>表白。勾选下方"匿名发布"即可隐藏身份。';
+        } else {
+            boardTip.className = 'board-tip normal-tip';
+            tipText.innerHTML = '📌 此板块为普通讨论区，您可以选择是否匿名发布。';
+        }
+    });
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', function() {
+        const event = new Event('change');
+        document.getElementById('board').dispatchEvent(event);
+    });
+
+    document.getElementById('newThreadForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const boardSelect = document.getElementById('board');
+        const selectedOption = boardSelect.options[boardSelect.selectedIndex];
+        const boardName = selectedOption ? selectedOption.dataset.name : '';
+        const isAnonymous = document.getElementById('isAnonymous').checked;
+
+        // 非匿名发帖需要登录
+        if (!isAnonymous && !userId) {
+            alert('实名发帖需要先登录，或勾选"匿名发布"');
+            window.location.href = '/login';
+            return;
+        }
+
+        const formData = new FormData(this);
+        const boardId = formData.get('board_id');
+        const title = formData.get('title');
+        const content = formData.get('content');
+
+        try {
+            const response = await fetch('{{ url_for("forum.new_thread") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user_id: userId ? parseInt(userId) : null,
+                    board_id: parseInt(boardId),
+                    title: title,
+                    content: content,
+                    is_anonymous: isAnonymous
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.code === 200) {
+                const msg = isAnonymous ? '👤 匿名发布成功！' : '✅ 发布成功！';
+                alert(msg);
+                window.location.href = '{{ url_for("forum.thread", thread_id=0) }}'.replace('0', result.data.thread_id);
+            } else {
+                alert('❌ ' + (result.message || '发布失败'));
+            }
+        } catch (error) {
+            alert('网络错误，请重试');
+        }
+    });
+</script>
+
+</body>
+</html>

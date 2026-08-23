@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ board.name }} · 翱三通史</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+    <script src="{{ url_for('static', filename='js/checkAdmin.js') }}"></script>
+    <style>
+        .forum-container {
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .board-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #b99e7c;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .board-header .board-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .board-header .board-icon {
+            font-size: 2.2rem;
+        }
+
+        .board-header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0;
+            border-bottom: none;
+            padding-bottom: 0;
+            text-shadow: 2px 2px 0 #3a2e1e, 3px 3px 0 #1f1a10;
+        }
+
+        .board-header .board-desc {
+            color: #b99e7c;
+            font-style: italic;
+            font-size: 0.95rem;
+            margin-left: 8px;
+        }
+        
+        .new-thread-btn {
+            display: inline-block;
+            padding: 0.5rem 1.6rem;
+            background: linear-gradient(145deg, #dac9ae, #efdfc7);
+            border: 1px solid #b5956b;
+            border-radius: 60px;
+            color: #3c2e1f;
+            text-decoration: none;
+            font-family: 'Georgia', 'Times New Roman', '宋体', serif;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 0 #7a623e, 0 8px 16px -6px #1f1a0e, inset 0 -2px 4px #fff4dd, inset 0 2px 4px #fffff0;
+            transition: all 0.15s ease;
+            text-shadow: 1px 1px 0 #fff3e0;
+        }
+
+        .new-thread-btn:hover {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #7a623e, 0 12px 20px -8px #0f0b06;
+        }
+
+        #psg-threads {
+            background: #f7efe0 linear-gradient(145deg, #f3ead9 0%, #faf3e2 70%);
+            border: 1px solid #bbaa8a;
+            border-radius: 32px 32px 24px 24px;
+            box-shadow: 0 20px 30px -10px rgba(0,0,0,0.7), inset 0 0 0 1px #fff6e5, inset 2px 2px 8px rgba(255, 245, 215, 0.8);
+            padding: 1.5rem 2rem;
+            position: relative;
+            transition: box-shadow 0.3s ease;
+        }
+
+        #psg-threads::before {
+            content: '';
+            position: absolute;
+            top: -4px; left: -4px; right: -4px; bottom: -4px;
+            border: 1px solid rgba(140, 110, 70, 0.2);
+            border-radius: 36px 36px 28px 28px;
+            pointer-events: none;
+            box-shadow: inset 0 0 20px #bba27a40;
+        }
+
+        #psg-threads::after {
+            content: '⸻  ⸻  卷帙浩渺  先贤列传  ⸻  ⸻';
+            display: block;
+            text-align: center;
+            font-size: 1rem;
+            color: #8f7b5f;
+            letter-spacing: 3px;
+            margin-top: 1.5rem;
+            font-style: italic;
+            font-family: 'Times New Roman', '楷体', serif;
+            border-top: 1px dashed #cbb291;
+            padding-top: 1.2rem;
+            opacity: 0.8;
+        }
+
+        .thread-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 16px;
+            border-bottom: 1px solid #d4c9b8;
+            text-decoration: none;
+            color: #3c2e1f;
+            transition: background 0.15s;
+            border-radius: 8px;
+        }
+
+        .thread-item:last-child {
+            border-bottom: none;
+        }
+
+        .thread-item:hover {
+            background: rgba(200, 180, 155, 0.2);
+        }
+
+        .thread-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .thread-title {
+            font-size: 1.05rem;
+            font-weight: 500;
+            font-family: 'Georgia', 'Times New Roman', serif;
+        }
+
+        .thread-title .pinned-badge {
+            background: #b5956b;
+            color: #fff;
+            padding: 1px 12px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            margin-right: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .thread-title .locked-badge {
+            background: #8f7b5f;
+            color: #fff;
+            padding: 1px 12px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            margin-right: 6px;
+        }
+
+        /* ===== 匿名标识 ===== */
+        .thread-title .anonymous-badge {
+            background: #7a623e;
+            color: #f7efe0;
+            padding: 1px 12px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            margin-right: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .anonymous-author {
+            color: #7a623e;
+        }
+
+        /* ===== 板块标签 ===== */
+        .board-header .board-badge {
+            background: #7a623e;
+            color: #f7efe0;
+            padding: 2px 14px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            margin-left: 8px;
+        }
+
+        .thread-meta {
+            font-size: 0.8rem;
+            color: #8f7b5f;
+            margin-top: 4px;
+        }
+
+        .thread-meta span {
+            margin-right: 14px;
+        }
+
+        .thread-stats {
+            display: flex;
+            gap: 18px;
+            font-size: 0.85rem;
+            color: #6b5a45;
+            flex-shrink: 0;
+            margin-left: 16px;
+        }
+
+        .thread-stats .stat-item {
+            text-align: center;
+        }
+
+        .thread-stats .stat-number {
+            font-weight: 600;
+            color: #2e3b2c;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #8f7b5f;
+        }
+
+        .empty-message .emoji {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .pagination a, .pagination span {
+            padding: 6px 16px;
+            border: 1px solid #b5956b;
+            border-radius: 30px;
+            text-decoration: none;
+            color: #3c2e1f;
+            font-size: 0.9rem;
+            transition: all 0.15s;
+            background: rgba(247, 239, 224, 0.5);
+        }
+
+        .pagination .current {
+            background: #b5956b;
+            color: #fff;
+            border-color: #b5956b;
+        }
+
+        .pagination a:hover {
+            background: #dac9ae;
+        }
+
+        @media (max-width: 700px) {
+            .board-header h1 {
+                font-size: 1.4rem;
+            }
+            #psg-threads {
+                padding: 1rem 1.2rem;
+            }
+            .thread-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            .thread-stats {
+                margin-left: 0;
+            }
+            .thread-title {
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h1>翱三通史 · 论道</h1>
+
+<nav class="nav-top-right">
+    <a href="/issues" class="a-link" data-tooltip="问题反馈">📮</a>
+    <span class="dot">✦</span>
+    <a href="/help" class="a-link" data-tooltip="查看帮助">📖</a>
+    <span class="dot">✦</span>
+    <a href="/version" class="a-link" data-tooltip="查看版本">📌</a>
+    <span class="dot">✦</span>
+    <a href="/forum" class="a-link" data-tooltip="返回论坛">📜</a>
+    <span class="dot">✦</span>
+    <a href="/" class="a-link" data-tooltip="返回主站">🏠</a>
+</nav>
+
+<div class="forum-container">
+    <div class="board-header">
+        <div class="board-info">
+            <span class="board-icon">{{ board.icon }}</span>
+            <h1>{{ board.name }}</h1>
+            <span class="board-desc">— {{ board.description }}</span>
+            {% if '表白墙' in board.name %}
+            <span class="board-badge">👤 可匿名</span>
+            {% endif %}
+        </div>
+        <a href="{{ url_for('forum.new_thread') }}" class="new-thread-btn" id="newThreadBtn">✻ 发起新论 ✻</a>
+    </div>
+
+    <div id="psg-threads">
+        {% if threads %}
+        {% for thread in threads %}
+        <a href="{{ url_for('forum.thread', thread_id=thread.id) }}" class="thread-item">
+            <div class="thread-info">
+                <div class="thread-title">
+                    {% if thread.is_pinned %}
+                    <span class="pinned-badge">📌 置顶</span>
+                    {% endif %}
+                    {% if thread.is_locked %}
+                    <span class="locked-badge">🔒 锁定</span>
+                    {% endif %}
+                    {% if thread.is_anonymous %}
+                    <span class="anonymous-badge">💎 匿名</span>
+                    {% endif %}
+                    {{ thread.title }}
+                </div>
+                <div class="thread-meta">
+                    <span>👤 {% if thread.is_anonymous %}<span class="anonymous-author">👤 匿名用户</span>{% else %}{{ thread.author_name or '匿名' }}{% endif %}</span>
+                    <span>📅 {{ thread.created_at.strftime('%Y-%m-%d') if thread.created_at else '' }}</span>
+                    {% if thread.last_reply_at %}
+                    <span>🕐 {{ thread.last_reply_at.strftime('%m-%d %H:%M') }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="thread-stats">
+                <div class="stat-item">
+                    <div class="stat-number">{{ thread.reply_count or 0 }}</div>
+                    <div style="font-size:0.7rem;">回复</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">{{ thread.view_count or 0 }}</div>
+                    <div style="font-size:0.7rem;">浏览</div>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+        {% else %}
+        <div class="empty-message">
+            <span class="emoji">📭</span>
+            <p>尚无帖子，来做第一个论道者吧！</p>
+            <a href="{{ url_for('forum.new_thread') }}" class="new-thread-btn" id="emptyNewThreadBtn" style="display:inline-block; margin-top:12px;">✻ 发起新论 ✻</a>
+        </div>
+        {% endif %}
+
+        {% if pagination.total_pages > 1 %}
+        <div class="pagination">
+            {% if pagination.page > 1 %}
+            <a href="{{ url_for('forum.board', board_id=board.id, page=pagination.page-1) }}">« 上一页</a>
+            {% endif %}
+
+            {% for p in range(1, pagination.total_pages + 1) %}
+            {% if p == pagination.page %}
+            <span class="current">{{ p }}</span>
+            {% else %}
+            <a href="{{ url_for('forum.board', board_id=board.id, page=p) }}">{{ p }}</a>
+            {% endif %}
+            {% endfor %}
+
+            {% if pagination.page < pagination.total_pages %}
+            <a href="{{ url_for('forum.board', board_id=board.id, page=pagination.page+1) }}">下一页 »</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<a href="/author" class="signature-container signature-link">✻ 甲辰校勘 ✻</a>
+<a class="signature-container signature-btn" onclick="sessionStorage.clear();window.location.href='/login';" href="javascript:void(0);">✻ 退出登录 ✻</a>
+
+<script>
+    const userId = sessionStorage.getItem('userID');
+
+    const newThreadBtn = document.getElementById('newThreadBtn');
+    const emptyNewThreadBtn = document.getElementById('emptyNewThreadBtn');
+
+    if (newThreadBtn) {
+        if (!userId) {
+            newThreadBtn.style.display = 'none';
+        }
+    }
+    if (emptyNewThreadBtn) {
+        if (!userId) {
+            emptyNewThreadBtn.style.display = 'none';
+        }
+    }
+</script>
+
+</body>
+</html>
