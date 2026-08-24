@@ -226,9 +226,22 @@
 <a class="signature-container signature-btn" onclick="sessionStorage.clear();window.location.href='/login';" href="javascript:void(0);">✻ 退出登录 ✻</a>
 
 <script>
+    async function log() {
+        const userName = sessionStorage.getItem('user');
+        await fetch('/api/log', {
+            'method': 'POST',
+            'headers': {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({user: userName, action: "访问论坛"})
+        });
+    }
+
     // 从 sessionStorage 读取用户信息
     const userId = sessionStorage.getItem('userID');
-    if (!userId) window.location.href = '/login';
+    const userName = sessionStorage.getItem('user');
+    if (!userId || !userName) window.location.href = '/login';
+    log();
 
     // 控制发帖按钮显示
     const newThreadBtn = document.getElementById('newThreadBtn');
