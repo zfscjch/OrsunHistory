@@ -327,18 +327,6 @@
             display: inline-block;
         }
     </style>
-    <script>
-        window.addEventListener("message", e => {
-            // 简单校验来源，允许同源及指定端口
-            if (e.origin !== "https://www.cjchcoderchat:3") return;
-            if (e.data && e.data.type === "AUTH_STATE" && e.data.isLoggedIn) {
-                sessionStorage.setItem("user", e.data.user);
-                sessionStorage.setItem("isTeacher", e.data.isTeacher.toString());
-                sessionStorage.setItem("userID", e.data.userId);
-            }
-            if (!isLogged) log();
-        });
-    </script>
 </head>
 <body>
 
@@ -544,34 +532,6 @@
 
 <!-- ===== 固定签条 ===== -->
 <a href="/author" class="signature-container signature-link">✻ 甲辰校勘 ✻</a>
-<a class="signature-container signature-btn" onclick="logout()" href="javascript:void 0;">✻ 退出登录 ✻</a>
-<script>
-    // ---------- 用户验证 ----------
-    const user = sessionStorage.getItem('user');
-    if (!user) window.location.href = '/login';
-    let isLogged = false;
-
-    function logout() {
-        sessionStorage.clear();
-        sessionStorage.setItem('fromIndex', '1');
-        location.reload();
-    }
-
-    async function log() {
-        if (!user || isLogged) return;
-        await fetch("/api/log", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({user: user, action: "浏览简介"})
-        });
-        isLogged = true;
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-        log();
-    })
-</script>
+<a class="signature-container signature-btn" href="/login">✻ 退出登录 ✻</a>
 </body>
 </html>

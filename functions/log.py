@@ -1,5 +1,6 @@
 import logging
 from logging.handlers import RotatingFileHandler
+from flask import session, request, g
 from .api_response import api_response
 
 class LogMgr:

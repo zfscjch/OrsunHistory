@@ -2,14 +2,21 @@ import os
 import re
 import json
 import traceback
+from datetime import timedelta
 from flask import (
-    Flask, request, jsonify, abort, render_template, redirect, g, url_for
+    Flask, request, jsonify, abort, render_template, redirect, g, url_for, session
 )
 from flask_cors import CORS
 from user_agents import parse
 from functions import *
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = "my-key-orsun-history-zfscjch"
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=2)  # 2小时无活动自动过期
+app.config['SESSION_COOKIE_AGE'] = 2 * 60 * 60  # 2小时
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+
 CORS(app)
 
 user_mgr = UserMgr()
@@ -18,6 +25,10 @@ students_mgr = StudentsMgr()
 os.chdir(os.path.dirname(__file__))
 log_mgr = LogMgr("../logs/OrsunHistory/website.log")
 
+def log_info(action: str):
+    current_user = session.get("user")
+    remote_address = request.remote_addr
+    log_mgr.info(current_user, action, remote_address)
 
 @app.errorhandler(503)
 def handle_503(error):
@@ -31,14 +42,7 @@ def handle_451(error):
 def check():
     """检查访问浏览器和服务器是否符合要求"""
     # 定义白名单路径
-    whitelist_paths = [
-        '/chat',
-        '/static',
-        '/version',
-        # 可以继续添加其他允许的路径
-        # '/api/health',
-        # '/static',
-    ]
+    whitelist_paths = ['/chat', '/static', '/version']
 
     if Config.through_ipc:
         # 检查当前请求路径是否在白名单中
@@ -88,22 +92,30 @@ def outdated_login():
 
 
 @app.route("/")
+@login_required
 def get_index():
+    log_info("访问首页")
     return render_template("index.html")
 
 
 @app.route("/intro")
+@login_required
 def get_intro():
+    log_info("访问简介")
     return render_template("introduce.html")
 
 
 @app.route("/stu")
+@login_required
 def get_stu():
+    log_info("浏览学生传记首页")
     return render_template("students.html")
 
 
 @app.route("/edit")
+@login_required
 def get_edit():
+    log_info("编辑文章")
     return render_template("edit.html")
 
 
@@ -117,7 +129,9 @@ def get_error_page():
 
 
 @app.route("/avoid_titles")
+@login_required
 def get_title_html():
+    log_info("访问防泄漏验证")
     return render_template("avoid_titles.html")
 
 
@@ -125,17 +139,14 @@ def get_title_html():
 def health_check():
     return jsonify({"status": "healthy"}), 200
 
-
-@app.route("/maintenance")
-def get_maintenance():
-    return render_template("maintenance.html")
-
-
 @app.route("/author")
+@login_required
 def get_author():
+    log_info("访问作者页")
     return render_template("author.html")
 
 @app.route("/psg/<slug>")
+@login_required
 def get_psg(slug):
     """教师传记页面"""
     return render_article(slug, psg_mgr, False)
@@ -172,6 +183,7 @@ def render_article(slug: str, mgr, is_stu: bool, share=False):
         title = psg[1] if len(psg) > 1 and psg[1] else "无标题"
         content = psg[2] if len(psg) > 2 and psg[2] else "[文章还在编辑中]"
         author_name = psg[4] if len(psg) > 4 and psg[4] else "未知"
+        log_info(f"访问{title}")
 
         # 处理内容
         if not isinstance(content, str):
@@ -227,7 +239,9 @@ def get_issue():
 
 
 @app.route('/user')
+@login_required
 def get_user():
+    log_info("访问用户设置")
     return render_template("user.html")
 
 @app.route('/help')
@@ -296,8 +310,10 @@ def get_version():
         return api_response("success", f"{version}-{pre_release}")
 
 @app.route('/chat')
+@login_required
 def get_chat():
     """翱三通史·聊天室 - 自动适配移动端"""
+    log_info("访问通史聊天")
     user_agent = request.headers.get("User-Agent", "").lower()
 
     # 移动端关键词（包含微信和QQ浏览器）

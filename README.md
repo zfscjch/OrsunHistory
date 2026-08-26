@@ -2,7 +2,7 @@
 
 ## 【项目简介】
 
-翱三通史官网是为记录奥山实验初级中学2023届3班初中生活而创立网站。网站储存和展示了本届的教师传记和学生传记。其中，教师传记储存在articles表中，学生传储存在students表中。网址：[https://www.cjchcoderchat.site:3/](https://www.cjchcoderchat.site:3/)。
+翱三通史官网是为记录奥山实验初级中学2023届3班初中生活而创立网站。网站储存和展示了本届的教师传记和学生传记。网站通过MySQL数据库存储数据。网址：[https://www.cjchcoderchat.site:3/](https://www.cjchcoderchat.site:3/)。
 此网站在`2026年中考前(2026年6月22日)`禁止教师访问。
 
 ## 【技术栈】
@@ -12,12 +12,10 @@ Python(Flask), HTML, JavaScript等。
 ```text
 OrsunHistory/
 ├── orsun_server.py             # flask应用，处理各种请求
-├── init.sql                    # MySQL数据库结构
-├── students.sql                # blog_db中储存学生文章的表结构
-├── comments.sql                # blog_db中储存article对应评论的表结构
+├── blog_db.sql                 # MySQL数据库结构
 ├── run.py                      # 生产环境运行
-├── package.json
-├── package-lock.json
+├── package.json                # js项目文件
+├── package-lock.json           # js项目文件
 ├── templates/                  # flask渲染模版
 │   ├── 503.html                # 处理状态码503
 │   ├── admin.html              # 管理员主页
@@ -87,5 +85,8 @@ OrsunHistory/
 │   │   ├── titles.json
 │   │   └── user_answers.json
 │   └── test/                   # 存储测试文件
+├── version/                    # 储存版本更新日志
+│   ├── x.y.zPreRelease.md      # 各版本更新日志
+│   └── lastest.json            # 最新版本配置文件
 └── README.md                   # 项目介绍
 ```

@@ -1,7 +1,8 @@
 import mysql.connector
 from mysql.connector import Error
 from datetime import datetime
-from flask import Blueprint, render_template, request, jsonify, redirect, url_for
+from flask import Blueprint, render_template, request, jsonify, redirect, url_for, session
+from .decorators import login_required, admin_required
 from .config import Config
 
 forum_bp = Blueprint('forum', __name__, url_prefix='/forum')
@@ -163,8 +164,9 @@ class ForumDB:
                   SELECT r.*, u.username as author_name
                   FROM forum_replies r
                            LEFT JOIN users u ON r.author_id = u.id
-                  WHERE r.thread_id = %s AND r.is_deleted = FALSE
-                  ORDER BY r.created_at ASC
+                  WHERE r.thread_id = %s
+                    AND r.is_deleted = FALSE
+                  ORDER BY r.created_at
                   LIMIT %s OFFSET %s \
                   """
             cursor = self.execute_query(sql, (thread_id, per_page, offset))
@@ -421,6 +423,7 @@ class ForumDB:
 
 
 @forum_bp.route('/')
+@login_required
 def index():
     db = ForumDB()
     try:
@@ -432,6 +435,7 @@ def index():
 
 
 @forum_bp.route('/board/<int:board_id>')
+@login_required
 def board(board_id):
     page = request.args.get('page', 1, type=int)
     db = ForumDB()
@@ -450,6 +454,7 @@ def board(board_id):
 
 
 @forum_bp.route('/thread/<int:thread_id>')
+@login_required
 def thread(thread_id):
     page = request.args.get('page', 1, type=int)
     db = ForumDB()
@@ -470,6 +475,7 @@ def thread(thread_id):
 
 
 @forum_bp.route('/new_thread', methods=['GET', 'POST'])
+@login_required
 def new_thread():
     db = ForumDB()
     try:
@@ -481,7 +487,7 @@ def new_thread():
         if not data:
             return jsonify({'code': 400, 'message': '请求格式错误'})
 
-        user_id = data.get('user_id')
+        user_id = session.get('user_id')
         board_id = data.get('board_id')
         title = data.get('title', '').strip()
         content = data.get('content', '').strip()
@@ -512,12 +518,13 @@ def new_thread():
 
 # 修改 reply 路由
 @forum_bp.route('/reply/<int:thread_id>', methods=['POST'])
+@login_required
 def create_reply(thread_id):
     data = request.get_json()
     if not data:
         return jsonify({'code': 400, 'message': '请求格式错误'})
 
-    user_id = data.get('user_id')
+    user_id = session.get('user_id')
     content = data.get('content', '').strip()
     is_anonymous = data.get('is_anonymous', False)
 
@@ -551,19 +558,11 @@ def create_reply(thread_id):
 
 
 @forum_bp.route('/api/thread/<int:thread_id>/pin', methods=['POST'])
+@admin_required
 def pin_thread(thread_id):
     data = request.get_json()
     if not data:
         return jsonify({'code': 400, 'message': '请求格式错误'})
-
-    user_id = data.get('user_id')
-    is_admin = data.get('is_admin', False)
-
-    if not user_id:
-        return jsonify({'code': 401, 'message': '请先登录'})
-
-    if not is_admin:
-        return jsonify({'code': 403, 'message': '需要管理员权限'})
 
     is_pinned = data.get('is_pinned', False)
 
@@ -579,19 +578,11 @@ def pin_thread(thread_id):
 
 
 @forum_bp.route('/api/thread/<int:thread_id>/lock', methods=['POST'])
+@admin_required
 def lock_thread(thread_id):
     data = request.get_json()
     if not data:
         return jsonify({'code': 400, 'message': '请求格式错误'})
-
-    user_id = data.get('user_id')
-    is_admin = data.get('is_admin', False)
-
-    if not user_id:
-        return jsonify({'code': 401, 'message': '请先登录'})
-
-    if not is_admin:
-        return jsonify({'code': 403, 'message': '需要管理员权限'})
 
     is_locked = data.get('is_locked', False)
 
@@ -607,17 +598,14 @@ def lock_thread(thread_id):
 
 
 @forum_bp.route('/api/thread/<int:thread_id>/delete', methods=['POST'])
+@login_required
 def delete_thread(thread_id):
     data = request.get_json()
     if not data:
         return jsonify({'code': 400, 'message': '请求格式错误'})
 
-    user_id = data.get('user_id')
-    is_admin = data.get('is_admin', False)
-
-    if not user_id:
-        return jsonify({'code': 401, 'message': '请先登录'})
-
+    user_id = session.get('user_id')
+    is_admin = session.get('is_admin')
     db = ForumDB()
     try:
         thread_info = db.get_thread_by_id(thread_id)
@@ -639,15 +627,13 @@ def delete_thread(thread_id):
 
 
 @forum_bp.route('/api/like', methods=['POST'])
+@login_required
 def toggle_like():
     data = request.get_json()
     if not data:
         return jsonify({'code': 400, 'message': '请求格式错误'})
 
-    user_id = data.get('user_id')
-    if not user_id:
-        return jsonify({'code': 401, 'message': '请先登录'})
-
+    user_id = session.get('user_id')
     reply_id = data.get('reply_id')
     thread_id = data.get('thread_id')
 
@@ -693,87 +679,6 @@ def stats():
     finally:
         db.close_connection()
 
-
-def init_forum_database():
-    db = ForumDB()
-    conn = db.get_connection()
-    cursor = db.get_cursor()
-
-    try:
-        cursor.execute("""
-                       CREATE TABLE IF NOT EXISTS forum_boards (
-                                                                   id INT PRIMARY KEY AUTO_INCREMENT,
-                                                                   name VARCHAR(100) NOT NULL,
-                                                                   description TEXT,
-                                                                   icon VARCHAR(50) DEFAULT '📄',
-                                                                   sort_order INT DEFAULT 0,
-                                                                   is_active BOOLEAN DEFAULT TRUE,
-                                                                   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                                                                   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-                       )
-                       """)
-
-        cursor.execute("""
-                       CREATE TABLE IF NOT EXISTS forum_threads (
-                                                                    id INT PRIMARY KEY AUTO_INCREMENT,
-                                                                    board_id INT NOT NULL,
-                                                                    title VARCHAR(200) NOT NULL,
-                                                                    content TEXT NOT NULL,
-                                                                    author_id INT NOT NULL,
-                                                                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                                                                    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                                                                    view_count INT DEFAULT 0,
-                                                                    reply_count INT DEFAULT 0,
-                                                                    last_reply_id INT,
-                                                                    last_reply_at DATETIME,
-                                                                    is_pinned BOOLEAN DEFAULT FALSE,
-                                                                    is_locked BOOLEAN DEFAULT FALSE,
-                                                                    is_deleted BOOLEAN DEFAULT FALSE,
-                                                                    FOREIGN KEY (board_id) REFERENCES forum_boards(id)
-                       )
-                       """)
-
-        cursor.execute("""
-                       CREATE TABLE IF NOT EXISTS forum_replies (
-                                                                    id INT PRIMARY KEY AUTO_INCREMENT,
-                                                                    thread_id INT NOT NULL,
-                                                                    content TEXT NOT NULL,
-                                                                    author_id INT NOT NULL,
-                                                                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                                                                    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                                                                    is_deleted BOOLEAN DEFAULT FALSE,
-                                                                    FOREIGN KEY (thread_id) REFERENCES forum_threads(id)
-                       )
-                       """)
-
-        cursor.execute("""
-                       CREATE TABLE IF NOT EXISTS forum_likes (
-                                                                  id INT PRIMARY KEY AUTO_INCREMENT,
-                                                                  reply_id INT,
-                                                                  thread_id INT,
-                                                                  user_id INT NOT NULL,
-                                                                  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                                                                  FOREIGN KEY (reply_id) REFERENCES forum_replies(id),
-                                                                  FOREIGN KEY (thread_id) REFERENCES forum_threads(id)
-                       )
-                       """)
-
-        conn.commit()
-        print("✅ 论坛数据库初始化成功！")
-        return True
-
-    except Error as e:
-        print(f"❌ 数据库初始化失败: {e}")
-        conn.rollback()
-        return False
-    finally:
-        db.close_connection()
-
-
 @forum_bp.context_processor
 def inject_forum_context():
     return {}
-
-
-if __name__ == '__main__':
-    init_forum_database()

@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>翱三通史 · 论道</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
-    <script src="{{ url_for('static', filename='js/checkAdmin.js') }}"></script>
     <style>
         .forum-container {
             max-width: 1100px;
@@ -223,33 +222,36 @@
 </div>
 
 <a href="/author" class="signature-container signature-link">✻ 甲辰校勘 ✻</a>
-<a class="signature-container signature-btn" onclick="sessionStorage.clear();window.location.href='/login';" href="javascript:void(0);">✻ 退出登录 ✻</a>
+<a class="signature-container signature-btn" id="logoutBtn" href="javascript:void(0);">✻ 退出登录 ✻</a>
 
 <script>
-    async function log() {
-        const userName = sessionStorage.getItem('user');
-        await fetch('/api/log', {
-            'method': 'POST',
-            'headers': {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({user: userName, action: "访问论坛"})
-        });
-    }
+    // ========== 退出登录 ==========
+    async function logout() {
+        if (!confirm('确定要退出登录吗？')) return;
 
-    // 从 sessionStorage 读取用户信息
-    const userId = sessionStorage.getItem('userID');
-    const userName = sessionStorage.getItem('user');
-    if (!userId || !userName) window.location.href = '/login';
-    log();
-
-    // 控制发帖按钮显示
-    const newThreadBtn = document.getElementById('newThreadBtn');
-    if (newThreadBtn) {
-        if (!userId) {
-            newThreadBtn.style.display = 'none';
+        try {
+            const response = await fetch('/api/logout', {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+            if (data.status === 'success') {
+                // 清除前端的记住我令牌
+                localStorage.removeItem('Orsun_Remember_Token');
+                window.location.href = '/login';
+            }
+        } catch (error) {
+            console.error('退出登录失败:', error);
         }
     }
+
+    // ========== 页面初始化 ==========
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+    });
 </script>
 
 </body>

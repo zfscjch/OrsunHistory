@@ -33,17 +33,6 @@
             grid-template-columns: repeat(3, 1fr);
         }
     </style>
-    <script>
-        window.addEventListener("message", e => {
-            const allowedOrigins = ["https://www.cjchcoderchat.site:3"];
-            if (!allowedOrigins.includes(e.origin)) return;
-            if (e.data && e.data.type === "AUTH_STATE" && e.data.isLoggedIn) {
-                sessionStorage.setItem("user", e.data.user);
-                sessionStorage.setItem("isTeacher", e.data.isTeacher.toString());
-                sessionStorage.setItem("userID", e.data.userId);
-            }
-        });
-    </script>
 </head>
 <body>
 <h1>翱三通史·学生传记</h1>
@@ -63,25 +52,12 @@
 
 <!-- 添加新的仿古签条链接 ✻ 甲辰校勘 ✻  -->
 <a href="/author" class="signature-container signature-link">✻ 甲辰校勘 ✻</a>
-<a class="signature-container signature-btn" id="logout" href="/login">✻ 退出登录 ✻</a>
+<a class="signature-container signature-btn" href="/login">✻ 退出登录 ✻</a>
 
 <script>
-    const user = sessionStorage.getItem('user');
-    if (!user) window.location.href = '/login';
-    const isTeacher = sessionStorage.getItem("isTeacher");
-
-    function addLogoutListener() {
-        document.querySelector('#logout').addEventListener('click', (e) => {
-            e.preventDefault();
-            sessionStorage.clear();
-            sessionStorage.setItem('fromIndex', '1');
-            window.location.href = '/login';
-        });
-    }
-
-    function getArticle(author) {
-        const data = {author: author, type: "students"};
-        fetch("/api/get-articles", {
+    function getArticle() {
+        const data = {type: "students"};
+        fetch("/api/get-view", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"   // 修正大小写
@@ -121,14 +97,7 @@
         aLinks.forEach(aLink => {
             aLink.addEventListener("click", (e) => {
                 e.preventDefault();
-                const popup = window.open(aLink.href);
-                popup.postMessage({
-                    type: "AUTH_STATE",
-                    isLoggedIn: true,
-                    user: sessionStorage.getItem("user"),
-                    isTeacher: sessionStorage.getItem("isTeacher") === "true",
-                    userId: sessionStorage.getItem("userID"),
-                }, "https://www.cjchcoderchat.site:3/");
+                window.open(aLink.href);
             });
         });
     }
@@ -144,10 +113,7 @@
             .replace(/'/g, "&#039;");
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-        addLogoutListener();
-        getArticle(".*");
-    });
+    document.addEventListener("DOMContentLoaded", () => { getArticle(); });
 </script>
 </body>
 </html>

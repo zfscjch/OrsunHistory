@@ -292,27 +292,8 @@
         }
     </style>
     <script>
-        window.addEventListener("message", e => {
-            if (e.origin !== "https://www.cjchcoderchat.site:3")
-                return;
-            if (e.data && e.data.type === "AUTH_STATE" && e.data.isLoggedIn) {
-                sessionStorage.setItem("user", e.data.user);
-                sessionStorage.setItem("isTeacher", e.data.isTeacher.toString());
-                sessionStorage.setItem("userID", e.data.userId);
-            }
-        });
-
-        function addLogoutListener() {
-            document.querySelector('#logout').addEventListener('click', (e) => {
-                e.preventDefault();
-                sessionStorage.clear();
-                sessionStorage.setItem('fromIndex', '1');
-                window.location.href = '/login';
-            });
-        }
-
-        function getArticle(author) {
-            const data = {author: author, type: "article"};
+        function getArticle() {
+            const data = {type: "article"};
             fetch("/api/get-articles", {
                 method: "POST",
                 headers: {
@@ -402,7 +383,6 @@
                 .replace(/'/g, "&#039;");
         }
     </script>
-    <script src="./../static/js/checkAdmin.js"></script>
 </head>
 <body>
 <nav class="nav-top-right">
@@ -426,24 +406,11 @@
     </div>
     <!-- 仿古签条（左侧固定） -->
     <a href="/edit" class="signature-container signature-link">✻ 新建文章 ✻</a>
-    <a class="signature-container signature-btn" id="logout" href="/login">✻ 退出登录 ✻</a>
+    <a class="signature-container signature-btn" href="/login">✻ 退出登录 ✻</a>
 </div>
 <script>
-    const user = sessionStorage.getItem("user");
-    const userId = sessionStorage.getItem("userID");
-    const isTeacher = sessionStorage.getItem("isTeacher");
-    if (!user) window.location.href = "/login";
-    addLogoutListener();
-    isAdmin(userId)
-        .then(res => {
-            if (res) {
-                getArticle(".*");
-                getDraftArticle();
-            } else {
-                document.querySelector("#review-li").style.display = "none";
-                getArticle(user);
-            }
-        });
+    getArticle();
+    getDraftArticle();
 </script>
 </body>
 </html>

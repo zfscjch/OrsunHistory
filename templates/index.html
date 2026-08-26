@@ -156,11 +156,9 @@
 
 <!-- 添加新的仿古签条链接 ✻ 甲辰校勘 ✻  -->
 <a href="/author" class="signature-container signature-link">✻ 甲辰校勘 ✻</a>
-<a class="signature-container signature-btn" href="/login" id="logout">✻ 退出登录 ✻</a>
+<a class="signature-container signature-btn" href="/login">✻ 退出登录 ✻</a>
 
 <script>
-    const user = sessionStorage.getItem('user');
-    if (!user) window.location.href = '/login';
     const targets = {
         49: "黄鼎泰",
         50: "陈莲芳",
@@ -185,27 +183,18 @@
         69: "测试用户"
     }
 
-    function addLogoutListener() {
-        document.querySelector('#logout').addEventListener('click', (e) => {
-            e.preventDefault();
-            sessionStorage.clear();
-            sessionStorage.setItem('fromIndex', '1');
-            window.location.href = '/login';
-        });
-    }
-
     // 优化后的 getArticle 函数
-    async function getArticle(author) {
+    async function getArticle() {
         const psgContainer = document.querySelector("#psg");
         psgContainer.innerHTML = "<p>⏳ 加载文章中...</p>";
 
         try {
-            const response = await fetch("/api/get-articles", {
+            const response = await fetch("/api/get-view", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({author: author, type: "article"})
+                body: JSON.stringify({type: "article"})
             });
 
             const data = await response.json();
@@ -236,16 +225,7 @@
                     if (link && link.href &&
                         (link.href.includes('/psg/') || link.href.includes("/intro") || link.href.includes("/stu"))) {
                         e.preventDefault();
-                        const popup = window.open(link.href);
-                        if (popup) {
-                            popup.postMessage({
-                                type: "AUTH_STATE",
-                                isLoggedIn: true,
-                                user: sessionStorage.getItem("user"),
-                                isTeacher: sessionStorage.getItem("isTeacher") === "true",
-                                userId: sessionStorage.getItem("userID"),
-                            }, "https://www.cjchcoderchat.site:3");
-                        }
+                        window.open(link.href);
                     }
                 });
                 psgContainer._hasEventDelegate = true;
@@ -279,24 +259,16 @@
         const msgDialog = document.querySelector("#msg-dialog");
         msgDialog.style.display = "none";
 
-        const userId = sessionStorage.getItem("userID");
-        if (!userId) {
-            console.warn('用户未登录，跳过初始化检查');
-            return;
-        }
-
         try {
             // 并行请求优化（同时发起两个请求，减少等待时间）
             const [settingsRes, msgRes] = await Promise.all([
                 fetch("/api/settings", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ userID: userId })
+                    headers: { "Content-Type": "application/json" }
                 }),
                 fetch("/api/check", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ user_id: userId })
+                    headers: { "Content-Type": "application/json" }
                 })
             ]);
 
@@ -356,8 +328,7 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-        addLogoutListener();
-        getArticle(".*");
+        getArticle();
         initCheck();
     });
 </script>

@@ -358,20 +358,7 @@
 </div>
 <div id="verify-container"></div>
 <script>
-    async function log() {
-        const user = sessionStorage.getItem("user");
-        const psgName = document.querySelector("#title").innerText;
-        await fetch("/api/log", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({user: user, action: "浏览:" + psgName})
-        });
-    }
-
     function init() {
-        log();
         handleSaying();
         if (settings.showSayings) {
             document.querySelector('#setSayings').style.display = 'none';

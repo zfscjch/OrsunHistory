@@ -352,13 +352,29 @@
 </form>
 
 <script>
+    async function getCurrentUser() {
+        const res = await fetch("/api/currentUser", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        const data = await res.json();
+        if (data.status === "success") {
+            return data;
+        } else {
+            console.log("出错了：", data);
+            return {user: null, userID: 0x3f3f3f3f};
+        }
+    }
+
     const userForm = document.querySelector('#user-form');
     const originalPassword = document.querySelector('#original');
     const newPassword = document.querySelector('#new');
     const showVerifyEl = document.querySelector("#show-verify");
     const showSayingsEl = document.querySelector("#show-sayings");
-    const userName = sessionStorage.getItem("user");
-    const userId = sessionStorage.getItem('userID');
+    let userName = "";
+    let userId = 0x3f3f3f3f;
 
     async function init() {
         const urlParams = new URLSearchParams(window.location.search);
@@ -370,21 +386,23 @@
             const sayingsEl = showSayingsEl.parentNode;
             highlightElement(sayingsEl, "点击这里以开启/关闭语录");
         }
-        if (!userName) window.location.href = "/login";
-        if (userName === "test") {
+        let user = await getCurrentUser();
+        userName = user.user;
+        userId = user.user_id;
+        if (!userName || userId === 0x3f3f3f3f) window.location.href = "/login";
+        if (user.user === "test") {
             originalPassword.disabled = true;
             newPassword.disabled = true;
             showVerifyEl.disabled = true;
             showSayingsEl.disabled = true;
             showMessage("临时账户禁止更改个性化设置！")
         }
-        document.querySelector("#username").innerHTML = userName;
+        document.querySelector("#username").innerHTML = user;
         const res = await fetch("/api/settings", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ userID: userId })
+            }
         });
         const data = await res.json();
         const settings = data.settings;
@@ -433,7 +451,7 @@
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({user_id: userId, pwd: pwd, settings: settings})
+            body: JSON.stringify({pwd: pwd, settings: settings})
         })
         .then((res) => {return res.json();})
         .then((data) => {

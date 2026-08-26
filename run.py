@@ -5,6 +5,8 @@ from orsun_server import app  # 导入你的Flask应用
 CERT_FILE = 'C:/HTML Projects/cjchcoderchat.site_other/cjchcoderchat.site_bundle.pem'
 KEY_FILE = 'C:/HTML Projects/cjchcoderchat.site_other/cjchcoderchat.site.key'
 
+app.config['SESSION_COOKIE_SECURE'] = True
+
 # 创建 WSGIServer，直接传入SSL证书参数
 server = pywsgi.WSGIServer(
     ('0.0.0.0', 3),  # 保持你用3端口（虽然不太常见，但尊重你的选择）

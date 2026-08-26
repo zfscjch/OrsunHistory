@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ board.name }} · 翱三通史</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
-    <script src="{{ url_for('static', filename='js/checkAdmin.js') }}"></script>
     <style>
         .forum-container {
             max-width: 1100px;
@@ -50,7 +49,7 @@
             font-size: 0.95rem;
             margin-left: 8px;
         }
-        
+
         .new-thread-btn {
             display: inline-block;
             padding: 0.5rem 1.6rem;
@@ -157,7 +156,6 @@
             margin-right: 6px;
         }
 
-        /* ===== 匿名标识 ===== */
         .thread-title .anonymous-badge {
             background: #7a623e;
             color: #f7efe0;
@@ -172,7 +170,6 @@
             color: #7a623e;
         }
 
-        /* ===== 板块标签 ===== */
         .board-header .board-badge {
             background: #7a623e;
             color: #f7efe0;
@@ -370,24 +367,35 @@
 </div>
 
 <a href="/author" class="signature-container signature-link">✻ 甲辰校勘 ✻</a>
-<a class="signature-container signature-btn" onclick="sessionStorage.clear();window.location.href='/login';" href="javascript:void(0);">✻ 退出登录 ✻</a>
+<a class="signature-container signature-btn" id="logoutBtn" href="javascript:void(0);">✻ 退出登录 ✻</a>
 
 <script>
-    const userId = sessionStorage.getItem('userID');
+    // ========== 退出登录 ==========
+    async function logout() {
+        if (!confirm('确定要退出登录吗？')) return;
 
-    const newThreadBtn = document.getElementById('newThreadBtn');
-    const emptyNewThreadBtn = document.getElementById('emptyNewThreadBtn');
-
-    if (newThreadBtn) {
-        if (!userId) {
-            newThreadBtn.style.display = 'none';
+        try {
+            const response = await fetch('/api/logout', {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+            if (data.status === 'success') {
+                localStorage.removeItem('Orsun_Remember_Token');
+                window.location.href = '/login';
+            }
+        } catch (error) {
+            console.error('退出登录失败:', error);
         }
     }
-    if (emptyNewThreadBtn) {
-        if (!userId) {
-            emptyNewThreadBtn.style.display = 'none';
-        }
-    }
+
+    // ========== 页面初始化 ==========
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+    });
 </script>
 
 </body>

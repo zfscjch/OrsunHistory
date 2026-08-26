@@ -359,8 +359,10 @@
 </div>
 
 <script>
-    function init() {
-        const username = sessionStorage.getItem("user");
+    async function init() {
+        const res = await fetch('/api/currentUser');
+        const json = await res.text();
+        const username = JSON.parse(json).user;
         const userNameEl = document.querySelector("#username");
         if (!username) {
             userNameEl.style.display = "block";

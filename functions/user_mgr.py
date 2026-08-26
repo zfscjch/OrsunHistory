@@ -1,7 +1,9 @@
+import json
+import hashlib
+import secrets
+from datetime import datetime, timedelta
 import bcrypt
 import mysql.connector
-import json
-
 from .config import Config
 
 class UserMgr:
@@ -88,25 +90,13 @@ class UserMgr:
                         cnx.commit()
                         return None, 0, f"密码错误，还剩 {5-attempts} 次尝试"
 
-    def reset_password(self, user_id, password):
-        password_hash = bcrypt.hashpw(
-            password.encode('utf-8'),
-            bcrypt.gensalt()
-        ).decode('utf-8')
-
-        with mysql.connector.connect(**Config.MySQLConfig) as conn:
-            with conn.cursor() as cursor:
-                cursor.execute("UPDATE users SET password_hash = %s WHERE id = %s",
-                               (password_hash, user_id))
-                conn.commit()
-
     def update_user(self, user_id, password="default", settings="default", change_active=False):
         password_hash = bcrypt.hashpw(
             password.encode('utf-8'),
             bcrypt.gensalt()
         ).decode('utf-8')
 
-        if type(settings) != str:
+        if type(settings).__name__ != 'str':
             settings = json.dumps(settings)
 
         with mysql.connector.connect(**Config.MySQLConfig) as conn:
@@ -133,17 +123,89 @@ class UserMgr:
                 result = cursor.fetchone()
                 if not result:
                     return {}
-                data = json.loads(result[0])
+                data = json.loads(str(result[0]))
                 return data
 
-    def get_id(self, user):
+    def generate_auto_login_token(self, user_id):
+        """生成"记住我"令牌"""
+        raw_token = secrets.token_urlsafe(32)
+        token_hash = hashlib.sha256(raw_token.encode()).hexdigest()
+        expires_at = datetime.now() + timedelta(days=30)
+
+        with mysql.connector.connect(**self.config) as cnx:
+            with cnx.cursor() as cursor:
+                # 清除旧令牌
+                cursor.execute(
+                    "DELETE FROM auto_login_tokens WHERE user_id = %s",
+                    (user_id,)
+                )
+                # 插入新令牌
+                cursor.execute(
+                    """INSERT INTO auto_login_tokens
+                           (user_id, token_hash, expires_at, created_at)
+                       VALUES (%s, %s, %s, %s)""",
+                    (user_id, token_hash, expires_at, datetime.now())
+                )
+                cnx.commit()
+
+        return raw_token
+
+    def verify_auto_login_token(self, token):
+        """验证"记住我"令牌"""
+        token_hash = hashlib.sha256(token.encode()).hexdigest()
+
+        with mysql.connector.connect(**self.config) as cnx:
+            with cnx.cursor() as cursor:
+                cursor.execute(
+                    """SELECT user_id, expires_at FROM auto_login_tokens
+                       WHERE token_hash = %s""",
+                    (token_hash,)
+                )
+                result = cursor.fetchone()
+
+                if not result:
+                    return None, None, False
+
+                user_id, expires_at = result
+
+                if expires_at < datetime.now():
+                    cursor.execute(
+                        "DELETE FROM auto_login_tokens WHERE token_hash = %s",
+                        (token_hash,)
+                    )
+                    cnx.commit()
+                    return None, None, False
+
+                cursor.execute(
+                    "SELECT username, is_admin FROM users WHERE id = %s",
+                    (user_id,)
+                )
+                user_info = cursor.fetchone()
+                if not user_info:
+                    return None, None, False
+
+                username, is_admin = user_info
+                return user_id, username, bool(is_admin)
+
+    def clear_auto_login_token(self, user_id):
+        """清除用户的"记住我"令牌"""
+        with mysql.connector.connect(**self.config) as cnx:
+            with cnx.cursor() as cursor:
+                cursor.execute(
+                    "DELETE FROM auto_login_tokens WHERE user_id = %s",
+                    (user_id,)
+                )
+                cnx.commit()
+
+    @staticmethod
+    def is_admin(user_id):
+        user_id = str(user_id)
+        if not user_id or user_id == "None":
+            return False
         with mysql.connector.connect(**Config.MySQLConfig) as conn:
             with conn.cursor() as cursor:
-                sql = "SELECT id FROM users WHERE username = %s"
-                cursor.execute(sql, (user,))
-                result = cursor.fetchone()
-                if not result:
-                    return 0
-                return result[0]
+                cursor.execute("SELECT is_admin FROM users WHERE id = %s", (user_id,))
+                is_admin = cursor.fetchone()
+                return is_admin
 
 

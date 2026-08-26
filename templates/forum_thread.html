@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ thread.title }} · 翱三通史</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
-    <script src="{{ url_for('static', filename='js/checkAdmin.js') }}"></script>
     <style>
         .forum-container {
             max-width: 900px;
@@ -275,7 +274,6 @@
             background: #dac9ae;
         }
 
-        /* ===== 匿名标识 ===== */
         .anonymous-badge {
             background: #7a623e;
             color: #f7efe0;
@@ -290,7 +288,6 @@
             color: #7a623e;
         }
 
-        /* ===== 匿名回复按钮 ===== */
         .reply-anonymous-toggle {
             display: flex;
             align-items: center;
@@ -334,7 +331,6 @@
             font-style: italic;
         }
 
-        /* ===== 匿名帖提示 ===== */
         .reply-thread-anonymous-tip {
             background: rgba(180, 160, 130, 0.08);
             border: 1px solid #8f7b5f;
@@ -471,17 +467,15 @@
     <div class="locked-message" id="lockedMessage">🔒 此论已锁定，不可再议</div>
     {% endif %}
 
-    <div id="psg-reply-form" style="display:none;">
+    <div id="psg-reply-form">
         <h3>✍️ 发表高论</h3>
 
-        <!-- 如果帖子是匿名的，显示提示 -->
         {% if thread.is_anonymous %}
         <div class="reply-thread-anonymous-tip">
             👤 此帖为 <strong>匿名帖</strong>，您可以选择匿名回复或实名回复
         </div>
         {% endif %}
 
-        <!-- 匿名回复选项 -->
         <div class="reply-anonymous-toggle">
             <input type="checkbox" id="replyAnonymous">
             <label for="replyAnonymous">
@@ -495,54 +489,76 @@
             <button type="submit">提交</button>
         </form>
     </div>
-
-    <div class="login-prompt" id="loginPrompt" style="display:none;">
-        <p>🔑 请 <a href="{{ url_for('handle_login') }}">登录</a> 后参与论道</p>
-    </div>
 </div>
 
 <a href="/author" class="signature-container signature-link">✻ 甲辰校勘 ✻</a>
-<a class="signature-container signature-btn" onclick="sessionStorage.clear();window.location.href='/login';" href="javascript:void(0);">✻ 退出登录 ✻</a>
+<a class="signature-container signature-btn" id="logoutBtn" href="javascript:void(0);">✻ 退出登录 ✻</a>
 
 <script>
-    // 从 sessionStorage 读取用户信息
-    const userId = sessionStorage.getItem('userID');
-
-    // DOM 元素
-    const replyForm = document.getElementById('psg-reply-form');
-    const loginPrompt = document.getElementById('loginPrompt');
-    const lockedMessage = document.getElementById('lockedMessage');
-    const adminActions = document.getElementById('adminActions');
-
-    // 根据登录状态控制 UI
-    if (userId) {
-        if (replyForm) replyForm.style.display = 'block';
-        if (loginPrompt) loginPrompt.style.display = 'none';
-    } else {
-        if (replyForm) replyForm.style.display = 'none';
-        if (loginPrompt) loginPrompt.style.display = 'block';
-        if (lockedMessage) lockedMessage.style.display = 'none';
-    }
-
-    // 检查是否为管理员
-    async function checkAdminAndShowActions() {
-        if (!userId) return;
-
+    // ========== 获取当前用户信息 ==========
+    async function getCurrentUser() {
         try {
-            const isAdm = await isAdmin(parseInt(userId));
-            if (isAdm && adminActions) {
-                adminActions.style.display = 'flex';
+            const response = await fetch('/api/currentUser', {
+                credentials: 'include'
+            });
+            const data = await response.json();
+            if (data.status === 'success') {
+                return data;
             }
+            return null;
         } catch (error) {
-            console.error('检查管理员权限失败:', error);
+            console.error('获取用户信息失败:', error);
+            return null;
         }
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        checkAdminAndShowActions();
+    // ========== 检查是否为管理员 ==========
+    async function isAdmin() {
+        const user = await getCurrentUser();
+        return user ? user.is_admin === true : false;
+    }
+
+    // ========== 退出登录 ==========
+    async function logout() {
+        if (!confirm('确定要退出登录吗？')) return;
+
+        try {
+            const response = await fetch('/api/logout', {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+            if (data.status === 'success') {
+                localStorage.removeItem('Orsun_Remember_Token');
+                window.location.href = '/login';
+            }
+        } catch (error) {
+            console.error('退出登录失败:', error);
+        }
+    }
+
+    // ========== 页面初始化 ==========
+    document.addEventListener('DOMContentLoaded', async function() {
+        const user = await getCurrentUser();
+        if (!user) {
+            window.location.href = '/login';
+            return;
+        }
+
+        // 退出登录按钮
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+
+        // 检查管理员权限
+        const admin = await isAdmin();
+        if (admin) {
+            document.getElementById('adminActions').style.display = 'flex';
+        }
     });
 
-    // 回复提交
+    // ========== 回复提交 ==========
     document.getElementById('replyForm')?.addEventListener('submit', async function(e) {
         e.preventDefault();
         const content = this.querySelector('textarea[name="content"]').value.trim();
@@ -552,16 +568,8 @@
             return;
         }
 
-        // 检查是否匿名回复（由用户选择）
         const replyAnonymous = document.getElementById('replyAnonymous');
         const isAnonymous = replyAnonymous ? replyAnonymous.checked : false;
-
-        // 非匿名回复需要登录
-        if (!isAnonymous && !userId) {
-            alert('实名回复需要先登录，或勾选"匿名回复"');
-            window.location.href = '/login';
-            return;
-        }
 
         try {
             const response = await fetch('{{ url_for("forum.create_reply", thread_id=thread.id) }}', {
@@ -569,8 +577,8 @@
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include',
                 body: JSON.stringify({
-                    user_id: userId ? parseInt(userId) : null,
                     content: content,
                     is_anonymous: isAnonymous
                 })
@@ -589,103 +597,100 @@
         }
     });
 
-    // 管理员功能 - 置顶
+    // ========== 管理员功能 ==========
     async function togglePin() {
-        if (!userId) {
+        const user = await getCurrentUser();
+        if (!user) {
             alert('请先登录');
             return;
         }
 
-        const isAdm = await isAdmin(parseInt(userId));
-        if (!isAdm) {
+        if (!user.is_admin) {
             alert('需要管理员权限');
             return;
         }
 
         if (!confirm('确定要{{ "取消置顶" if thread.is_pinned else "置顶" }}此论吗？')) return;
 
-        fetch('{{ url_for("forum.pin_thread", thread_id=thread.id) }}', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                user_id: parseInt(userId),
-                is_admin: isAdm,
-                is_pinned: {{ "false" if thread.is_pinned else "true" }}
-    })
-    })
-    .then(response => response.json())
-            .then(data => {
-                if (data.code === 200) location.reload();
-                else alert(data.message || '操作失败');
-            })
-            .catch(() => alert('网络错误'));
+        try {
+            const response = await fetch('{{ url_for("forum.pin_thread", thread_id=thread.id) }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    is_pinned: {{ "false" if thread.is_pinned else "true" }}
+        })
+        });
+            const data = await response.json();
+            if (data.code === 200) location.reload();
+            else alert(data.message || '操作失败');
+        } catch (error) {
+            alert('网络错误');
+        }
     }
 
-    // 管理员功能 - 锁定
     async function toggleLock() {
-        if (!userId) {
+        const user = await getCurrentUser();
+        if (!user) {
             alert('请先登录');
             return;
         }
 
-        const isAdm = await isAdmin(parseInt(userId));
-        if (!isAdm) {
+        if (!user.is_admin) {
             alert('需要管理员权限');
             return;
         }
 
         if (!confirm('确定要{{ "解锁" if thread.is_locked else "锁定" }}此论吗？')) return;
 
-        fetch('{{ url_for("forum.lock_thread", thread_id=thread.id) }}', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                user_id: parseInt(userId),
-                is_admin: isAdm,
-                is_locked: {{ "false" if thread.is_locked else "true" }}
-            })
+        try {
+            const response = await fetch('{{ url_for("forum.lock_thread", thread_id=thread.id) }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    is_locked: {{ "false" if thread.is_locked else "true" }}
         })
-            .then(response => response.json())
-                    .then(data => {
-                        if (data.code === 200) location.reload();
-                        else alert(data.message || '操作失败');
-                    })
-                    .catch(() => alert('网络错误'));
-            }
+        });
+            const data = await response.json();
+            if (data.code === 200) location.reload();
+            else alert(data.message || '操作失败');
+        } catch (error) {
+            alert('网络错误');
+        }
+    }
 
-    // 删除帖子
     async function deleteThread() {
-        if (!userId) {
+        const user = await getCurrentUser();
+        if (!user) {
             alert('请先登录');
             return;
         }
 
-        const isAdm = await isAdmin(parseInt(userId));
-        if (!isAdm) {
+        if (!user.is_admin) {
             alert('需要管理员权限');
             return;
         }
 
         if (!confirm('确定要删除此论吗？此操作不可恢复！')) return;
 
-        fetch('{{ url_for("forum.delete_thread", thread_id=thread.id) }}', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                user_id: parseInt(userId),
-                is_admin: isAdm
-            })
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.code === 200) {
-                    alert('删除成功');
-                    window.location.href = '{{ url_for("forum.index") }}';
-                } else {
-                    alert(data.message || '删除失败');
-                }
-            })
-            .catch(() => alert('网络错误'));
+        try {
+            const response = await fetch('{{ url_for("forum.delete_thread", thread_id=thread.id) }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({})
+            });
+            const data = await response.json();
+            if (data.code === 200) {
+                alert('删除成功');
+                window.location.href = '{{ url_for("forum.index") }}';
+            } else {
+                alert(data.message || '删除失败');
+            }
+        } catch (error) {
+            alert('网络错误');
+        }
     }
 </script>
 

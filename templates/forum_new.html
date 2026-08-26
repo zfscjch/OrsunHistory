@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>发起新论 · 翱三通史</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
-    <script src="{{ url_for('static', filename='js/checkAdmin.js') }}"></script>
     <style>
         .forum-container {
             max-width: 800px;
@@ -148,7 +147,6 @@
             flex-shrink: 0;
         }
 
-        /* ===== 板块提示 ===== */
         .board-tip {
             padding: 12px 18px;
             border-radius: 12px;
@@ -298,13 +296,11 @@
                 </select>
             </div>
 
-            <!-- 板块提示 -->
             <div id="boardTip" class="board-tip normal-tip" style="display:none;">
                 <span class="tip-icon">📌</span>
                 <span class="tip-text" id="tipText">请选择板块</span>
             </div>
 
-            <!-- 匿名切换按钮 -->
             <div class="anonymous-toggle" id="anonymousToggle">
                 <input type="checkbox" id="isAnonymous" name="is_anonymous">
                 <label class="toggle-label" for="isAnonymous">
@@ -335,12 +331,49 @@
 </div>
 
 <a href="/author" class="signature-container signature-link">✻ 甲辰校勘 ✻</a>
-<a class="signature-container signature-btn" onclick="sessionStorage.clear();window.location.href='/login';" href="javascript:void(0);">✻ 退出登录 ✻</a>
+<a class="signature-container signature-btn" id="logoutBtn" href="javascript:void(0);">✻ 退出登录 ✻</a>
 
 <script>
-    const userId = sessionStorage.getItem('userID');
+    // ========== 获取当前用户信息 ==========
+    async function getCurrentUser() {
+        try {
+            const response = await fetch('/api/currentUser', {
+                credentials: 'include'
+            });
+            const data = await response.json();
+            if (data.status === 'success') {
+                return data;
+            }
+            return null;
+        } catch (error) {
+            console.error('获取用户信息失败:', error);
+            return null;
+        }
+    }
 
-    // 检测板块变化，更新提示
+    // ========== 退出登录 ==========
+    async function logout() {
+        if (!confirm('确定要退出登录吗？')) return;
+
+        try {
+            const response = await fetch('/api/logout', {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+            if (data.status === 'success') {
+                localStorage.removeItem('Orsun_Remember_Token');
+                window.location.href = '/login';
+            }
+        } catch (error) {
+            console.error('退出登录失败:', error);
+        }
+    }
+
+    // ========== 板块变化提示 ==========
     document.getElementById('board').addEventListener('change', function() {
         const selectedOption = this.options[this.selectedIndex];
         const boardName = selectedOption ? selectedOption.dataset.name : '';
@@ -349,7 +382,6 @@
         const boardTip = document.getElementById('boardTip');
         const tipText = document.getElementById('tipText');
 
-        // 显示提示
         boardTip.style.display = 'flex';
 
         if (isAnonymousBoard) {
@@ -361,31 +393,36 @@
         }
     });
 
-    // 初始化
-    document.addEventListener('DOMContentLoaded', function() {
-        const event = new Event('change');
-        document.getElementById('board').dispatchEvent(event);
-    });
-
-    document.getElementById('newThreadForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-
-        const boardSelect = document.getElementById('board');
-        const selectedOption = boardSelect.options[boardSelect.selectedIndex];
-        const boardName = selectedOption ? selectedOption.dataset.name : '';
-        const isAnonymous = document.getElementById('isAnonymous').checked;
-
-        // 非匿名发帖需要登录
-        if (!isAnonymous && !userId) {
-            alert('实名发帖需要先登录，或勾选"匿名发布"');
+    // ========== 页面初始化 ==========
+    document.addEventListener('DOMContentLoaded', async function() {
+        const user = await getCurrentUser();
+        if (!user) {
             window.location.href = '/login';
             return;
         }
 
-        const formData = new FormData(this);
-        const boardId = formData.get('board_id');
-        const title = formData.get('title');
-        const content = formData.get('content');
+        // 退出登录按钮
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+
+        // 初始化板块提示
+        const event = new Event('change');
+        document.getElementById('board').dispatchEvent(event);
+    });
+
+    // ========== 表单提交 ==========
+    document.getElementById('newThreadForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const boardSelect = document.getElementById('board');
+        const boardId = boardSelect.value;
+        const title = document.getElementById('title').value.trim();
+        const content = document.getElementById('content').value.trim();
+        const isAnonymous = document.getElementById('isAnonymous').checked;
+
+        if (!boardId || !title || !content) {
+            alert('请完整填写所有字段');
+            return;
+        }
 
         try {
             const response = await fetch('{{ url_for("forum.new_thread") }}', {
@@ -393,8 +430,8 @@
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include',
                 body: JSON.stringify({
-                    user_id: userId ? parseInt(userId) : null,
                     board_id: parseInt(boardId),
                     title: title,
                     content: content,

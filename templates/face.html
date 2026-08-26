@@ -266,7 +266,14 @@
             console.log(result);
 
             if (result.status === "success") {
-                const currentUser = sessionStorage.getItem("user");
+                const res = await fetch('/api/currentUser', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                const json = JSON.stringify(res.json());
+                const currentUser = json.user;
                 const realUser = result.user;
                 if (currentUser !== realUser) {
                     alert("登录账号和识别人像不一致，请重新登录或再次拍摄！");

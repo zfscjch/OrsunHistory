@@ -112,21 +112,16 @@ function handleVerifySuccess() {
 async function getSettings() {
     const settings = sessionStorage.getItem("settings");
     if (settings) return JSON.parse(settings);
-    const userId = sessionStorage.getItem("userID");
     const res = await fetch("/api/settings", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-        },
-        body: JSON.stringify({userID: userId})
+        }
     });
     const data = await res.json();
     console.log(data);
     return data.settings;
 }
-
-const username = sessionStorage.getItem("user");
-const isTeacher = sessionStorage.getItem("isTeacher");
 
 let loop, body, app, verifyContainer, settings;
 loop = null;
@@ -145,8 +140,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     verifyContainer = document.querySelector("#verify-container");
     app.style.display = "none";
     verifyContainer.style.display = "block";
-    if (!username) {
-        window.location.href = "/login";
-    }
     await initApp();
 });

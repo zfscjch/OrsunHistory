@@ -313,16 +313,6 @@
             color: blue;
         }
     </style>
-    <script>
-        window.addEventListener("message", e => {
-            if (e.origin !== "https://www.cjchcoderchat.site:3") return;
-            if (e.type === "AUTH_STATE" && e.isLoggedIn) {
-                sessionStorage.setItem("user", e.user);
-                sessionStorage.setItem("isTeacher", e.isTeacher.toString());
-                sessionStorage.setItem("userID", e.userId.toString());
-            }
-        });
-    </script>
 </head>
 <body>
 <div id="container">
@@ -382,9 +372,7 @@
     </form>
     <script>
         let isChanged = false;
-        let currentType = "article"; // 'article' 或 'student'
-        const user = sessionStorage.getItem("user");
-        if (!user) window.location.href = "./login";
+        let currentType = "article";
 
         const searchEL = document.getElementById('search');
         const editForm = document.getElementById('edit-form');
@@ -499,7 +487,6 @@
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    user: user,
                     article: article,
                     pwd: passwordEl.value,
                     request: isChanged ? "change" : "upload",
