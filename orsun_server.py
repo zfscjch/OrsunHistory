@@ -108,6 +108,7 @@ def check():
 
 @app.route("/login")
 def handle_login():
+    session.clear()
     return render_template("login.html")
 
 @app.route("/outdatedLogin")
