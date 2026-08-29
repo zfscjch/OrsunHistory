@@ -345,7 +345,10 @@
     const container = document.querySelector("#container");
     const mdPara = container.dataset.content;
     const htmlPara = marked.parse(mdPara);
-    container.innerHTML = htmlPara;
+    container.innerHTML = htmlPara.toString();
+    document.querySelectorAll('a').forEach(link => {
+        link.target = '_blank';
+    });
 </script>
 </body>
 </html>
