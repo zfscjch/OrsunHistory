@@ -279,6 +279,90 @@
             display: none;
         }
 
+        /* ——— 风控警示板块样式 ——— */
+        .risk-warning-section {
+            margin: 2.5rem 0 1.5rem;
+            border-top: 2px solid #e4eaf1;
+            padding-top: 1.8rem;
+        }
+
+        .risk-warning-section h2 {
+            border-left-color: #c0392b;
+        }
+
+        .risk-badge {
+            display: inline-block;
+            background: #fde8e4;
+            color: #a93226;
+            padding: 0.15rem 0.9rem;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-left: 0.5rem;
+        }
+
+        .risk-warning-section .md-para strong {
+            color: #a93226;
+        }
+
+        .risk-quote-block {
+            background: #fdf6f3;
+            border-left: 4px solid #c0392b;
+            padding: 1rem 1.8rem;
+            margin: 1.5rem 0;
+            border-radius: 12px 4px 4px 12px;
+            color: #2b2b38;
+        }
+
+        .risk-quote-block p {
+            margin: 0.3rem 0;
+            font-style: italic;
+        }
+
+        .risk-checklist {
+            background: #faf9f7;
+            border-radius: 18px;
+            padding: 1.2rem 2rem;
+            margin: 1.5rem 0;
+            border: 1px solid #e7e2da;
+        }
+
+        .risk-checklist p {
+            margin: 0.5rem 0;
+            font-weight: 450;
+        }
+
+        .risk-checklist .num {
+            display: inline-block;
+            font-weight: 600;
+            color: #3f3f52;
+            margin-right: 0.3rem;
+        }
+
+        .risk-final-line {
+            background: #1e1e2a;
+            color: #f0ebe4;
+            padding: 0.4rem 1.8rem;
+            border-radius: 60px;
+            font-weight: 500;
+            display: inline-block;
+            letter-spacing: 0.3px;
+            margin: 0.5rem 0;
+        }
+
+        .risk-footer-tag {
+            font-size: 0.7rem;
+            color: #8a8a9a;
+            border: 1px solid #d8d0c4;
+            display: inline-block;
+            padding: 0.15rem 0.8rem;
+            border-radius: 40px;
+            letter-spacing: 0.3px;
+            margin-top: 0.6rem;
+            background: transparent;
+        }
+
         /* 响应式 */
         @media (max-width: 680px) {
             body {
@@ -311,6 +395,12 @@
                 font-size: 0.9rem;
                 padding: 0.8rem 1rem;
             }
+            .risk-checklist {
+                padding: 1rem 1.2rem;
+            }
+            .risk-quote-block {
+                padding: 0.8rem 1.2rem;
+            }
         }
 
         @media print {
@@ -338,7 +428,7 @@
 
         <!-- 头部：与用户协议保持同一家族风格 -->
         <div class="protocol-header">
-            <h1>翱三通史官网<br>帮助文档 · 传记模版</h1>
+            <h1>翱三通史官网<br>帮助文档</h1>
             <div class="version-badge">
                 <span>📚 版本：2026.07 通史版本: <a href="/version" target="_blank" id="current-v">[非稳定版本]</a></span>
                 <span>⚡ 适用于所有用户</span>
@@ -445,6 +535,81 @@
             📦 项目地址：
             <a href="https://github.com/zfscjch/OrsunHistory" target="_blank" rel="noopener noreferrer">https://github.com/zfscjch/OrsunHistory</a>
         </p>
+
+        <!-- ============================================================ -->
+        <!-- 风控警示板块 – 嵌入位置：源码开源之后，底部之前 -->
+        <!-- ============================================================ -->
+        <div class="risk-warning-section">
+            <h2 id="risk-warning">🛡️ 风控安全警示 <span class="risk-badge">自动执行</span></h2>
+
+            <p class="md-para">
+                <strong>好消息：</strong>翱三通史的服务器终于学会记仇了。
+            </p>
+            <p class="md-para">
+                <strong>坏消息：</strong>某些人终于不能一边把账号当共享单车骑，一边在出事后瞪圆眼睛喊“我什么都没干”。
+            </p>
+            <p class="md-para">
+                它不会打盹，更懒得听你在被封以后临时编的那套“我朋友登的”“我电脑中病毒了”的经典复读。
+            </p>
+            <p class="md-para">
+                当后台行为分析系统检测到同一账号在半小时内横跳四个城市、同一设备疯狂刷新页面、或者你的Cookie像传单一样被到处分发时，系统将自动冻结相关权限；花样太多者，直接注销账号。整个过程由代码执行，不需要任何人工评委为你那套蹩脚操作打分。
+            </p>
+
+            <p class="md-para" style="margin-top:1.8rem;">
+                <strong>如果你发现自己登不上了，</strong>请先别急着掏出键盘质问“翱三通史凭什么搞我”，而是完成以下几道“小学生都会”的送分题：
+            </p>
+
+            <!-- 自查清单 -->
+            <div class="risk-checklist">
+                <p><span class="num">1.</span> 有没有把账号密码当作生日礼物，随手送给刚认识三分钟的网友、群友？</p>
+                <p><span class="num">2.</span> 有没有在浏览器里装了一堆号称“一键优化”“自动领奖”“极速抢券”的野鸡插件，而它们的代码质量甚至连你初中写的贪吃蛇都不如？</p>
+                <p><span class="num">3.</span> 有没有在凌晨三点用脚本疯狂刷页面，同时天真地认为服务器是永动机，不会对你产生任何看法？</p>
+            </div>
+
+            <p class="md-para">
+                <strong>完成以上自查之前，</strong>请暂时克制以下保留节目的演出欲望：
+            </p>
+
+            <!-- 保留节目引用块 -->
+            <div class="risk-quote-block">
+                <p>“凭什么偏偏封我？”</p>
+                <p>“我明明什么都没做！”</p>
+                <p>“你们是不是针对我？”</p>
+            </div>
+
+            <p class="md-para">
+                请放心，行为分析系统没空针对你。它不认识你，不关心你的星座，也不在意你充了多少钱。它只是忠实地回放了你留下的操作日志——那些日志比你口中的“无辜”要诚实得多。
+            </p>
+
+            <p class="md-para">
+                自己把账号借给八竿子打不着的网友，自己在浏览器里塞满来路不明的“效率神器”，自己把Cookie像零食一样到处撒，等到触发风控以后，又能瞬间切换成一张白莲花脸，跑来哭诉翱三通史不近人情。
+            </p>
+
+            <p class="md-para">
+                毕竟，网友肯定是靠谱的，插件肯定是安全的，异常请求肯定是手滑的，Cookie肯定是不会泄露的——千错万错，总不可能是你的错，只可能是翱三通史闲得长草，专门从数十位用户里精准挑中了你这位“纯洁的倒霉蛋”。
+            </p>
+
+            <p class="md-para">
+                可惜，这套话术除了证明你对“账号安全”四个字的理解还停留在幼儿园阶段以外，没有任何说服力。
+            </p>
+
+            <p class="md-para" style="font-weight:500; background:#f4f1ec; padding:0.4rem 1.2rem; border-radius:60px; display:inline-block;">
+                ⚡ 系统或许听不懂你的委屈，但它一定看得懂你的访问记录——而且它记性很好。
+            </p>
+
+            <hr style="border:none; border-top:2px dashed #d8d2c8; margin:1.8rem 0;">
+
+            <p style="margin:0.5rem 0; text-align:center; letter-spacing:0.3px;">
+                <span class="risk-final-line">谨以此文，威慑那些准备攻击通史官网的“人”。</span>
+            </p>
+
+            <div style="text-align:center; margin-top:0.8rem;">
+                <span class="risk-footer-tag">🛡️ 风控策略 · 自动执行 · 2026.08</span>
+            </div>
+        </div>
+        <!-- ============================================================ -->
+        <!-- 风控警示板块结束 -->
+        <!-- ============================================================ -->
 
         <!-- 底部 (与协议页呼应) -->
         <div class="footer-thanks">
