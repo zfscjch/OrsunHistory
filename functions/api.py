@@ -1,5 +1,5 @@
 from flask import Blueprint, request, g, session
-from .decorators import login_required
+from .decorators import login_required, admin_required
 from .config import Config
 from .get_titles import load_titles
 from .error_handlers import check_user
@@ -7,6 +7,7 @@ from .psg_mgr import CommentsMgr
 from .psg_reviewer import PsgReviewer
 from .error_handlers import upload_error
 from .api_response import api_response, request_not_json_res, request_miss_arg_res, server_error_res
+from .rate_limiter import add_ip_blacklist, remove_ip_blacklist
 
 api_bp = Blueprint("api", __name__)
 comments_mgr = CommentsMgr()
@@ -312,13 +313,13 @@ def update_user():
             return request_not_json_res()
 
         data = request.get_json()
-        if "user_id" not in data or "pwd" not in data or not "settings" in data:
+        if "pwd" not in data or not "settings" in data:
             return request_miss_arg_res()
 
         user_mgr = g.user_mgr
-        user_id = data['user_id']
+        user_id = session['user_id']
         is_admin = session['is_admin']
-        password = data['password']
+        password = data['pwd']
         settings = data['settings']
         is_active = data.get("a", False)
         if user_id != session['user_id'] and not is_admin:
@@ -426,3 +427,109 @@ def get_articles_index():
 def clear_session():
     session.clear()
     return api_response("success", "已退出登录")
+
+@api_bp.route('/ban/ip', methods=['POST'])
+@admin_required  # 需要管理员权限
+def api_ban_ip():
+    """封禁 IP"""
+    ban_mgr = g.ban_mgr
+    data = request.get_json()
+    ip = data.get('ip')
+    reason = data.get('reason', '管理员封禁')
+    duration = data.get('duration')  # 秒数，None表示永久
+    
+    if not ip:
+        return api_response('error', '请提供要封禁的IP')
+    
+    if ban_mgr.ban_ip(ip, reason, duration, session.get('user')):
+        # 同时也加入黑名单
+        add_ip_blacklist(ip)
+        return api_response('success', f'IP {ip} 已封禁')
+    else:
+        return api_response('error', '封禁操作失败')
+
+
+@api_bp.route('/ban/user', methods=['POST'])
+@admin_required
+def api_ban_user():
+    """封禁用户"""
+    ban_mgr = g.ban_mgr
+    data = request.get_json()
+    user_id = data.get('user_id')
+    reason = data.get('reason', '管理员封禁')
+    duration = data.get('duration')
+    
+    if not user_id:
+        return api_response('error', '请提供要封禁的用户名')
+    
+    if ban_mgr.ban_user(user_id, reason, duration, session.get('user')):
+        return api_response('success', f'用户 {user_id} 已封禁')
+    else:
+        return api_response('error', '封禁操作失败')
+
+
+@api_bp.route('/unban/ip', methods=['POST'])
+@admin_required
+def api_unban_ip():
+    """解封 IP"""
+    ban_mgr = g.ban_mgr
+    data = request.get_json()
+    ip = data.get('ip')
+    
+    if not ip:
+        return api_response('error', '请提供要解封的IP')
+    
+    if ban_mgr.unban_ip(ip):
+        remove_ip_blacklist(ip)
+        return api_response('success', f'IP {ip} 已解封')
+    else:
+        return api_response('error', '解封操作失败')
+
+
+@api_bp.route('/unban/user', methods=['POST'])
+@admin_required
+def api_unban_user():
+    """解封用户"""
+    ban_mgr = g.ban_mgr
+    data = request.get_json()
+    user_id = data.get('user_id')
+    
+    if not user_id:
+        return api_response('error', '请提供要解封的用户名')
+    
+    if ban_mgr.unban_user(user_id):
+        return api_response('success', f'用户 {user_id} 已解封')
+    else:
+        return api_response('error', '解封操作失败')
+
+
+@api_bp.route('/ban/list', methods=['GET'])
+@admin_required
+def api_get_ban_list():
+    """获取封禁列表"""
+    ban_mgr = g.ban_mgr
+    bans = ban_mgr.get_ban_list()
+    return api_response('success', data=bans)
+
+
+@api_bp.route('/ban/check', methods=['POST'])
+def api_check_banned():
+    """检查当前用户或IP是否被封禁（用于前端校验）"""
+    ban_mgr = g.ban_mgr
+    data = request.get_json() or {}
+    ip = data.get('ip', request.remote_addr)
+    user_id = data.get('user_id', session.get('user'))
+    
+    result = {'ip_banned': False, 'user_banned': False}
+    
+    if ip:
+        banned, reason = ban_mgr.check_banned("ip", ip)
+        result['ip_banned'] = banned
+        result['ip_reason'] = reason if banned else None
+    
+    if user_id:
+        banned, reason = ban_mgr.check_banned("user", user_id)
+        result['user_banned'] = banned
+        result['user_reason'] = reason if banned else None
+    
+    return api_response('success', data=result)

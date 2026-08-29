@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>翱三通史 · 封禁管理</title>
+    <style>
+        /* ===== 全局重置 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f6f4f0;
+            min-height: 100vh;
+            padding: 30px;
+            margin: 0;
+            line-height: 1.5;
+            color: #1f1b17;
+        }
+
+        /* ===== 主容器 ===== */
+        .ban-container {
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 2.8rem 2.5rem 2.2rem;
+            border-radius: 28px;
+            border: 1px solid #edeae5;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.02), 0 2px 6px rgba(0, 0, 0, 0.01);
+            transition: box-shadow 0.2s ease;
+        }
+        .ban-container:hover {
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.02), 0 4px 12px rgba(0, 0, 0, 0.01);
+            border-color: #e3dbd2;
+        }
+
+        /* ===== 头部 ===== */
+        .ban-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e6e0d8;
+        }
+
+        .ban-header .ban-icon {
+            font-size: 36px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .ban-header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2b241e;
+            letter-spacing: 1px;
+        }
+
+        .ban-header .subtitle {
+            color: #a39484;
+            font-size: 14px;
+            margin-top: 4px;
+            letter-spacing: 2px;
+            font-weight: 300;
+        }
+
+        /* ===== 返回按钮 ===== */
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #a39484;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+        .back-link:hover {
+            color: #2b241e;
+        }
+        .back-link::before {
+            content: '← ';
+        }
+
+        /* ===== 统计信息 ===== */
+        .stats-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .stat-card {
+            flex: 1;
+            min-width: 120px;
+            background: #faf9f7;
+            padding: 16px 20px;
+            border-radius: 16px;
+            border: 1px solid #edeae5;
+            text-align: center;
+        }
+        .stat-card .number {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2b241e;
+        }
+        .stat-card .label {
+            font-size: 13px;
+            color: #a39484;
+            margin-top: 4px;
+        }
+        .stat-card.warning .number {
+            color: #e67e22;
+        }
+        .stat-card.danger .number {
+            color: #e74c3c;
+        }
+        .stat-card.success .number {
+            color: #27ae60;
+        }
+
+        /* ===== 添加封禁表单 ===== */
+        .ban-form {
+            background: #faf9f7;
+            padding: 24px;
+            border-radius: 18px;
+            border: 1px solid #edeae5;
+            margin-bottom: 30px;
+        }
+        .ban-form h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2b241e;
+            margin-bottom: 16px;
+        }
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-end;
+        }
+        .form-group {
+            flex: 1;
+            min-width: 140px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: #a39484;
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #e6e0d8;
+            border-radius: 12px;
+            background: #ffffff;
+            font-size: 14px;
+            color: #1f1b17;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+        .form-group select:focus,
+        .form-group input:focus {
+            border-color: #c6b9ab;
+            box-shadow: 0 0 0 3px rgba(198, 185, 171, 0.15);
+        }
+        .form-group select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23a39484' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 36px;
+        }
+        .btn-ban {
+            padding: 10px 32px;
+            background: #2b241e;
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 100px;
+            height: 46px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn-ban:hover {
+            background: #1f1b17;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .btn-ban:active {
+            transform: translateY(0);
+        }
+        .btn-ban.danger {
+            background: #e74c3c;
+        }
+        .btn-ban.danger:hover {
+            background: #c0392b;
+        }
+        .btn-ban.success {
+            background: #27ae60;
+        }
+        .btn-ban.success:hover {
+            background: #1e8449;
+        }
+        .btn-ban:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* ===== 封禁列表 ===== */
+        .ban-list-section h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2b241e;
+            margin-bottom: 16px;
+        }
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 16px;
+            border: 1px solid #edeae5;
+        }
+        .ban-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            min-width: 600px;
+        }
+        .ban-table thead {
+            background: #faf9f7;
+        }
+        .ban-table th {
+            padding: 14px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #a39484;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            border-bottom: 1px solid #edeae5;
+        }
+        .ban-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #f0ebe5;
+            color: #1f1b17;
+            vertical-align: middle;
+        }
+        .ban-table tbody tr:hover {
+            background: #faf9f7;
+        }
+        .ban-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .ban-type-badge {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .ban-type-badge.ip {
+            background: #e8f0fe;
+            color: #1a73e8;
+        }
+        .ban-type-badge.user {
+            background: #fce8e6;
+            color: #d93025;
+        }
+
+        .ban-status {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .ban-status.active {
+            background: #fce8e6;
+            color: #d93025;
+        }
+        .ban-status.expired {
+            background: #e8eaed;
+            color: #5f6368;
+        }
+        .ban-status.permanent {
+            background: #f1f3f4;
+            color: #e67e22;
+        }
+
+        .btn-unban {
+            padding: 4px 16px;
+            background: transparent;
+            color: #a39484;
+            border: 1px solid #e6e0d8;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-unban:hover {
+            background: #e74c3c;
+            color: #ffffff;
+            border-color: #e74c3c;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #a39484;
+        }
+        .empty-state .empty-icon {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 12px;
+        }
+        .empty-state p {
+            font-size: 14px;
+        }
+
+        /* ===== Toast 提示 ===== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 14px 24px;
+            background: #2b241e;
+            color: #ffffff;
+            border-radius: 14px;
+            font-size: 14px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            transform: translateY(80px);
+            opacity: 0;
+            transition: all 0.4s ease;
+            z-index: 9999;
+            max-width: 400px;
+        }
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .toast.success {
+            background: #27ae60;
+        }
+        .toast.error {
+            background: #e74c3c;
+        }
+
+        /* ===== 加载状态 ===== */
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 768px) {
+            .ban-container {
+                padding: 20px 16px;
+                border-radius: 20px;
+            }
+            .ban-header h1 {
+                font-size: 22px;
+            }
+            .form-row {
+                flex-direction: column;
+            }
+            .form-group {
+                min-width: 100%;
+            }
+            .btn-ban {
+                width: 100%;
+            }
+            .stats-row {
+                gap: 10px;
+            }
+            .stat-card {
+                min-width: calc(50% - 10px);
+                padding: 12px 16px;
+            }
+            .stat-card .number {
+                font-size: 22px;
+            }
+            .ban-table {
+                font-size: 13px;
+                min-width: 500px;
+            }
+            .ban-table th,
+            .ban-table td {
+                padding: 10px 12px;
+            }
+            .toast {
+                left: 16px;
+                right: 16px;
+                bottom: 16px;
+                font-size: 13px;
+                padding: 12px 18px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+            .ban-container {
+                padding: 16px 12px;
+                border-radius: 16px;
+            }
+            .ban-header .ban-icon {
+                font-size: 28px;
+            }
+            .ban-header h1 {
+                font-size: 20px;
+            }
+            .stat-card {
+                min-width: 100%;
+            }
+            .ban-form {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Toast 提示 -->
+<div class="toast" id="toast"></div>
+
+<div class="ban-container">
+    <!-- 返回链接 -->
+    <a href="./admin" class="back-link">返回管理控制台</a>
+
+    <!-- 头部 -->
+    <div class="ban-header">
+        <span class="ban-icon">🔒</span>
+        <h1>封禁管理</h1>
+        <p class="subtitle">翱三通史 · 风控中心</p>
+    </div>
+
+    <!-- 统计信息 -->
+    <div class="stats-row" id="stats-row">
+        <div class="stat-card">
+            <div class="number" id="total-bans">0</div>
+            <div class="label">总封禁数</div>
+        </div>
+        <div class="stat-card danger">
+            <div class="number" id="active-bans">0</div>
+            <div class="label">生效中</div>
+        </div>
+        <div class="stat-card warning">
+            <div class="number" id="permanent-bans">0</div>
+            <div class="label">永久封禁</div>
+        </div>
+        <div class="stat-card success">
+            <div class="number" id="expired-bans">0</div>
+            <div class="label">已过期</div>
+        </div>
+    </div>
+
+    <!-- 添加封禁表单 -->
+    <div class="ban-form">
+        <h3>➕ 新增封禁</h3>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="ban-type">封禁类型</label>
+                <select id="ban-type">
+                    <option value="ip">IP 地址</option>
+                    <option value="user">用户名</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="ban-target">目标值</label>
+                <input type="text" id="ban-target" placeholder="例如: 192.168.1.1 或 username" />
+            </div>
+            <div class="form-group">
+                <label for="ban-reason">封禁原因</label>
+                <input type="text" id="ban-reason" placeholder="可选，默认: 管理员封禁" />
+            </div>
+            <div class="form-group">
+                <label for="ban-duration">时长（秒）</label>
+                <input type="number" id="ban-duration" placeholder="留空为永久" min="1" />
+            </div>
+            <button class="btn-ban" id="btn-add-ban" onclick="addBan()">
+                <span>封禁</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- 快捷解封 -->
+    <div class="ban-form" style="margin-top: -10px;">
+        <h3>🔓 快捷解封</h3>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="unban-type">解封类型</label>
+                <select id="unban-type">
+                    <option value="ip">IP 地址</option>
+                    <option value="user">用户名</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="unban-target">目标值</label>
+                <input type="text" id="unban-target" placeholder="输入要解封的目标" />
+            </div>
+            <button class="btn-ban success" onclick="unban()">
+                <span>解封</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- 封禁列表 -->
+    <div class="ban-list-section">
+        <h3>📋 封禁记录</h3>
+        <div class="table-wrapper">
+            <table class="ban-table">
+                <thead>
+                    <tr>
+                        <th>类型</th>
+                        <th>目标</th>
+                        <th>原因</th>
+                        <th>操作人</th>
+                        <th>过期时间</th>
+                        <th>状态</th>
+                        <th style="text-align: center;">操作</th>
+                    </tr>
+                </thead>
+                <tbody id="ban-table-body">
+                    <!-- 动态渲染 -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 底部 -->
+    <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #f0ebe5; color: #c6b9ab; font-size: 12px; letter-spacing: 1px;">
+        <span style="display: inline-block; width: 8px; height: 8px; background: #4ade80; border-radius: 50%; margin-right: 8px; vertical-align: middle;"></span>
+        系统运行中 ·
+        <span class="version">v3.0</span>
+        <br>
+        <span style="font-size: 11px; opacity: 0.5;">翱三通史 · 风控管理系统</span>
+    </div>
+</div>
+
+<script>
+    // ===== 配置 =====
+    const API_BASE = '/api';
+
+    // ===== Toast 提示 =====
+    function showToast(message, type = 'info', duration = 3000) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = 'toast';
+        if (type === 'success') toast.classList.add('success');
+        if (type === 'error') toast.classList.add('error');
+        toast.classList.add('show');
+        clearTimeout(toast._timer);
+        toast._timer = setTimeout(() => {
+            toast.classList.remove('show');
+        }, duration);
+    }
+
+    // ===== 加载封禁列表 =====
+    async function loadBanList() {
+        try {
+            const res = await fetch(`${API_BASE}/ban/list`);
+            const data = await res.json();
+
+            const tbody = document.getElementById('ban-table-body');
+            if (data.code === 'success' && data.data && data.data.length > 0) {
+                tbody.innerHTML = data.data.map(ban => {
+                    const isActive = ban.expire_at === null || new Date(ban.expire_at) > new Date();
+                    const isPermanent = ban.expire_at === null;
+
+                    let statusHtml = '';
+                    if (isPermanent) {
+                        statusHtml = '<span class="ban-status permanent">永久</span>';
+                    } else if (isActive) {
+                        statusHtml = '<span class="ban-status active">生效中</span>';
+                    } else {
+                        statusHtml = '<span class="ban-status expired">已过期</span>';
+                    }
+
+                    const typeLabel = ban.type === 'ip' ? 'IP' : '用户';
+                    const typeClass = ban.type === 'ip' ? 'ip' : 'user';
+
+                    return `
+                        <tr>
+                            <td><span class="ban-type-badge ${typeClass}">${typeLabel}</span></td>
+                            <td style="font-family: monospace; font-size: 13px;">${ban.hash || ban.target || '--'}</td>
+                            <td>${ban.reason || '--'}</td>
+                            <td>${ban.banned_by || 'system'}</td>
+                            <td style="font-size: 13px;">${ban.expire_at || '永久'}</td>
+                            <td>${statusHtml}</td>
+                            <td style="text-align: center;">
+                                ${isActive ? `<button class="btn-unban" onclick="unbanTarget('${ban.type}', '${ban.target || ban.hash}')">解封</button>` : '--'}
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } else {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7">
+                            <div class="empty-state">
+                                <span class="empty-icon">🔓</span>
+                                <p>暂无封禁记录</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }
+
+            // 更新统计信息
+            updateStats(data.data || []);
+
+        } catch (e) {
+            console.error('加载封禁列表失败:', e);
+            showToast('加载封禁列表失败，请刷新重试', 'error');
+        }
+    }
+
+    // ===== 更新统计 =====
+    function updateStats(bans) {
+        const total = bans.length;
+        const active = bans.filter(b => b.expire_at === null || new Date(b.expire_at) > new Date()).length;
+        const permanent = bans.filter(b => b.expire_at === null).length;
+        const expired = bans.filter(b => b.expire_at !== null && new Date(b.expire_at) <= new Date()).length;
+
+        document.getElementById('total-bans').textContent = total;
+        document.getElementById('active-bans').textContent = active;
+        document.getElementById('permanent-bans').textContent = permanent;
+        document.getElementById('expired-bans').textContent = expired;
+    }
+
+    // ===== 添加封禁 =====
+    async function addBan() {
+        const type = document.getElementById('ban-type').value;
+        const target = document.getElementById('ban-target').value.trim();
+        const reason = document.getElementById('ban-reason').value.trim() || '管理员封禁';
+        const duration = document.getElementById('ban-duration').value;
+
+        if (!target) {
+            showToast('请输入封禁目标值', 'error');
+            return;
+        }
+
+        const btn = document.getElementById('btn-add-ban');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="loading"></span>';
+
+        try {
+            const payload = { reason };
+            if (duration && parseInt(duration) > 0) {
+                payload.duration = parseInt(duration);
+            }
+
+            const endpoint = type === 'ip' ? `${API_BASE}/ban/ip` : `${API_BASE}/ban/user`;
+            if (type === 'ip') {
+                payload.ip = target;
+            } else {
+                payload.user_id = target;
+            }
+
+            const res = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+
+            if (data.code === 'success') {
+                showToast(`✅ ${data.message || '封禁成功'}`, 'success');
+                document.getElementById('ban-target').value = '';
+                document.getElementById('ban-reason').value = '';
+                document.getElementById('ban-duration').value = '';
+                loadBanList();
+            } else {
+                showToast(`❌ ${data.message || '封禁失败'}`, 'error');
+            }
+        } catch (e) {
+            showToast('请求失败: ' + e.message, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<span>封禁</span>';
+        }
+    }
+
+    // ===== 解封（通过表单） =====
+    async function unban() {
+        const type = document.getElementById('unban-type').value;
+        const target = document.getElementById('unban-target').value.trim();
+
+        if (!target) {
+            showToast('请输入要解封的目标值', 'error');
+            return;
+        }
+
+        await unbanTarget(type, target);
+        document.getElementById('unban-target').value = '';
+    }
+
+    // ===== 解封（通用） =====
+    async function unbanTarget(type, target) {
+        if (!target) {
+            showToast('目标值无效', 'error');
+            return;
+        }
+
+        if (!confirm(`确定要解封这个 ${type === 'ip' ? 'IP' : '用户'} 吗？`)) {
+            return;
+        }
+
+        try {
+            const endpoint = type === 'ip' ? `${API_BASE}/unban/ip` : `${API_BASE}/unban/user`;
+            const payload = type === 'ip' ? { ip: target } : { user_id: target };
+
+            const res = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+
+            if (data.code === 'success') {
+                showToast(`✅ ${data.message || '解封成功'}`, 'success');
+                loadBanList();
+            } else {
+                showToast(`❌ ${data.message || '解封失败'}`, 'error');
+            }
+        } catch (e) {
+            showToast('请求失败: ' + e.message, 'error');
+        }
+    }
+
+    // ===== 键盘快捷键：回车提交 =====
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('ban-target').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') addBan();
+        });
+        document.getElementById('ban-reason').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') addBan();
+        });
+        document.getElementById('ban-duration').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') addBan();
+        });
+        document.getElementById('unban-target').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') unban();
+        });
+
+        // 初始加载
+        loadBanList();
+
+        // 每 30 秒自动刷新
+        setInterval(loadBanList, 30000);
+    });
+</script>
+
+</body>
+</html>

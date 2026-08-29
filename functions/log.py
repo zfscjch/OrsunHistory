@@ -30,37 +30,33 @@ class LogMgr:
 
         self.logger.addHandler(file_handler)
 
-    def info(self, user, action, remote_addr):
+    def info(self, user, action, remote_addr="127.0.0.1"):
         try:
             # 使用LoggerAdapter自动添加user字段
             if user == "admin":
-                return api_response("success")
+                return
             adapter = logging.LoggerAdapter(self.logger, {'user': user, "remote_addr": remote_addr})
             adapter.info(action)
-            return api_response("success")
         except Exception as e:
             print(f"发生错误：{e}")
-            return api_response("error", f"发生错误：{e}", http_code=500)
+            self.error("log_mgr", f"在保存info日志时发生错误：{e}")
 
-    def warn(self, user, action, remote_addr):
+    def warn(self, user, action, remote_addr="127.0.0.1"):
         try:
             # 使用LoggerAdapter自动添加user字段
             adapter = logging.LoggerAdapter(self.logger, {'user': user, "remote_addr": remote_addr})
             adapter.warning(action)
-            return api_response("success")
         except Exception as e:
             print(f"发生错误：{e}")
-            return api_response("error", f"发生错误：{e}", http_code=500)
+            self.error("log_mgr", f"在保存warn日志时发生错误：{e}")
 
-    def error(self, user, action, remote_addr):
+    def error(self, user, action, remote_addr="system"):
         try:
             # 使用LoggerAdapter自动添加user字段
             adapter = logging.LoggerAdapter(self.logger, {'user': user, "remote_addr": remote_addr})
             adapter.error(action)
-            return api_response("success")
         except Exception as e:
             print(f"发生错误：{e}")
-            return api_response("error", f"发生错误：{e}", http_code=500)
 
     def get_log(self):
         try:

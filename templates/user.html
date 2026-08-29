@@ -361,6 +361,7 @@
         });
         const data = await res.json();
         if (data.status === "success") {
+            console.log(data);
             return data;
         } else {
             console.log("出错了：", data);
@@ -397,7 +398,7 @@
             showSayingsEl.disabled = true;
             showMessage("临时账户禁止更改个性化设置！")
         }
-        document.querySelector("#username").innerHTML = user;
+        document.querySelector("#username").innerHTML = userName;
         const res = await fetch("/api/settings", {
             method: "POST",
             headers: {
@@ -431,7 +432,7 @@
         }, timeout);
     }
 
-    userForm.addEventListener('submit',async (e) => {
+    userForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         showMessage("提交中……");
         window.scrollTo(0, document.body.scrollHeight);

@@ -24,6 +24,7 @@ psg_mgr = PsgMgr()
 students_mgr = StudentsMgr()
 os.chdir(os.path.dirname(__file__))
 log_mgr = LogMgr("../logs/OrsunHistory/website.log")
+ban_mgr = BanMgr(log_mgr)
 
 def log_info(action: str):
     current_user = session.get("user")
@@ -53,6 +54,29 @@ def check():
     g.log_mgr = log_mgr
     g.psg_mgr = psg_mgr
     g.students_mgr = students_mgr
+    g.ban_mgr = ban_mgr
+
+    # ========== 新增：IP 封禁检查 ==========
+    ip = request.remote_addr
+    
+    # 1. IP 黑名单检查（手动或自动加入的）
+    banned, reason = ban_mgr.check_banned("ip", ip)
+    if banned:
+        abort(403, description=f"您的IP已被封禁。原因：{reason}")
+    
+    # 2. 用户封禁检查（登录用户）
+    user_id = session.get("user")
+    if user_id:
+        banned, reason = ban_mgr.check_banned("user", user_id)
+        if banned:
+            session.clear()
+            abort(403, description=f"您的账号已被封禁。原因：{reason}")
+    
+    # 3. 频率限制检查（放在用户检查之后）
+    if not check_rate_limit(ip, request.path):
+        # 触发频率限制，自动封禁 IP 30分钟
+        ban_mgr.ban_ip(ip, "访问频率过高，触发自动封禁", 1800)
+        abort(429, description="访问过于频繁，已被自动封禁30分钟")
 
     # 先禁止IE访问
     user_agent = request.headers.get("User-Agent", "").lower()
@@ -95,7 +119,11 @@ def outdated_login():
 @login_required
 def get_index():
     log_info("访问首页")
-    return render_template("index.html")
+    articles, code = psg_mgr.get_by_author(".*")
+    page = {"articles": ""}
+    for article in articles:
+        page["articles"] += f"<a href=\"/psg/{article[1]}\" target=\"_blank\">{article[0]}</a>"
+    return render_template("index.html", page=page)
 
 
 @app.route("/intro")
@@ -109,7 +137,11 @@ def get_intro():
 @login_required
 def get_stu():
     log_info("浏览学生传记首页")
-    return render_template("students.html")
+    articles, code = students_mgr.get_by_author(".*")
+    page = {"articles": ""}
+    for article in articles:
+        page["articles"] += f"<a href=\"/student/{article[1]}\" target=\"_blank\">{article[0]}</a>"
+    return render_template("students.html", page=page)
 
 
 @app.route("/edit")

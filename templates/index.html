@@ -151,7 +151,8 @@
 </dialog>
 <div id="psg">
     <a href="./intro" class="intro">简介</a>
-    <a href="./stu">学生传记</a>
+    <a href="./stu" target="_blank">学生传记</a>
+    {{ page.articles|safe }}
 </div>
 
 <!-- 添加新的仿古签条链接 ✻ 甲辰校勘 ✻  -->
@@ -183,78 +184,6 @@
         69: "测试用户"
     }
 
-    // 优化后的 getArticle 函数
-    async function getArticle() {
-        const psgContainer = document.querySelector("#psg");
-        psgContainer.innerHTML = "<p>⏳ 加载文章中...</p>";
-
-        try {
-            const response = await fetch("/api/get-view", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({type: "article"})
-            });
-
-            const data = await response.json();
-
-            // 数据验证
-            if (!data?.data?.length) {
-                psgContainer.innerHTML = "<p>📜 没有文章</p>";
-                return;
-            }
-
-            // 生成所有链接的 HTML
-            let html = '<a href="./intro" class="intro">简介</a><a href="./stu">学生传记</a>';
-            const items = data.data;
-            for (let i = 0; i < items.length; i++) {
-                const title = escapeHtml(items[i][0]) || '无题';
-                const slug = encodeURIComponent(items[i][1]);
-                html += `<a href="/psg/${slug}" data-slug="${slug}">${title}</a>`;
-            }
-
-            // 一次性插入所有链接
-            psgContainer.innerHTML = html;
-
-            // 使用事件委托代替逐个绑定（性能提升最大）
-            // 只需绑定一次，不需要循环绑定
-            if (!psgContainer._hasEventDelegate) {
-                psgContainer.addEventListener('click', function(e) {
-                    const link = e.target.closest('a');
-                    if (link && link.href &&
-                        (link.href.includes('/psg/') || link.href.includes("/intro") || link.href.includes("/stu"))) {
-                        e.preventDefault();
-                        window.open(link.href);
-                    }
-                });
-                psgContainer._hasEventDelegate = true;
-            }
-
-        } catch (err) {
-            console.error('加载文章失败:', err);
-            psgContainer.innerHTML = "<p>❌ 载入失败，请稍后重试</p>";
-        }
-    }
-
-    // 优化 escapeHtml 函数（使用 Map 提升性能）
-    function escapeHtml(unsafe) {
-        if (!unsafe) return unsafe;
-
-        const escapeMap = {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#039;'
-        };
-
-        return unsafe.replace(/[&<>"']/g, function(match) {
-            return escapeMap[match];
-        });
-    }
-
-    // 优化后的 initCheck 函数
     async function initCheck() {
         const msgDialog = document.querySelector("#msg-dialog");
         msgDialog.style.display = "none";
@@ -328,7 +257,6 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-        getArticle();
         initCheck();
     });
 </script>

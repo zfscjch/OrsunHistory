@@ -48,72 +48,11 @@
 </nav>
 
 <div class="hint">【注意】本人可以编辑自己的传记！（提交秘钥：admin?pwd=123456）</div>
-<div id="psg"></div>
+<div id="psg">{{ page.articles|safe }}</div>
 
 <!-- 添加新的仿古签条链接 ✻ 甲辰校勘 ✻  -->
 <a href="/author" class="signature-container signature-link">✻ 甲辰校勘 ✻</a>
 <a class="signature-container signature-btn" href="/login">✻ 退出登录 ✻</a>
 
-<script>
-    function getArticle() {
-        const data = {type: "students"};
-        fetch("/api/get-view", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"   // 修正大小写
-            },
-            body: JSON.stringify(data)
-        })
-            .then((res) => res.json())
-            .then((data) => {
-                console.log(data);
-                // 判断无文章或空数据
-                if (!data || !data.data || data.data.length === 0) {
-                    const li = document.querySelector("#psg");
-                    li.innerHTML = "<p>📜 没有文章</p>";
-                    return;
-                }
-                showArticle(data.data);
-            })
-            .catch((err) => {
-                console.log(err);
-                document.querySelector("#psg").innerHTML = "<p>❌ 载入失败，请稍后重试</p>";
-            });
-    }
-
-    function showArticle(d) {
-        const li = document.querySelector("#psg");
-        // 确保 d 是数组且有内容
-        if (!Array.isArray(d) || d.length === 0) {
-            return;
-        }
-        let html = '';
-        d.forEach((item) => {
-            // 假设 item[0] 是标题或标识，item[1] 是 slug
-            html += `<a href="/student/${encodeURIComponent(item[1])}">${escapeHtml(item[0]) || '无题'}</a>`;
-        });
-        li.innerHTML += html;
-        const aLinks = document.querySelectorAll("#psg a");
-        aLinks.forEach(aLink => {
-            aLink.addEventListener("click", (e) => {
-                e.preventDefault();
-                window.open(aLink.href);
-            });
-        });
-    }
-
-    // 简单的防XSS转义
-    function escapeHtml(unsafe) {
-        if (!unsafe) return unsafe;
-        return unsafe
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-    }
-
-    document.addEventListener("DOMContentLoaded", () => { getArticle(); });
-</script>
 </body>
 </html>

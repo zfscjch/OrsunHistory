@@ -77,3 +77,8 @@ def update_maintenance():
         return api_response("success", f"服务器是否维护：{'是' if maintenance_mode else '否'}")
     except Exception as e:
         return server_error_res("更新maintenance", e)
+
+@admin_bp.route("/ban")
+@admin_required
+def get_ban_page():
+    return render_template("ban.html")
