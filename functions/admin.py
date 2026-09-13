@@ -1,22 +1,25 @@
 from flask import Blueprint, render_template, request, g
 from .api_response import api_response, request_not_json_res, request_miss_arg_res, server_error_res
 from .error_handlers import get_all, resolve_error
-from .decorators import admin_required
+from .decorators import login_required, admin_required
 from .config import Config
 
 admin_bp = Blueprint("admin", __name__)
 
 @admin_bp.route("/")
+@login_required
 @admin_required
 def get_index():
     return render_template("admin.html")
 
 @admin_bp.route("/maintenance")
+@login_required
 @admin_required
 def get_maintenance():
     return render_template("maintenance.html")
 
 @admin_bp.route("/check-issues")
+@login_required
 @admin_required
 def get_issues_html():
     return render_template("show_issues.html")
@@ -42,6 +45,7 @@ def resolve_issues():
     return api_response(status, msg, http_code=code)
 
 @admin_bp.route("/get-log")
+@login_required
 @admin_required
 def get_log():
     log_mgr = g.log_mgr
@@ -79,6 +83,7 @@ def update_maintenance():
         return server_error_res("更新maintenance", e)
 
 @admin_bp.route("/ban")
+@login_required
 @admin_required
 def get_ban_page():
     return render_template("ban.html")
