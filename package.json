@@ -1,6 +1,6 @@
 {
   "name": "orsun-history",
-  "version": "3.0.0",
+  "version": "4.1.1",
   "main": "templates/index.html",
   "scripts": {
     "test": "cd ./ && python orsun_server.py",
@@ -15,6 +15,7 @@
   "description": "记录奥山实验初级中学2023届3班初中生活的网站。",
   "dependencies": {
     "marked": "^18.0.6",
+    "marked-katex-extension": "^5.1.13",
     "socket.io": "^4.8.3"
   }
 }

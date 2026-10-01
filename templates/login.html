@@ -112,7 +112,7 @@
 
 			if (data.status === "success") {
 				// ✅ 自动登录成功，跳转到首页
-				console.log("自动登录成功:", data.data.username);
+				console.log("自动登录成功:", data.username);
 				window.location.href = "/";
 			} else {
 				// ✅ 令牌无效，清除并显示登录表单

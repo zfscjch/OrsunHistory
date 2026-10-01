@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>用户首页 - 翱三通史</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="./../node_modules/marked/lib/marked.umd.js"></script>
+    <script src="./../node_modules/katex/dist/katex.min.js"></script>
+    <script src="./../node_modules/marked-katex-extension/lib/index.umd.js"></script>
+</head>
+<body>
+<div id="current-user-info">
+    <p id="current-user-id">{{ user.username }}</p>
+    {% if user.img_url %}
+    <img id="current-user-img" src="{{ user.img_url }}" alt="{{ user.username }}">
+    {% endif %}
+    <!--<a href="/psg/{{ user.articleURL }}">个人传记</a>-->
+    <a href="/chat?@={{ user.username }}">聊天</a>
+    <div id="psg-preview" class="md-para"></div>
+</div>
+<script type="text/markdown" id="markdown-preview">
+    {{ user.article if user.article else '暂时没有简介。[点击完善](/edit)' }}
+</script>
+<script>
+    const mdElement = document.querySelector('#markdown-preview');
+    const mdPara = mdElement.textContent;
+    marked.use(markedKatex({ throwOnError: false }));
+    const htmlPara = marked.parse(mdPara);
+    document.querySelector('#psg-preview').innerHTML = htmlPara.toString();
+</script>
+</body>
+</html>

@@ -334,21 +334,24 @@
             }
         }
     </style>
-    <script src="./../static/js/marked.umd.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="./../node_modules/marked/lib/marked.umd.js"></script>
+    <script src="./../node_modules/katex/dist/katex.min.js"></script>
+    <script src="./../node_modules/marked-katex-extension/lib/index.umd.js"></script>
 </head>
 <body>
-<div id="container" class="changelog" data-content="{{ data }}"></div>
+<div id="container" class="changelog"></div>
 <footer class="site-footer">
     &copy; 2025-2026 Orsun History. All rights Reserved.
 </footer>
+<script type="text/markdown" id="raw-markdown">{{ data }}</script>
 <script>
-    const container = document.querySelector("#container");
-    const mdPara = container.dataset.content;
-    const htmlPara = marked.parse(mdPara);
-    container.innerHTML = htmlPara.toString();
-    document.querySelectorAll('a').forEach(link => {
-        link.target = '_blank';
-    });
+    // UMD 版本下，marked 和 markedKatex 是全局变量
+    marked.use(markedKatex({ throwOnError: false }));
+
+    const rawMarkdown = document.querySelector('#raw-markdown').textContent;
+    const html = marked.parse(rawMarkdown);
+    document.querySelector('#container').innerHTML = html;
 </script>
 </body>
 </html>

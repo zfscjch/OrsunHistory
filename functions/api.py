@@ -131,7 +131,7 @@ def check_session():
         session.permanent = True  # ✅ 检查时也刷新
         return api_response("success", "Session 有效", {
             "user_id": session['user_id'],
-            "username": session['username']
+            "username": session['user']
         })
     return api_response("error", "Session 已过期", http_code=401)
 

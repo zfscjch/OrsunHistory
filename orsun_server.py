@@ -4,7 +4,7 @@ import json
 import traceback
 from datetime import timedelta
 from flask import (
-    Flask, request, jsonify, abort, render_template, redirect, g, url_for, session
+    Flask, request, jsonify, abort, render_template, redirect, g, url_for, session, send_from_directory
 )
 from flask_cors import CORS
 from user_agents import parse
@@ -275,7 +275,7 @@ def get_issue():
 @login_required
 def get_user():
     log_info("访问用户设置")
-    return render_template("user.html")
+    return render_template("user_settings.html")
 
 @app.route('/help')
 def get_help():
@@ -379,6 +379,19 @@ def get_chat():
         return render_template("mobileChat.html")
 
     return render_template("chat.html")
+
+@app.route('/profile')
+def get_profile():
+    user_data = {
+        "username": session["user"],
+        "articleURL": None,
+        "article": "暂无简介。[点击完善](/edit)"
+    }
+    return render_template("profile.html", user=user_data)
+
+@app.route('/node_modules/<path:filename>')
+def node_modules_files(filename):
+    return send_from_directory('node_modules', filename)
 
 app.register_blueprint(api_bp, url_prefix="/api")
 app.register_blueprint(face_bp, url_prefix="/face")
