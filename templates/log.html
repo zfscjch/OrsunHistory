@@ -162,20 +162,21 @@
 </head>
 <body>
 <div class="log-card">
-    <!-- 头部：日志 + 状态标签（极简） -->
     <div class="log-header">
         <span class="log-title">翱三通史</span>
         <span class="log-tag">· 日志 ·</span>
     </div>
 
-    <!-- 内容：data 占位，保留原模板语义 -->
     <div class="log-content">
-        <div class="log-entry">{{ data|safe }}</div>
+        <div class="log-entry">
+            <!--jinja2 templates-->
+            {{ data|safe }}
+        </div>
     </div>
 
     <!-- 脚注：仅一点气息，不抢眼 -->
     <div class="log-footer">
-        <span>&copy; 2025-2026 CoderChat. All Rights Reversed. </span>
+        <span>&copy; 2026 OrsunHistory. All Rights Reversed. </span>
     </div>
     <script>
         window.scrollTo(0, document.body.scrollHeight);

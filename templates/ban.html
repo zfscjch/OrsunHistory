@@ -447,7 +447,7 @@
 
 <div class="ban-container">
     <!-- 返回链接 -->
-    <a href="./admin" class="back-link">返回管理控制台</a>
+    <a href="/admin" class="back-link">返回管理控制台</a>
 
     <!-- 头部 -->
     <div class="ban-header">
@@ -552,8 +552,7 @@
     <!-- 底部 -->
     <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #f0ebe5; color: #c6b9ab; font-size: 12px; letter-spacing: 1px;">
         <span style="display: inline-block; width: 8px; height: 8px; background: #4ade80; border-radius: 50%; margin-right: 8px; vertical-align: middle;"></span>
-        系统运行中 ·
-        <span class="version">v3.0</span>
+        系统运行中
         <br>
         <span style="font-size: 11px; opacity: 0.5;">翱三通史 · 风控管理系统</span>
     </div>
@@ -562,6 +561,17 @@
 <script>
     // ===== 配置 =====
     const API_BASE = '/api';
+
+    // ===== HTML 转义 =====
+    function escapeHtml(s) {
+        if (s === null || s === undefined) return '';
+        return String(s)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
 
     // ===== Toast 提示 =====
     function showToast(message, type = 'info', duration = 3000) {
@@ -577,40 +587,51 @@
         }, duration);
     }
 
+    // ===== 状态渲染 =====
+    function renderStatus(status) {
+        if (status === 'permanent') return '<span class="ban-status permanent">永久</span>';
+        if (status === 'active')    return '<span class="ban-status active">生效中</span>';
+        return '<span class="ban-status expired">已过期</span>';
+    }
+
     // ===== 加载封禁列表 =====
     async function loadBanList() {
         try {
             const res = await fetch(`${API_BASE}/ban/list`);
             const data = await res.json();
+            const list = Array.isArray(data.data) ? data.data : [];
 
             const tbody = document.getElementById('ban-table-body');
-            if (data.code === 'success' && data.data && data.data.length > 0) {
-                tbody.innerHTML = data.data.map(ban => {
-                    const isActive = ban.expire_at === null || new Date(ban.expire_at) > new Date();
-                    const isPermanent = ban.expire_at === null;
-
-                    let statusHtml = '';
-                    if (isPermanent) {
-                        statusHtml = '<span class="ban-status permanent">永久</span>';
-                    } else if (isActive) {
-                        statusHtml = '<span class="ban-status active">生效中</span>';
-                    } else {
-                        statusHtml = '<span class="ban-status expired">已过期</span>';
-                    }
+            if (data.status === 'success' && list.length > 0) {
+                tbody.innerHTML = list.map(ban => {
+                    const status = ban.status
+                        || (ban.is_permanent ? 'permanent' : 'active');
 
                     const typeLabel = ban.type === 'ip' ? 'IP' : '用户';
                     const typeClass = ban.type === 'ip' ? 'ip' : 'user';
 
+                    const targetDisplay = ban.target
+                        ? escapeHtml(ban.target)
+                        : `<span style="color:#a39484;">（原始值未知：${escapeHtml(ban.hash || '--')}）</span>`;
+
+                    const canUnban = status === 'active' || status === 'permanent';
+                    // 优先使用原始值；旧数据回退到 hash（后端支持 hash 解封）
+                    const unbanValue = ban.target || ban.hash || '';
+
                     return `
                         <tr>
                             <td><span class="ban-type-badge ${typeClass}">${typeLabel}</span></td>
-                            <td style="font-family: monospace; font-size: 13px;">${ban.hash || ban.target || '--'}</td>
-                            <td>${ban.reason || '--'}</td>
-                            <td>${ban.banned_by || 'system'}</td>
-                            <td style="font-size: 13px;">${ban.expire_at || '永久'}</td>
-                            <td>${statusHtml}</td>
+                            <td style="font-family: monospace; font-size: 13px;">${targetDisplay}</td>
+                            <td>${escapeHtml(ban.reason || '--')}</td>
+                            <td>${escapeHtml(ban.banned_by || 'system')}</td>
+                            <td style="font-size: 13px;">${escapeHtml(ban.expire_at || '永久')}</td>
+                            <td>${renderStatus(status)}</td>
                             <td style="text-align: center;">
-                                ${isActive ? `<button class="btn-unban" onclick="unbanTarget('${ban.type}', '${ban.target || ban.hash}')">解封</button>` : '--'}
+                                ${canUnban
+                        ? `<button class="btn-unban"
+                                              data-type="${escapeHtml(ban.type)}"
+                                              data-target="${escapeHtml(unbanValue)}">解封</button>`
+                        : '--'}
                             </td>
                         </tr>
                     `;
@@ -628,9 +649,7 @@
                 `;
             }
 
-            // 更新统计信息
-            updateStats(data.data || []);
-
+            updateStats(list);
         } catch (e) {
             console.error('加载封禁列表失败:', e);
             showToast('加载封禁列表失败，请刷新重试', 'error');
@@ -640,9 +659,9 @@
     // ===== 更新统计 =====
     function updateStats(bans) {
         const total = bans.length;
-        const active = bans.filter(b => b.expire_at === null || new Date(b.expire_at) > new Date()).length;
-        const permanent = bans.filter(b => b.expire_at === null).length;
-        const expired = bans.filter(b => b.expire_at !== null && new Date(b.expire_at) <= new Date()).length;
+        const active = bans.filter(b => b.status === 'active' || b.status === 'permanent').length;
+        const permanent = bans.filter(b => b.status === 'permanent').length;
+        const expired = bans.filter(b => b.status === 'expired').length;
 
         document.getElementById('total-bans').textContent = total;
         document.getElementById('active-bans').textContent = active;
@@ -686,7 +705,7 @@
             });
             const data = await res.json();
 
-            if (data.code === 'success') {
+            if (data.status === 'success') {
                 showToast(`✅ ${data.message || '封禁成功'}`, 'success');
                 document.getElementById('ban-target').value = '';
                 document.getElementById('ban-reason').value = '';
@@ -703,31 +722,27 @@
         }
     }
 
-    // ===== 解封（通过表单） =====
+    // ===== 解封（表单） =====
     async function unban() {
         const type = document.getElementById('unban-type').value;
         const target = document.getElementById('unban-target').value.trim();
-
         if (!target) {
             showToast('请输入要解封的目标值', 'error');
             return;
         }
-
-        await unbanTarget(type, target);
-        document.getElementById('unban-target').value = '';
+        const ok = await unbanTarget(type, target);
+        if (ok) document.getElementById('unban-target').value = '';
     }
 
-    // ===== 解封（通用） =====
+    // ===== 解封（通用，返回是否成功） =====
     async function unbanTarget(type, target) {
         if (!target) {
             showToast('目标值无效', 'error');
-            return;
+            return false;
         }
-
         if (!confirm(`确定要解封这个 ${type === 'ip' ? 'IP' : '用户'} 吗？`)) {
-            return;
+            return false;
         }
-
         try {
             const endpoint = type === 'ip' ? `${API_BASE}/unban/ip` : `${API_BASE}/unban/user`;
             const payload = type === 'ip' ? { ip: target } : { user_id: target };
@@ -739,18 +754,20 @@
             });
             const data = await res.json();
 
-            if (data.code === 'success') {
+            if (data.status === 'success') {
                 showToast(`✅ ${data.message || '解封成功'}`, 'success');
                 loadBanList();
-            } else {
-                showToast(`❌ ${data.message || '解封失败'}`, 'error');
+                return true;
             }
+            showToast(`❌ ${data.message || '解封失败'}`, 'error');
+            return false;
         } catch (e) {
             showToast('请求失败: ' + e.message, 'error');
+            return false;
         }
     }
 
-    // ===== 键盘快捷键：回车提交 =====
+    // ===== 事件绑定 =====
     document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('ban-target').addEventListener('keydown', (e) => {
             if (e.key === 'Enter') addBan();
@@ -765,10 +782,16 @@
             if (e.key === 'Enter') unban();
         });
 
-        // 初始加载
-        loadBanList();
+        // 事件委托：列表内解封按钮
+        document.getElementById('ban-table-body').addEventListener('click', (e) => {
+            const btn = e.target.closest('.btn-unban');
+            if (!btn) return;
+            const type = btn.dataset.type;
+            const target = btn.dataset.target;
+            unbanTarget(type, target);
+        });
 
-        // 每 30 秒自动刷新
+        loadBanList();
         setInterval(loadBanList, 30000);
     });
 </script>

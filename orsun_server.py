@@ -271,7 +271,7 @@ def get_issue():
     return render_template("issue.html")
 
 
-@app.route('/user')
+@app.route('/settings')
 @login_required
 def get_user():
     log_info("访问用户设置")
@@ -380,14 +380,14 @@ def get_chat():
 
     return render_template("chat.html")
 
-@app.route('/profile')
-def get_profile():
+@app.route('/user')
+def get_user_profile():
     user_data = {
         "username": session["user"],
         "articleURL": None,
-        "article": "暂无简介。[点击完善](/edit)"
+        "article": ""
     }
-    return render_template("profile.html", user=user_data)
+    return render_template("user.html", user=user_data)
 
 @app.route('/node_modules/<path:filename>')
 def node_modules_files(filename):

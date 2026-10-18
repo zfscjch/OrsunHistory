@@ -1,6 +1,6 @@
 .idea/
 __pycache__/
-functions/db/known_faces/
+functions/db/
 functions/test/
 functions/__pycache__/
 functions/config.py
