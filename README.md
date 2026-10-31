@@ -1,92 +1,136 @@
-# 翱三通史官网
+# 翱三通史官网 OrsunHistory
 
-## 【项目简介】
+> 记录奥山实验初级中学 2023 届 3 班初中生活的纪念性网站。
 
-翱三通史官网是为记录奥山实验初级中学2023届3班初中生活而创立网站。网站储存和展示了本届的教师传记和学生传记。网站通过MySQL数据库存储数据。网址：[https://www.cjchcoderchat.site:3/](https://www.cjchcoderchat.site:3/)。
-此网站在`2026年中考前(2026年6月22日)`禁止教师访问。
+## 项目简介
 
-## 【技术栈】
-Python(Flask), HTML, JavaScript等。
+**翱三通史**是为**奥山实验初级中学 2023 届 3 班**建立的班级历史记录网站。网站用于储存和展示本届的**教师传记**与**学生传记**，同时提供论坛、聊天、人脸识别登录等互动功能。
 
-## 【项目结构】
-```text
-OrsunHistory/
-├── orsun_server.py             # flask应用，处理各种请求
-├── blog_db.sql                 # MySQL数据库结构
-├── run.py                      # 生产环境运行
-├── package.json                # js项目文件
-├── package-lock.json           # js项目文件
-├── templates/                  # flask渲染模版
-│   ├── 503.html                # 处理状态码503
-│   ├── admin.html              # 管理员主页
-│   ├── article.html            # 文章阅读器
-│   ├── author.html             # 作者查看可编辑文章的网页
-│   ├── avoid_titles.html       # 与secret.js一起使用，验证用户身份
-│   ├── chat.html               # 聊天模块
-│   ├── edit.html               # 作者编辑文章的网页
-│   ├── face.html               # 识别人脸
-│   ├── forum_board.html        # 论坛各个板块
-│   ├── forum_index.html        # 论坛首页
-│   ├── forum_new.html          # 新建论坛
-│   ├── forum_not_found.html    # 404论坛页
-│   ├── forum_thread.html       # 论坛内容
-│   ├── help.html               # 帮转文档
-│   ├── index.html              # 首页
-│   ├── introduce.html          # 简介
-│   ├── issue.html              # 申报错误
-│   ├── log.html                # 管理员日志
-│   ├── login.html              # 登录
-│   ├── login_outdated.html     # 怀旧版登录 
-│   ├── maintenance.html        # 控制维护模式
-│   ├── mobileChat.html         # 移动端聊天模块
-│   ├── not_allow.html          # 非法用户重定向
-│   ├── runtime_error.html      # 自定义错误
-│   ├── share.html              # 分享
-│   ├── show_issues.html        # 管理员管理网站错误 
-│   ├── upload_img.html         # 上传人脸
-│   ├── user.html               # 用户个性化设置
-│   ├── userPolicy.html         # 用户隐私协议
-│   └── version.html            # 版本文件
-├── static/                     # 储存静态文件
-│   ├── css/
-│   │   ├── article.css         # article.html和share.html的css
-│   │   ├── chat.css            # 适配chat.html的css
-│   │   ├── common.css          # index.html,introduce.html和author.html的css
-│   │   ├── face.css            # face.html和upload_img.html的css
-│   │   └── verify.css          # login.html和avoid_titles.html的css
-│   ├── js/
-│   │   ├── checkAdmin.js       # 检查用户是否是管理员
-│   │   ├── marked.umd.js       # markdown渲染文件
-│   │   ├── messageChannel.js   # 各标签页通讯接口（暂未启用）
-│   │   ├── secret.js           # 验证用户身份
-│   │   └── socket.io.js        # WebSocket接口，用于使chat.html连接服务器
-│   ├── doc/
-│   └── pics/
-├── functions/                  # 主要函数实现
-│   ├── __init__.py             # 包文件
-│   ├── admin.py                # 管理员模块
-│   ├── admin_locker.py         # 管理员登录
-│   ├── api.py                  # 管理所有POST请求方法的模块
-│   ├── api_response.py         # 翱三通史标准Response
-│   ├── config.py               # 项目配置
-│   ├── error_handlers.py       # 处理用户提交的错误
-│   ├── face_recognizer.py      # 原人脸识别后台
-│   ├── face_recognizer_new.py  # 新人脸识别后台
-│   ├── forum.py                # 论坛后端
-│   ├── get_titles.py           # 与secret.js和avoid_titles.html一起使用，验证用户身份
-│   ├── get_user.py             # 配合人脸识别获取用户
-│   ├── log.py                  # 网站日志记录
-│   ├── psg_mgr.py              # 管理MySQL中的文章
-│   ├── psg_reviewer.py         # 文章审核
-│   ├── user_mgr.py             # 管理用户登录
-│   ├── db/                     # 数据储存
-│   │   ├── known_faces/        # 储存人脸识别信息
-│   │   ├── login_locks.json
-│   │   ├── titles.json
-│   │   └── user_answers.json
-│   └── test/                   # 存储测试文件
-├── version/                    # 储存版本更新日志
-│   ├── x.y.zPreRelease.md      # 各版本更新日志
-│   └── lastest.json            # 最新版本配置文件
-└── README.md                   # 项目介绍
+- **线上地址**：https://www.cjchcoderchat.site:3/
+- **访问限制**：2026 年中考前（预计 6 月 22 日前）禁止教师访问，以保证学生内容的私密性。
+- **开源协议**：MIT License。
+
+## 功能特性
+
+- **传记浏览与阅读**：教师传记、学生传记的文章阅读器与分享页。
+- **文章编辑与审核**：作者可编辑文章，设有文章审核与管理员日志机制。
+- **论坛系统**：论坛首页、板块、发帖、帖子详情及 404 论坛页。
+- **实时聊天**：基于 Socket.IO 的聊天模块，含独立移动端页面。
+- **人脸识别登录**：基于新版后台 `face_recognizer_new.py` 的人脸识别登录，配合用户身份验证与登录锁定（旧版 `face_recognizer.py` 已弃用）。
+- **身份验证**：`secret.js` 配合 `avoid_titles.html` 及 `get_titles.py` 完成用户身份校验。
+- **维护模式**：支持维护模式与 503 状态页。
+- **错误申报**：用户可申报网站错误，管理员统一管理。
+
+> **说明**：`chat.html` 前端页面包含在本项目中，但其依赖的后端服务 **CoderChat** 因团队原因未开源，敬请谅解。
+
+## 技术栈
+
+| 层面 | 技术 |
+|---|---|
+| 后端 | Python（Flask） |
+| 数据库 | MySQL（结构见 `blog_db.sql`） |
+| 前端 | HTML / CSS / JavaScript |
+| 实时通信 | Socket.IO |
+| Markdown 渲染 | marked.umd.js |
+| 人脸识别 | 自研 Python 后台（`face_recognizer_new.py`；旧版 `face_recognizer.py` 已弃用） |
+
+## 快速开始
+
+### 1. 环境要求
+
+- Python 3.8 及以上
+- MySQL 5.7+ 或 8.0+
+- Node.js（仅前端依赖需要，如 `package.json` 所定义）
+
+### 2. 安装依赖
+
+```bash
+pip install -r requirements.txt
+npm install
 ```
+
+> `npm install` 仅用于获取/更新前端依赖（如 `socket.io.js`）。若仓库中已包含 `static/js/socket.io.js`，生产部署可跳过此步。
+
+> 若 `requirements.txt` 未包含人脸识别相关依赖（如 `face_recognition`、`opencv-python`、`dlib`），请根据 `face_recognizer_new.py` 的导入另行安装。
+
+### 3. 初始化数据库
+
+将 `blog_db.sql` 导入 MySQL：
+
+```bash
+mysql -u <用户名> -p <数据库名> < blog_db.sql
+```
+
+### 4. 配置
+
+复制 `functions/config.example.py` 为 `functions/config.py`。若仓库未提供示例文件，请按以下字段自行创建：
+
+```python
+# functions/config.py
+DB_HOST = "localhost"
+DB_PORT = 3306
+DB_USER = "root"
+DB_PASSWORD = "your_password"
+DB_NAME = "orsun_history"
+SECRET_KEY = "change-me"
+```
+
+> `functions/config.py` 已被 `.gitignore` 忽略，请勿将真实密码提交到仓库。
+
+### 5. 运行
+
+**开发环境**：
+
+```bash
+python orsun_server.py
+```
+
+**生产环境**：
+
+```bash
+python run.py
+```
+
+> 生产环境建议配合反向代理（如 Nginx）与进程管理工具使用。
+
+> 聊天功能依赖外部 CoderChat 后端，部署时需自行提供，否则 `chat.html` 无法完整运行。
+
+## 数据与安全说明
+
+> **重要**：本项目包含多个运行时数据文件，**不应将真实数据提交到 GitHub**。完整忽略规则见 `.gitignore`。
+
+### 需要忽略的文件
+
+以下文件已被 `.gitignore` 排除，或建议加入忽略：
+
+- `functions/db/known_faces/*` — 人脸识别数据
+- `functions/db/login_locks.json` — 登录锁定记录
+- `functions/db/titles.json` — 身份验证题目与答案（**含学生真实姓名**，属于敏感信息）
+- `functions/db/user_answers.json` — 用户答题记录
+- `functions/db/bans.json` — 封禁记录
+- `functions/db/ip_blacklist.json` — IP 黑名单
+- `functions/db/rate_limits.json` — 速率限制记录（含 IP 与请求路径）
+- `functions/config.py` — 可能包含数据库密码等配置
+
+### 如果文件已被 Git 跟踪
+
+`.gitignore` 只对**从未被跟踪**的文件生效。若上述文件曾经被提交过，需要先移出跟踪，再提交：
+
+```bash
+git rm --cached functions/db/titles.json
+git rm --cached functions/db/user_answers.json
+# 其他文件同理
+git commit -m "停止跟踪敏感数据文件"
+```
+
+### 推荐做法
+
+更安全的做法是**不在仓库中保留这些数据文件**，程序运行时自动创建空文件或从环境变量读取配置。如果确实需要在仓库中保留“空占位”，可使用 `git update-index --skip-worktree <文件>`，但需注意其对 `git pull` 的潜在影响。
+
+## 问题反馈
+
+如遇到问题或有改进建议，欢迎提交 Issue。
+
+## License
+
+MIT License © 2026 zfscjch
