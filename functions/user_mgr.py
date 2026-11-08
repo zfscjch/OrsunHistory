@@ -73,7 +73,7 @@ class UserMgr:
                 else:
                     # 增加失败次数
                     attempts += 1
-                    if attempts >= 3:
+                    if attempts >= Config.MAX_LOGIN:
                         cursor.execute("""
                                    UPDATE users
                                    SET account_locked = 1, login_attempts = %s
@@ -88,7 +88,7 @@ class UserMgr:
                                    WHERE id = %s
                                    """, (attempts, user_id))
                         cnx.commit()
-                        return None, 0, f"密码错误，还剩 {5-attempts} 次尝试"
+                        return None, 0, f"密码错误，还剩 {Config.MAX_LOGIN - attempts} 次尝试"
 
     def update_user(self, user_id, password="default", settings="default", change_active=False):
         password_hash = bcrypt.hashpw(

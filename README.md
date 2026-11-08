@@ -26,7 +26,7 @@
 ## 技术栈
 
 | 层面 | 技术 |
-|---|---|
+|:---:|:---:|
 | 后端 | Python（Flask） |
 | 数据库 | MySQL（结构见 `blog_db.sql`） |
 | 前端 | HTML / CSS / JavaScript |
@@ -63,17 +63,7 @@ mysql -u <用户名> -p <数据库名> < blog_db.sql
 
 ### 4. 配置
 
-复制 `functions/config.example.py` 为 `functions/config.py`。若仓库未提供示例文件，请按以下字段自行创建：
-
-```python
-# functions/config.py
-DB_HOST = "localhost"
-DB_PORT = 3306
-DB_USER = "root"
-DB_PASSWORD = "your_password"
-DB_NAME = "orsun_history"
-SECRET_KEY = "change-me"
-```
+复制 `functions/config.example.py` 为 `functions/config.py`。
 
 > `functions/config.py` 已被 `.gitignore` 忽略，请勿将真实密码提交到仓库。
 

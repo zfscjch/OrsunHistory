@@ -86,7 +86,8 @@
 		document.querySelector('#message').style.display = 'none';
 
 		// ✅ 检查"记住我"自动登录
-		checkRememberMe();
+		const searchParams = new URLSearchParams(window.location.search);
+		if (!searchParams.has('out')) checkRememberMe();
 	});
 
 	// ========== 检查"记住我"自动登录 ==========
@@ -221,8 +222,15 @@
 						}
 
 						// ✅ 处理登录成功（不再存储 user_id 到 sessionStorage）
-						handleLoginSuccess(username, data.isActive, data.error_hint);
+						handleLoginSuccess(username, data.error_hint);
 					} else {
+						if (data.msg === "账户未激活") {
+							showMessage("用户账号还未激活，正在跳转激活页……", "error");
+							setTimeout(() => {
+								window.location.href = "/face/";
+							}, 1000);
+							return;
+						}
 						showMessage(data.msg, "error");
 					}
 				})
@@ -233,18 +241,10 @@
 	}
 
 	// ========== 处理登录成功 ==========
-	function handleLoginSuccess(username, isActive, errorHint) {
+	function handleLoginSuccess(username, errorHint) {
 		showMessage('登录成功，正在跳转...', 'success');
 
 		if (errorHint) alert(errorHint);
-
-		if (!isActive) {
-			showMessage("用户账号还未激活，正在跳转激活页……", "error");
-			setTimeout(() => {
-				window.location.href = "/face/";
-			}, 1000);
-			return;
-		}
 
 		// ✅ 获取跳转页面
 		let jumpPage = document.referrer;

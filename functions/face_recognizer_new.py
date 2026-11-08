@@ -616,7 +616,7 @@ def get_index():
 
 @face_bp.route('/upload')
 def get_upload():
-    return render_template("upload_img.html")
+    return render_template("register_face.html")
 
 @face_bp.route('/recognize', methods=['POST'])
 def recognize():

@@ -3,182 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>翱三通史 - 人脸识别系统</title>
+    <title>翱三通史 - 人脸识别</title>
     <link rel="stylesheet" href="./../static/css/face.css">
-    <style>
-        /* 不确定进度条样式 - 循环动画效果 */
-        #recognize-process[max="0"] {
-            width: 100%;
-            height: 6px;
-            border-radius: 3px;
-            background: #e0e0e0;
-            appearance: none;
-            -webkit-appearance: none;
-            overflow: hidden;
-            margin-top: 10px;
-        }
-
-        /* 不确定进度条的滑块动画 */
-        #recognize-process[max="0"]::-webkit-progress-bar {
-            background: #f0f0f0;
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        #recognize-process[max="0"]::-webkit-progress-value {
-            background: linear-gradient(90deg, #4CAF50, #2196F3, #4CAF50);
-            border-radius: 3px;
-            animation: indeterminate-progress 1.5s ease-in-out infinite;
-            width: 30% !important;
-            position: relative;
-        }
-
-        #recognize-process[max="0"]::-moz-progress-bar {
-            background: linear-gradient(90deg, #4CAF50, #2196F3, #4CAF50);
-            border-radius: 3px;
-            animation: indeterminate-progress 1.5s ease-in-out infinite;
-            width: 30% !important;
-        }
-
-        /* 动画：让进度条左右滑动 */
-        @keyframes indeterminate-progress {
-            0% {
-                transform: translateX(-100%);
-            }
-            100% {
-                transform: translateX(300%);
-            }
-        }
-
-        /* 或者使用更简单的脉冲动画 */
-        @keyframes pulse-progress {
-            0%, 100% {
-                opacity: 0.6;
-                background: #4CAF50;
-            }
-            50% {
-                opacity: 1;
-                background: #2196F3;
-            }
-        }
-
-        #recognize-process[max="0"] {
-            animation: pulse-progress 1s ease-in-out infinite;
-        }
-    </style>
-    <script defer>
-        /**
-         * 显示对话框并获取用户输入
-         * @param {string} message - 请求输入的内容
-         * @param {string} placeholderText - 输入框提示语
-         * @param {string} type - 输入框属性
-         * @param {boolean} isRequired - 是否必填
-         * @returns {Promise<string>} 用户回答的Promise
-         */
-        function dialog(message, placeholderText, type = "text", isRequired = true) {
-            return new Promise((resolve, reject) => {
-                const dialog = document.querySelector("#ensure-sth");
-                const description = document.querySelector("#description");
-                const input = document.querySelector("#question");
-
-                // 设置对话框内容
-                description.innerHTML = message;
-                input.placeholder = placeholderText;
-                input.type = type;
-                input.required = isRequired;
-                input.value = ""; // 清空之前的值
-
-                // 显示对话框
-                dialog.showModal();
-
-                // 确定按钮事件
-                document.querySelector("#sure").onclick = () => {
-                    const answer = input.value.trim();
-                    if (!isRequired || (isRequired && answer)) {
-                        dialog.close();
-                        resolve(answer);
-                    }
-                    // 如果必填且为空，浏览器会自动显示验证提示
-                };
-
-                // 取消按钮事件
-                document.querySelector("#cancel").onclick = () => {
-                    dialog.close();
-                    reject("cancel by user"); // 返回空字符串表示取消
-                };
-
-                // 回车键提交
-                input.onkeypress = (e) => {
-                    if (e.key === 'Enter') {
-                        document.querySelector("#sure").click();
-                    }
-                };
-
-                // 点击背景关闭（可选）
-                dialog.onclick = (e) => {
-                    if (e.target === dialog) {
-                        dialog.close();
-                        reject("cancel by user");
-                    }
-                };
-            });
-        }
-    </script>
 </head>
 <body>
-<dialog id="ensure-sth">
-    <div class="dialog-content">
-        <label for="question" id="description"></label>
-        <input id="question">
-        <div class="button-group">
-            <button class="close-btn" id="sure">确定</button>
-            <button class="close-btn" id="cancel">取消</button>
-        </div>
-    </div>
-</dialog>
+<div id="toast-container"></div>
 
 <div class="container">
     <header>
-        <h1>🎭 人脸识别系统</h1>
-        <p class="subtitle">前后端分离 | 实时识别</p>
+        <h1>🎭 人脸识别</h1>
+        <p class="subtitle">拍摄人脸 · 设置新密码 · 一次提交</p>
     </header>
 
-    <div class="main-content">
-        <!-- 左侧：视频区域 -->
-        <div class="video-section">
+    <main class="main-content">
+        <!-- ===== 左列：摄像头 ===== -->
+        <section class="video-section" aria-labelledby="videoTitle">
+            <div class="card-header">
+                <span class="card-index">1</span>
+                <h2 id="videoTitle" class="card-title">拍摄人脸</h2>
+            </div>
             <div class="video-container">
                 <video id="video" autoplay muted playsinline></video>
                 <canvas id="overlayCanvas" class="overlay-canvas"></canvas>
             </div>
             <div class="video-controls">
                 <button id="startCameraBtn" class="btn btn-primary">📷 启动摄像头</button>
-                <button id="captureBtn" class="btn btn-success" disabled>🎯 识别当前画面</button>
+                <button id="captureBtn" class="btn btn-success" disabled>🎯 识别并提交</button>
                 <button id="stopCameraBtn" class="btn btn-warning" disabled>⏹️ 关闭摄像头</button>
             </div>
-        </div>
+        </section>
 
-        <!-- 右侧：控制和结果区域 -->
-        <div class="control-section">
-            <!-- 识别结果 -->
-            <div class="result-panel">
-                <h3>🔍 识别结果</h3>
-                <div id="resultArea" class="result-area">
-                    <div class="info-message">等待识别，按下“🎯 识别当前画面”以开始识别</div>
+        <!-- ===== 右列：表单与结果 ===== -->
+        <section class="control-section">
+            <!-- 步骤 2：设置新密码 -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-index">2</span>
+                    <h2 class="card-title">设置新密码</h2>
+                </div>
+                <p class="card-desc">识别通过后将使用该密码重置账户密码。</p>
+                <div class="input-with-action">
+                    <input id="newPassword" class="text-input" type="password"
+                           placeholder="请输入新密码" autocomplete="new-password">
+                    <button id="togglePwd" class="input-action-btn" type="button">显示</button>
                 </div>
             </div>
-            <div>
-                <a href="/issues" class="issue">识别失败？向安全中心反映问题</a>
+
+            <!-- 步骤 3：识别结果 -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-index">3</span>
+                    <h2 class="card-title">识别结果</h2>
+                </div>
+                <div id="resultArea" class="result-area">
+                    <div class="info-message">等待识别，按下「🎯 识别并提交」开始</div>
+                </div>
             </div>
-        </div>
-    </div>
+
+            <a href="/issues" class="help-link">识别失败？向安全中心反映问题 →</a>
+        </section>
+    </main>
 </div>
 
 <script>
-    // API配置
+    // ==================== 状态与 DOM ====================
     let videoStream = null;
     let isRecognizing = false;
 
-    // DOM元素
     const video = document.getElementById('video');
     const overlayCanvas = document.getElementById('overlayCanvas');
     const ctx = overlayCanvas.getContext('2d');
@@ -186,164 +77,203 @@
     const captureBtn = document.getElementById('captureBtn');
     const stopCameraBtn = document.getElementById('stopCameraBtn');
     const resultArea = document.getElementById('resultArea');
+    const newPasswordInput = document.getElementById('newPassword');
+    const togglePwdBtn = document.getElementById('togglePwd');
 
-    // ==================== 摄像头控制 ====================
+    // ==================== Toast ====================
+    function showToast(message, type = 'info', duration = 3000) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+        container.appendChild(toast);
+        requestAnimationFrame(() => toast.classList.add('show'));
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, duration);
+    }
+
+    // ==================== 摄像头 ====================
     async function startCamera() {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({
-                video: {
-                    width: { ideal: 640 },
-                    height: { ideal: 480 },
-                    facingMode: 'user'
-                }
+                video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: 'user' }
             });
-
             videoStream = stream;
             video.srcObject = stream;
             await video.play();
 
-            // 设置canvas尺寸与视频一致
             overlayCanvas.width = video.videoWidth;
             overlayCanvas.height = video.videoHeight;
 
             startCameraBtn.disabled = true;
             captureBtn.disabled = false;
             stopCameraBtn.disabled = false;
-
-            console.log('摄像头已启动');
         } catch (error) {
             console.error('摄像头启动失败:', error);
-            alert('无法访问摄像头，请检查权限设置');
+            showToast('无法访问摄像头，请检查权限设置', 'error', 4000);
         }
     }
 
     function stopCamera() {
-        if (videoStream) {
-            videoStream.getTracks().forEach(track => track.stop());
-            videoStream = null;
-            video.srcObject = null;
+        if (!videoStream) return;
+        videoStream.getTracks().forEach(track => track.stop());
+        videoStream = null;
+        video.srcObject = null;
 
-            startCameraBtn.disabled = false;
-            captureBtn.disabled = true;
-            stopCameraBtn.disabled = true;
+        startCameraBtn.disabled = false;
+        captureBtn.disabled = true;
+        stopCameraBtn.disabled = true;
 
-            // 清空画布
-            ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
-
-            console.log('摄像头已关闭');
-        }
+        ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
     }
 
-    // ==================== 人脸识别 ====================
+    function captureCurrentFrame() {
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const tempCtx = canvas.getContext('2d');
+
+        // 与预览一致，保持镜像
+        tempCtx.save();
+        tempCtx.scale(-1, 1);
+        tempCtx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+        tempCtx.restore();
+
+        return canvas.toDataURL('image/jpeg', 0.8);
+    }
+
+    // ==================== 识别 + 重置密码 ====================
     async function captureAndRecognize() {
         if (!videoStream || isRecognizing) return;
+
+        // 1. 采集密码
+        const pwd = newPasswordInput.value;
+        if (!pwd) {
+            showToast('请先输入新密码，再进行人脸识别', 'warning');
+            newPasswordInput.focus();
+            return;
+        }
+
+        // 2. 采集人脸帧
+        let imageData;
+        try {
+            imageData = captureCurrentFrame();
+        } catch (e) {
+            showToast('画面采集失败：' + e.message, 'error', 4000);
+            return;
+        }
+
+        // 3. 确认提交
+        if (!window.confirm('已采集人脸图像和新密码，确认提交？')) {
+            showToast('已取消提交', 'info');
+            return;
+        }
 
         isRecognizing = true;
         captureBtn.disabled = true;
 
-        try {
-            // 截取当前视频帧
-            const imageData = captureCurrentFrame();
-
-            // 显示识别中状态 - 使用不确定进度条
-            resultArea.innerHTML = `
+        resultArea.innerHTML = `
             <div class="info-message">
                 🤔 识别中...
-                <progress id="recognize-process" max="0" style="width: 100%; margin-top: 10px;"></progress>
+                <progress id="recognize-process" max="0"></progress>
             </div>
         `;
 
-            // 发送到后端识别
-            const response = await fetch("/face/recognize", {
+        try {
+            // 4. 后端识别人脸
+            const response = await fetch('/face/recognize', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ image: imageData })
             });
-
+            if (!response.ok) throw new Error(`服务返回 ${response.status}`);
             const result = await response.json();
-            console.log(result);
 
-            if (result.status === "success") {
+            if (result.status !== 'success') {
+                resultArea.innerHTML = `<div class="info-message">❌ 人脸识别失败：${result.message || '未知错误'}</div>`;
+                showToast(`人脸存在问题：${result.message || '识别失败'}`, 'error', 5000);
+                return;
+            }
+
+            // 5. 校验当前登录账号与人脸一致
+            let currentUser = null;
+            try {
                 const res = await fetch('/api/currentUser', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
+                    headers: { 'Content-Type': 'application/json' }
                 });
-                const json = JSON.stringify(res.json());
-                const currentUser = json.user;
-                const realUser = result.user;
-                if (currentUser !== realUser) {
-                    alert("登录账号和识别人像不一致，请重新登录或再次拍摄！");
-                    resultArea.innerHTML = "等待识别，按下“🎯 识别当前画面”以开始识别";
-                    return;
-                }
-
-                resultArea.innerHTML = `识别用户为：${result.user}，正在跳转……`;
-                const pwd = await dialog(`识别用户为：${result.user}，为确保安全，请重置密码`, "请输入重置密码", "password");
-                savePassword(result.user_id, pwd);
-                sessionStorage.setItem("user", result.user);
-                sessionStorage.setItem("isTeacher", result.isT);
-                sessionStorage.setItem("userID", result.user_id);
-                setTimeout(() => {
-                    window.location.href = "/";
-                }, 1000);
-            } else {
-                resultArea.innerHTML = `<div class="info-message">❌ 识别失败: ${result.message}</div>`;
+                const userData = await res.json();
+                currentUser = userData.user ?? userData.username ?? null;
+            } catch (e) {
+                console.warn('获取当前用户失败:', e);
             }
+
+            if (!currentUser) {
+                resultArea.innerHTML = `<div class="info-message">⚠️ 无法获取当前登录账号，请重新登录</div>`;
+                showToast('无法获取当前登录账号，请重新登录', 'error', 5000);
+                return;
+            }
+            if (currentUser !== result.user) {
+                resultArea.innerHTML = `<div class="info-message">⚠️ 登录账号（${currentUser}）与识别人像（${result.user}）不一致</div>`;
+                showToast('登录账号和识别人像不一致，请重新登录或再次拍摄', 'error', 5000);
+                return;
+            }
+
+            // 6. 保存新密码
+            resultArea.innerHTML = `<div class="info-message">识别用户为：${result.user}，正在保存密码……</div>`;
+            const saved = await savePassword(result.user_id, pwd);
+            if (!saved) {
+                resultArea.innerHTML = `<div class="info-message">❌ 密码保存失败，请重试</div>`;
+                showToast('密码修改失败，请重试', 'error', 5000);
+                return;
+            }
+
+            // 7. 成功跳转
+            resultArea.innerHTML = `<div class="info-message">✅ 识别用户为：${result.user}，密码已更新，正在跳转……</div>`;
+            showToast('密码修改成功，正在跳转', 'success', 2000);
+
+            newPasswordInput.value = '';
+            sessionStorage.setItem('user', result.user);
+            sessionStorage.setItem('isTeacher', result.isT);
+            sessionStorage.setItem('userID', result.user_id);
+            setTimeout(() => { window.location.href = '/'; }, 1500);
         } catch (error) {
             console.error('识别请求失败:', error);
-            resultArea.innerHTML = `<div class="info-message">❌ 连接后端失败: ${error.message}</div>`;
+            resultArea.innerHTML = `<div class="info-message">❌ 连接后端失败：${error.message}</div>`;
+            showToast(`请求失败：${error.message}`, 'error', 5000);
         } finally {
             isRecognizing = false;
             captureBtn.disabled = false;
         }
     }
 
-    function savePassword(id, pwd) {
-        fetch("/api/saveUser", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({user_id: id, pwd: pwd, settings: "default", a: true})
-        })
-            .then(res => res.json())
-            .then(data => {
-                console.log(data);
-                if (data.status === "success") {
-                    alert("密码保存成功！");
-                }
-            })
-            .catch(error => {
-                console.log(error);
-                alert("密码保存失败！");
-            })
-    }
-
-    function captureCurrentFrame() {
-        // 创建临时canvas
-        const canvas = document.createElement('canvas');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        const tempCtx = canvas.getContext('2d');
-
-        // 绘制当前视频帧（注意保持镜像效果）
-        tempCtx.save();
-        tempCtx.scale(-1, 1);
-        tempCtx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
-        tempCtx.restore();
-
-        // 转换为base64
-        return canvas.toDataURL('image/jpeg', 0.8);
+    async function savePassword(id, pwd) {
+        try {
+            const res = await fetch('/api/saveUser', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: id, pwd, settings: 'default', a: true })
+            });
+            const data = await res.json();
+            return data.status === 'success';
+        } catch (e) {
+            console.error('保存密码失败:', e);
+            return false;
+        }
     }
 
     // ==================== 事件绑定 ====================
     startCameraBtn.addEventListener('click', startCamera);
     stopCameraBtn.addEventListener('click', stopCamera);
     captureBtn.addEventListener('click', captureAndRecognize);
+
+    togglePwdBtn.addEventListener('click', () => {
+        const isPwd = newPasswordInput.type === 'password';
+        newPasswordInput.type = isPwd ? 'text' : 'password';
+        togglePwdBtn.textContent = isPwd ? '隐藏' : '显示';
+    });
 </script>
 </body>
 </html>

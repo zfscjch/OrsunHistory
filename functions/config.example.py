@@ -14,6 +14,12 @@ class Config:
         "raise_on_warnings": True
     }
 
+    PSG_MAP = {}
+    PRODUCE_KEY = "YourProduceEnvironmentKey"
+    MAX_LOGIN = 3
+
+    KEY_FILE = "YourSSLKeyFile"
+    CERT_FILE = "YourSSLCertFile"
 
     @classmethod
     def change_maintenance(cls):

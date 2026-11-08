@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>翱三通史 - 人脸注册</title>
+    <link rel="stylesheet" href="./../static/css/face.css">
+</head>
+<body>
+<div id="toast-container"></div>
+
+<div class="container">
+    <header>
+        <h1>🎭 人脸注册</h1>
+        <p class="subtitle">摄像头拍摄或上传照片 · 注册新用户</p>
+    </header>
+
+    <main class="main-content">
+        <!-- ===== 左列：摄像头预览 ===== -->
+        <section class="video-section">
+            <div class="card-header">
+                <h2 class="card-title">📹 摄像头预览</h2>
+            </div>
+            <div class="video-container">
+                <video id="video" autoplay muted playsinline></video>
+                <canvas id="overlayCanvas" class="overlay-canvas"></canvas>
+            </div>
+            <div class="video-controls">
+                <button id="startCameraBtn" class="btn btn-primary">📷 启动摄像头</button>
+                <button id="changeCameraBtn" class="btn btn-primary" disabled>🔄 切换摄像头</button>
+                <button id="stopCameraBtn" class="btn btn-warning" disabled>⏹️ 关闭摄像头</button>
+            </div>
+        </section>
+
+        <!-- ===== 右列：注册表单 ===== -->
+        <section class="control-section">
+            <!-- 步骤 1：账户信息 -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-index">1</span>
+                    <h2 class="card-title">账户信息</h2>
+                </div>
+                <div class="field" style="margin-bottom: 14px;">
+                    <label for="userName">用户名</label>
+                    <input id="userName" class="text-input" type="text"
+                           placeholder="请输入用户名（最多 20 字）" maxlength="20">
+                </div>
+                <div class="field">
+                    <label for="newPassword">初始密码</label>
+                    <div class="input-with-action">
+                        <input id="newPassword" class="text-input" type="password"
+                               placeholder="请输入初始密码" autocomplete="new-password">
+                        <button id="togglePwd" class="input-action-btn" type="button">显示</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 步骤 2：注册方式 -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-index">2</span>
+                    <h2 class="card-title">注册方式</h2>
+                </div>
+
+                <div class="register-method" role="tablist">
+                    <button id="methodCamera" class="method-btn active" type="button" role="tab" aria-selected="true">📷 拍摄注册</button>
+                    <button id="methodUpload" class="method-btn" type="button" role="tab" aria-selected="false">📁 上传照片</button>
+                </div>
+
+                <!-- 拍摄注册 -->
+                <div id="panelCamera" class="method-panel">
+                    <p class="card-desc" style="margin-bottom: 0;">请先在左侧启动摄像头，对准人脸后点击按钮。</p>
+                    <button id="captureBtn" class="btn btn-success" disabled>🎯 拍摄并注册</button>
+                </div>
+
+                <!-- 上传注册 -->
+                <div id="panelUpload" class="method-panel" hidden>
+                    <div class="file-upload-area">
+                        <input type="file" id="uploadImage" accept="image/*">
+                        <span id="fileDisplayName" class="file-name">未选择文件</span>
+                    </div>
+                    <button id="uploadRegisterBtn" class="btn btn-success">📤 上传并注册</button>
+                </div>
+            </div>
+
+            <!-- 步骤 3：注册状态 -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-index">3</span>
+                    <h2 class="card-title">注册状态</h2>
+                </div>
+                <div id="resultArea" class="result-area">
+                    <div class="info-message">等待操作…</div>
+                </div>
+            </div>
+
+            <a href="/issues" class="help-link">注册遇到问题？向安全中心反映 →</a>
+        </section>
+    </main>
+</div>
+
+<script>
+    // ==================== 状态与 DOM ====================
+    let videoStream = null;
+    let facingMode = 'user';
+    let isSubmitting = false;
+
+    const video = document.getElementById('video');
+    const overlayCanvas = document.getElementById('overlayCanvas');
+    const ctx = overlayCanvas.getContext('2d');
+    const startCameraBtn = document.getElementById('startCameraBtn');
+    const changeCameraBtn = document.getElementById('changeCameraBtn');
+    const stopCameraBtn = document.getElementById('stopCameraBtn');
+    const captureBtn = document.getElementById('captureBtn');
+    const userNameInput = document.getElementById('userName');
+    const newPasswordInput = document.getElementById('newPassword');
+    const togglePwdBtn = document.getElementById('togglePwd');
+    const resultArea = document.getElementById('resultArea');
+    const methodCameraBtn = document.getElementById('methodCamera');
+    const methodUploadBtn = document.getElementById('methodUpload');
+    const panelCamera = document.getElementById('panelCamera');
+    const panelUpload = document.getElementById('panelUpload');
+    const uploadImageInput = document.getElementById('uploadImage');
+    const fileDisplayName = document.getElementById('fileDisplayName');
+    const uploadRegisterBtn = document.getElementById('uploadRegisterBtn');
+
+    // ==================== Toast ====================
+    function showToast(message, type = 'info', duration = 3000) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+        container.appendChild(toast);
+        requestAnimationFrame(() => toast.classList.add('show'));
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, duration);
+    }
+
+    // ==================== 摄像头 ====================
+    async function startCamera(change = false) {
+        // 切换摄像头时先释放旧流
+        if (videoStream) {
+            videoStream.getTracks().forEach(t => t.stop());
+            videoStream = null;
+        }
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode }
+            });
+            videoStream = stream;
+            video.srcObject = stream;
+            video.style.transform = facingMode === 'environment' ? 'scaleX(1)' : 'scaleX(-1)';
+            await video.play();
+
+            overlayCanvas.width = video.videoWidth;
+            overlayCanvas.height = video.videoHeight;
+
+            startCameraBtn.disabled = true;
+            changeCameraBtn.disabled = false;
+            captureBtn.disabled = false;
+            stopCameraBtn.disabled = false;
+
+            if (!change) showToast('摄像头已启动', 'success', 1500);
+        } catch (error) {
+            console.error('摄像头启动失败:', error);
+            showToast('无法访问摄像头，请检查权限设置', 'error', 4000);
+        }
+    }
+
+    async function changeCamera() {
+        facingMode = facingMode === 'user' ? 'environment' : 'user';
+        await startCamera(true);
+        showToast(`已切换到${facingMode === 'user' ? '前置' : '后置'}摄像头`, 'info', 1500);
+    }
+
+    function stopCamera() {
+        if (!videoStream) return;
+        videoStream.getTracks().forEach(track => track.stop());
+        videoStream = null;
+        video.srcObject = null;
+
+        startCameraBtn.disabled = false;
+        changeCameraBtn.disabled = true;
+        captureBtn.disabled = true;
+        stopCameraBtn.disabled = true;
+
+        ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+    }
+
+    function captureCurrentFrame() {
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const tempCtx = canvas.getContext('2d');
+
+        // 前置摄像头镜像，后置不镜像
+        if (facingMode === 'user') {
+            tempCtx.save();
+            tempCtx.scale(-1, 1);
+            tempCtx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+            tempCtx.restore();
+        } else {
+            tempCtx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        }
+        return canvas.toDataURL('image/jpeg', 0.8);
+    }
+
+    // ==================== 注册方式切换 ====================
+    function switchMethod(method) {
+        const isCamera = method === 'camera';
+        methodCameraBtn.classList.toggle('active', isCamera);
+        methodUploadBtn.classList.toggle('active', !isCamera);
+        methodCameraBtn.setAttribute('aria-selected', String(isCamera));
+        methodUploadBtn.setAttribute('aria-selected', String(!isCamera));
+        panelCamera.hidden = !isCamera;
+        panelUpload.hidden = isCamera;
+    }
+    methodCameraBtn.addEventListener('click', () => switchMethod('camera'));
+    methodUploadBtn.addEventListener('click', () => switchMethod('upload'));
+
+    // ==================== 表单校验 ====================
+    function collectForm() {
+        const name = userNameInput.value.trim();
+        if (!name) {
+            showToast('请输入用户名', 'warning');
+            userNameInput.focus();
+            return null;
+        }
+        const pwd = newPasswordInput.value;
+        if (!pwd) {
+            showToast('请输入初始密码', 'warning');
+            newPasswordInput.focus();
+            return null;
+        }
+        return { name, pwd };
+    }
+
+    // ==================== 摄像头注册 ====================
+    async function registerByCamera() {
+        if (isSubmitting) return;
+        const form = collectForm();
+        if (!form) return;
+
+        if (!videoStream) {
+            showToast('请先启动摄像头', 'warning');
+            return;
+        }
+        const imageData = captureCurrentFrame();
+        await submitRegister(form.name, form.pwd, imageData);
+    }
+
+    // ==================== 上传注册 ====================
+    async function registerByUpload() {
+        if (isSubmitting) return;
+        const form = collectForm();
+        if (!form) return;
+
+        const file = uploadImageInput.files[0];
+        if (!file) {
+            showToast('请先选择一张照片', 'warning');
+            return;
+        }
+        if (!file.type.startsWith('image/')) {
+            showToast('请选择有效的图片文件', 'warning');
+            return;
+        }
+
+        const imageData = await readFileAsDataURL(file).catch(err => {
+            showToast('读取文件失败：' + err.message, 'error', 4000);
+            return null;
+        });
+        if (!imageData) return;
+
+        await submitRegister(form.name, form.pwd, imageData);
+    }
+
+    function readFileAsDataURL(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = e => resolve(e.target.result);
+            reader.onerror = () => reject(new Error('文件读取失败'));
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // ==================== 统一提交 ====================
+    async function submitRegister(name, pwd, imageData) {
+        if (!window.confirm(`确认使用用户名「${name}」注册该人脸？`)) {
+            showToast('已取消注册', 'info');
+            return;
+        }
+
+        isSubmitting = true;
+        captureBtn.disabled = true;
+        uploadRegisterBtn.disabled = true;
+
+        resultArea.innerHTML = `
+            <div class="info-message">
+                🤔 注册中...
+                <progress id="recognize-process" max="0"></progress>
+            </div>
+        `;
+
+        try {
+            const res = await fetch('/face/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, image: imageData })
+            });
+            if (!res.ok) throw new Error(`服务返回 ${res.status}`);
+            const result = await res.json();
+
+            if (result.status !== 'success') {
+                resultArea.innerHTML = `<div class="info-message">❌ 注册失败：${result.message || '未知错误'}</div>`;
+                showToast(`注册失败：${result.message || '人脸存在问题'}`, 'error', 5000);
+                return;
+            }
+
+            // 保存初始密码
+            resultArea.innerHTML = `<div class="info-message">✅ ${result.message || '人脸注册成功'}，正在保存密码……</div>`;
+            const saved = await savePassword(result.user_id, pwd);
+            if (!saved) {
+                resultArea.innerHTML = `<div class="info-message">❌ 密码保存失败，请重试</div>`;
+                showToast('密码保存失败，请重试', 'error', 5000);
+                return;
+            }
+
+            resultArea.innerHTML = `<div class="info-message">✅ 用户「${result.user}」注册成功，正在跳转……</div>`;
+            showToast('注册成功，正在跳转', 'success', 2000);
+
+            sessionStorage.setItem('user', result.user);
+            sessionStorage.setItem('isTeacher', result.isT);
+            sessionStorage.setItem('userID', result.user_id);
+            setTimeout(() => { window.location.href = '/'; }, 1500);
+        } catch (error) {
+            console.error('注册请求失败:', error);
+            resultArea.innerHTML = `<div class="info-message">❌ 连接后端失败：${error.message}</div>`;
+            showToast(`请求失败：${error.message}`, 'error', 5000);
+        } finally {
+            isSubmitting = false;
+            captureBtn.disabled = !videoStream;
+            uploadRegisterBtn.disabled = false;
+        }
+    }
+
+    // ==================== 保存密码 ====================
+    async function savePassword(id, pwd) {
+        try {
+            const res = await fetch('/api/saveUser', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: id, pwd, settings: 'default' })
+            });
+            const data = await res.json();
+            return data.status === 'success';
+        } catch (e) {
+            console.error('保存密码失败:', e);
+            return false;
+        }
+    }
+
+    // ==================== 其它事件 ====================
+    uploadImageInput.addEventListener('change', function () {
+        const file = this.files[0];
+        fileDisplayName.textContent = file
+            ? `${file.name}（${(file.size / 1024).toFixed(1)} KB）`
+            : '未选择文件';
+    });
+
+    togglePwdBtn.addEventListener('click', () => {
+        const isPwd = newPasswordInput.type === 'password';
+        newPasswordInput.type = isPwd ? 'text' : 'password';
+        togglePwdBtn.textContent = isPwd ? '隐藏' : '显示';
+    });
+
+    startCameraBtn.addEventListener('click', () => startCamera(false));
+    changeCameraBtn.addEventListener('click', changeCamera);
+    stopCameraBtn.addEventListener('click', stopCamera);
+    captureBtn.addEventListener('click', registerByCamera);
+    uploadRegisterBtn.addEventListener('click', registerByUpload);
+</script>
+</body>
+</html>

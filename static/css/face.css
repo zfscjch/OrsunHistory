@@ -1,4 +1,61 @@
-/* ===== 全局重置与基调（与 article.html 一致） ===== */
+/* =========================================================
+   翱三通史 · 人脸识别页面样式
+   目录
+   1. 设计变量
+   2. 基础重置与布局
+   3. 头部
+   4. 卡片系统
+   5. 表单控件
+   6. 按钮
+   7. 视频区域
+   8. 结果与状态
+   9. 进度条
+   10. Toast 提示
+   11. 注册方式切换
+   12. 文件上传
+   13. 对话框（兼容旧页面）
+   14. 辅助链接
+   15. 响应式
+   ========================================================= */
+
+/* ---------- 1. 设计变量 ---------- */
+:root {
+    --bg: #f4f1eb;
+    --surface: #ffffff;
+    --surface-soft: #faf9f7;
+    --border: #eee7dd;
+    --border-strong: #e0d9cf;
+
+    --text: #2c3e50;
+    --text-strong: #1f1b17;
+    --text-muted: #a39484;
+    --text-placeholder: #c6b9ab;
+
+    --accent: #9bb88b;
+    --accent-hover: #8aaa7a;
+    --accent-soft: rgba(155, 184, 139, 0.25);
+
+    --dark: #2b241e;
+    --dark-hover: #1f1b17;
+
+    --danger: #e5484d;
+    --warning: #f0a020;
+    --success: #4caf50;
+    --info: #4a4a4a;
+
+    --radius-lg: 32px;
+    --radius-md: 20px;
+    --radius-sm: 16px;
+    --radius-xs: 12px;
+    --pill: 40px;
+
+    --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.06);
+    --shadow-pop: 0 8px 24px rgba(0, 0, 0, 0.15);
+    --shadow-dialog: 0 20px 60px rgba(0, 0, 0, 0.12);
+}
+
+/* ---------- 2. 基础重置与布局 ---------- */
 * {
     margin: 0;
     padding: 0;
@@ -6,154 +63,172 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    background: #f4f1eb;   /* 暖白底，护眼古韵 */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
     min-height: 100vh;
     padding: 2rem 1rem;
     display: flex;
     justify-content: center;
-    align-items: center;
-    color: #2c3e50;
+    align-items: flex-start;
+    color: var(--text);
     line-height: 1.6;
 }
 
-/* ===== 主容器 ===== */
+/* 主容器 */
 .container {
     max-width: 1400px;
     width: 100%;
     margin: 0 auto;
-    background: #ffffff;
-    border-radius: 32px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    border: 1px solid #eee7dd;
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
     overflow: hidden;
     transition: box-shadow 0.2s ease;
 }
 .container:hover {
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+    box-shadow: var(--shadow-md);
 }
 
-/* ===== 头部 ===== */
+/* ---------- 3. 头部 ---------- */
 header {
-    background: #ffffff;
-    color: #2c3e50;
+    background: var(--surface);
+    color: var(--text);
     padding: 2rem 2.5rem 1.5rem;
     text-align: center;
-    border-bottom: 2px solid #eee7dd;
+    border-bottom: 2px solid var(--border);
 }
-
 header h1 {
     font-size: 2.2rem;
     font-weight: 600;
-    color: #2c3e50;
+    color: var(--text);
     letter-spacing: -0.01em;
     margin-bottom: 6px;
 }
-
 .subtitle {
-    color: #a39484;
+    color: var(--text-muted);
     font-size: 1rem;
     font-weight: 400;
 }
 
-/* ===== 主内容区域 ===== */
+/* ---------- 主内容区（两列） ---------- */
 .main-content {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 24px;
     padding: 30px;
+    align-items: start;
 }
-
-/* ===== 视频区域 ===== */
-.video-section {
-    background: #faf9f7;
-    border-radius: 20px;
-    padding: 20px;
-    border: 1px solid #eee7dd;
-}
-
-.video-container {
-    position: relative;
-    background: #1f1b17;
-    border-radius: 16px;
-    overflow: hidden;
-    margin-bottom: 16px;
-    aspect-ratio: 4/3;
-}
-
-#video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transform: scaleX(-1);
-}
-
-.overlay-canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-}
-
-/* ===== 视频控制按钮 ===== */
-.video-controls {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-/* ===== 右侧控制区域 ===== */
 .control-section {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-/* ===== 结果面板 ===== */
-.result-panel {
-    background: #faf9f7;
-    border-radius: 20px;
+/* ---------- 4. 卡片系统 ---------- */
+.card,
+.video-section {
+    background: var(--surface-soft);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
     padding: 20px;
-    border: 1px solid #eee7dd;
 }
-
-.result-panel h3 {
-    color: #2c3e50;
-    margin-bottom: 12px;
-    font-size: 1.1rem;
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+.card-index {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--dark);
+    color: #fff;
+    font-size: 0.8rem;
     font-weight: 600;
+    flex-shrink: 0;
+}
+.card-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text);
+}
+.card-desc {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 12px;
 }
 
-.result-area {
-    min-height: 150px;
-    background: #ffffff;
-    border-radius: 16px;
-    padding: 16px;
-    margin-bottom: 16px;
-    border: 1px solid #eee7dd;
-    font-size: 0.95rem;
-    color: #2c3e50;
-    line-height: 1.7;
+/* ---------- 5. 表单控件 ---------- */
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.field label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+.text-input {
+    width: 100%;
+    padding: 0.8rem 1.2rem;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--pill);
+    font-size: 1rem;
+    font-family: inherit;
+    color: var(--text-strong);
+    outline: none;
+    transition: border 0.2s, box-shadow 0.2s;
+}
+.text-input:focus {
+    border-color: var(--dark);
+    box-shadow: 0 0 0 3px rgba(43, 36, 30, 0.08);
+}
+.text-input::placeholder {
+    color: var(--text-placeholder);
 }
 
-.info-message {
-    color: #a39484;
-    text-align: center;
-    padding: 20px;
-    font-style: italic;
+/* 带尾部按钮的输入框 */
+.input-with-action {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.input-with-action .text-input {
+    padding-right: 4.8rem;
+}
+.input-action-btn {
+    position: absolute;
+    right: 8px;
+    padding: 0.35rem 0.9rem;
+    border: none;
+    border-radius: var(--pill);
+    background: #f0ece6;
+    color: var(--dark);
+    font-size: 0.85rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.input-action-btn:hover {
+    background: #e6e0d8;
 }
 
-/* ===== 统一按钮样式（与 article.html 风格一致） ===== */
+/* ---------- 6. 按钮 ---------- */
 .btn {
     display: inline-block;
     padding: 0.6rem 1.8rem;
-    background: #9bb88b;
+    background: var(--accent);
     color: #ffffff;
     border: none;
-    border-radius: 40px;
+    border-radius: var(--pill);
     font-size: 0.95rem;
     font-weight: 500;
     cursor: pointer;
@@ -166,13 +241,12 @@ header h1 {
     cursor: not-allowed;
     transform: none !important;
 }
-
 .btn-primary {
-    background: #2b241e;
+    background: var(--dark);
     color: #ffffff;
 }
 .btn-primary:hover:not(:disabled) {
-    background: #1f1b17;
+    background: var(--dark-hover);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
@@ -180,24 +254,22 @@ header h1 {
     transform: translateY(0);
     box-shadow: none;
 }
-
 .btn-success {
-    background: #9bb88b;
+    background: var(--accent);
     color: #ffffff;
 }
 .btn-success:hover:not(:disabled) {
-    background: #8aaa7a;
+    background: var(--accent-hover);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(155, 184, 139, 0.25);
+    box-shadow: 0 4px 12px var(--accent-soft);
 }
 .btn-success:active:not(:disabled) {
     transform: translateY(0);
     box-shadow: none;
 }
-
 .btn-warning {
     background: #f0ece6;
-    color: #2b241e;
+    color: var(--dark);
     border: 1px solid #edeae5;
 }
 .btn-warning:hover:not(:disabled) {
@@ -208,20 +280,199 @@ header h1 {
     transform: translateY(0);
 }
 
-/* ===== 对话框（与 user_settings.html 风格一致） ===== */
+/* ---------- 7. 视频区域 ---------- */
+.video-container {
+    position: relative;
+    background: var(--text-strong);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    margin-bottom: 16px;
+    aspect-ratio: 4 / 3;
+}
+#video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1);
+}
+.overlay-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+.video-controls {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* ---------- 8. 结果与状态 ---------- */
+.result-area {
+    min-height: 120px;
+    background: var(--surface);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    border: 1px solid var(--border);
+    font-size: 0.95rem;
+    color: var(--text);
+    line-height: 1.7;
+}
+.info-message {
+    color: var(--text-muted);
+    text-align: center;
+    padding: 20px;
+    font-style: italic;
+}
+
+/* ---------- 9. 进度条（不确定进度） ---------- */
+#recognize-process[max="0"] {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #e0e0e0;
+    appearance: none;
+    -webkit-appearance: none;
+    overflow: hidden;
+    margin-top: 10px;
+}
+#recognize-process[max="0"]::-webkit-progress-bar {
+    background: #f0f0f0;
+    border-radius: 3px;
+    overflow: hidden;
+}
+#recognize-process[max="0"]::-webkit-progress-value {
+    background: linear-gradient(90deg, #4caf50, #2196f3, #4caf50);
+    border-radius: 3px;
+    animation: indeterminate-progress 1.5s ease-in-out infinite;
+    width: 30% !important;
+    position: relative;
+}
+#recognize-process[max="0"]::-moz-progress-bar {
+    background: linear-gradient(90deg, #4caf50, #2196f3, #4caf50);
+    border-radius: 3px;
+    animation: indeterminate-progress 1.5s ease-in-out infinite;
+    width: 30% !important;
+}
+@keyframes indeterminate-progress {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(300%);
+    }
+}
+
+/* ---------- 10. Toast 提示 ---------- */
+#toast-container {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+.toast {
+    min-width: 220px;
+    max-width: 360px;
+    padding: 12px 18px;
+    border-radius: var(--radius-xs);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #fff;
+    box-shadow: var(--shadow-pop);
+    opacity: 0;
+    transform: translateX(24px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: auto;
+    word-break: break-word;
+}
+.toast.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+.toast-success { background: var(--success); }
+.toast-error   { background: var(--danger); }
+.toast-warning { background: var(--warning); color: var(--dark); }
+.toast-info    { background: var(--info); }
+
+/* ---------- 11. 注册方式切换 ---------- */
+.register-method {
+    display: flex;
+    gap: 4px;
+    background: #f0ece6;
+    padding: 4px;
+    border-radius: var(--pill);
+    margin-bottom: 16px;
+}
+.method-btn {
+    flex: 1;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: var(--pill);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.method-btn.active {
+    background: var(--surface);
+    color: var(--dark);
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+.method-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.method-panel[hidden] {
+    display: none;
+}
+.method-panel .btn {
+    align-self: flex-start;
+}
+
+/* ---------- 12. 文件上传 ---------- */
+.file-upload-area {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 14px;
+    background: var(--surface);
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius-xs);
+}
+.file-upload-area input[type="file"] {
+    font-size: 0.9rem;
+    font-family: inherit;
+}
+.file-name {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    word-break: break-all;
+}
+
+/* ---------- 13. 对话框（兼容旧页面） ---------- */
 #ensure-sth {
     margin: 0;
     border: none;
     border-radius: 24px;
     padding: 0;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+    box-shadow: var(--shadow-dialog);
     width: 400px;
     max-width: 90vw;
-    background: #ffffff;
+    background: var(--surface);
     animation: dialogAppear 0.3s ease-out;
     overflow: hidden;
 }
-
 @keyframes dialogAppear {
     from {
         opacity: 0;
@@ -232,55 +483,49 @@ header h1 {
         transform: scale(1) translateY(0);
     }
 }
-
 #ensure-sth::backdrop {
     background: rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(6px);
 }
-
 #ensure-sth > * {
     margin: 0;
     padding: 24px 28px;
 }
-
 #description {
     display: block;
     font-size: 1rem;
     font-weight: 600;
-    color: #2b241e;
+    color: var(--dark);
     line-height: 1.6;
     margin-bottom: 16px;
 }
-
 #question {
     width: 100%;
     padding: 0.8rem 1.2rem;
-    background: #ffffff;
-    border: 1px solid #e0d9cf;
-    border-radius: 40px;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--pill);
     font-size: 1rem;
     font-family: inherit;
-    color: #1f1b17;
+    color: var(--text-strong);
     transition: border 0.2s, box-shadow 0.2s;
     outline: none;
     box-sizing: border-box;
     margin-bottom: 20px;
 }
 #question:focus {
-    border-color: #2b241e;
+    border-color: var(--dark);
     box-shadow: 0 0 0 3px rgba(43, 36, 30, 0.08);
 }
 #question::placeholder {
-    color: #c6b9ab;
+    color: var(--text-placeholder);
 }
-
 #ensure-sth > div:last-child {
     display: flex;
     gap: 12px;
     justify-content: flex-end;
     padding-top: 0;
 }
-
 .close-btn {
     padding: 0.6rem 1.8rem;
     border: none;
@@ -292,13 +537,12 @@ header h1 {
     font-family: inherit;
     min-width: 80px;
 }
-
 #sure {
-    background: #2b241e;
+    background: var(--dark);
     color: #ffffff;
 }
 #sure:hover {
-    background: #1f1b17;
+    background: var(--dark-hover);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
@@ -306,10 +550,9 @@ header h1 {
     transform: translateY(0);
     box-shadow: none;
 }
-
 #cancel {
     background: #f0ece6;
-    color: #2b241e;
+    color: var(--dark);
 }
 #cancel:hover {
     background: #e6e0d8;
@@ -319,22 +562,22 @@ header h1 {
     transform: translateY(0);
 }
 
-.a-link {
+/* ---------- 14. 辅助链接 ---------- */
+.help-link {
     display: inline-block;
-    font-size: 0.8rem;
-    color: #2b241e;
+    font-size: 0.85rem;
+    color: var(--dark);
     text-decoration: underline;
     text-underline-offset: 2px;
     text-decoration-color: #d6cbc0;
-    margin-top: 0.8rem;
     transition: color 0.2s;
 }
-.a-link:hover {
-    color: #1f1b17;
-    text-decoration-color: #2b241e;
+.help-link:hover {
+    color: var(--dark-hover);
+    text-decoration-color: var(--dark);
 }
 
-/* ===== 响应式 ===== */
+/* ---------- 15. 响应式 ---------- */
 @media (max-width: 1024px) {
     .main-content {
         grid-template-columns: 1fr;
@@ -346,7 +589,6 @@ header h1 {
         order: 2;
     }
 }
-
 @media (max-width: 768px) {
     body {
         padding: 1rem 0.5rem;
@@ -361,10 +603,8 @@ header h1 {
     header h1 {
         font-size: 1.8rem;
     }
+    .card,
     .video-section {
-        padding: 14px;
-    }
-    .result-panel {
         padding: 14px;
     }
     .btn {
@@ -379,6 +619,15 @@ header h1 {
         min-width: 80px;
         text-align: center;
     }
+    #toast-container {
+        top: 12px;
+        right: 12px;
+        left: 12px;
+    }
+    .toast {
+        max-width: none;
+        width: 100%;
+    }
     #ensure-sth > * {
         padding: 18px 20px;
     }
@@ -390,7 +639,6 @@ header h1 {
         justify-content: center;
     }
 }
-
 @media (max-width: 480px) {
     header h1 {
         font-size: 1.4rem;

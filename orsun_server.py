@@ -380,15 +380,6 @@ def get_chat():
 
     return render_template("chat.html")
 
-@app.route('/user')
-def get_user_profile():
-    user_data = {
-        "username": session["user"],
-        "articleURL": None,
-        "article": ""
-    }
-    return render_template("user.html", user=user_data)
-
 @app.route('/node_modules/<path:filename>')
 def node_modules_files(filename):
     return send_from_directory('node_modules', filename)

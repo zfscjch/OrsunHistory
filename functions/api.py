@@ -32,6 +32,9 @@ def login():
         log_mgr = g.log_mgr
         user_id, is_active, msg = user_mgr.authenticate(user, password)
 
+        if not is_active:
+            return api_response("error", "账户未激活")
+
         if user_id:
             log_mgr.info(user, "登录成功", request.remote_addr)
 
